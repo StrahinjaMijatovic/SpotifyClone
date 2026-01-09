@@ -1,0 +1,42 @@
+services:
+  # Baze podataka
+  mongodb-users:
+    image: mongo:7
+    container_name: mongodb-users
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+    volumes:
+      - mongodb-users-data:/data/db
+    networks:
+      - spotify-network
+
+  # Mikroservisi
+  users-service:
+    build:
+      context: ./users-service
+      dockerfile: Dockerfile
+    container_name: users-service
+    ports:
+      - "8001:8001"
+    environment:
+      PORT: 8001
+      MONGODB_URI: mongodb://admin:admin123@mongodb-users:27017/users?authSource=admin
+      JWT_SECRET: your-secret-key-change-in-production
+      EMAIL_HOST: smtp.gmail.com
+      EMAIL_PORT: 587
+      EMAIL_USER: your-email@gmail.com
+      EMAIL_PASS: your-password
+    depends_on:
+      - mongodb-users
+    networks:
+      - spotify-network
+
+volumes:
+  mongodb-users-data:
+
+networks:
+  spotify-network:
+    driver: bridge
