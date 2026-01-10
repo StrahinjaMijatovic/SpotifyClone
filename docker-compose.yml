@@ -13,6 +13,19 @@ services:
     networks:
       - spotify-network
 
+  mongodb-content:
+    image: mongo:7
+    container_name: mongodb-content
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+    volumes:
+      - mongodb-content-data:/data/db
+    networks:
+      - spotify-network
+
   # Mikroservisi
   users-service:
     build:
@@ -34,8 +47,25 @@ services:
     networks:
       - spotify-network
 
+  content-service:
+    build:
+      context: ./content-service
+      dockerfile: Dockerfile
+    container_name: content-service
+    ports:
+      - "8002:8002"
+    environment:
+      PORT: 8002
+      MONGODB_URI: mongodb://admin:admin123@mongodb-content:27017/content?authSource=admin
+      JWT_SECRET: your-secret-key-change-in-production
+    depends_on:
+      - mongodb-content
+    networks:
+      - spotify-network
+
 volumes:
   mongodb-users-data:
+  mongodb-content-data:
 
 networks:
   spotify-network:
