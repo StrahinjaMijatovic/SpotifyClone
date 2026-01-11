@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { LoginRequest, LoginResponse } from '../models/auth.models';
+import { RegisterRequest, RegisterResponse } from '../models/auth.models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -28,4 +29,8 @@ export class AuthService {
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
+
+  register(payload: RegisterRequest): Observable<RegisterResponse> {
+  return this.http.post<RegisterResponse>(`${this.apiBase}/register`, payload);
+}
 }
