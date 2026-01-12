@@ -46,6 +46,18 @@ services:
     networks:
       - spotify-network
 
+  cassandra-notifications:
+    image: cassandra:4
+    container_name: cassandra-notifications
+    ports:
+      - "9042:9042"
+    environment:
+      CASSANDRA_CLUSTER_NAME: spotify-cluster
+    volumes:
+      - cassandra-notifications-data:/var/lib/cassandra
+    networks:
+      - spotify-network
+
   # Mikroservisi
   users-service:
     build:
@@ -115,11 +127,29 @@ services:
     networks:
       - spotify-network
 
+  notifications-service:
+    build:
+      context: ./notifications-service
+      dockerfile: Dockerfile
+    container_name: notifications-service
+    ports:
+      - "8005:8005"
+    environment:
+      PORT: 8005
+      CASSANDRA_HOSTS: cassandra-notifications
+      CASSANDRA_KEYSPACE: notifications
+      JWT_SECRET: your-secret-key-change-in-production
+    depends_on:
+      - cassandra-notifications
+    networks:
+      - spotify-network
+
 volumes:
   mongodb-users-data:
   mongodb-content-data:
   redis-ratings-data:
   redis-subscriptions-data:
+  cassandra-notifications-data:
 
 networks:
   spotify-network:
