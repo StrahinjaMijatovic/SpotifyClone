@@ -26,6 +26,16 @@ services:
     networks:
       - spotify-network
 
+  redis-ratings:
+    image: redis:7-alpine
+    container_name: redis-ratings
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-ratings-data:/data
+    networks:
+      - spotify-network
+
   # Mikroservisi
   users-service:
     build:
@@ -63,9 +73,26 @@ services:
     networks:
       - spotify-network
 
+  ratings-service:
+    build:
+      context: ./ratings-service
+      dockerfile: Dockerfile
+    container_name: ratings-service
+    ports:
+      - "8003:8003"
+    environment:
+      PORT: 8003
+      REDIS_URI: redis://redis-ratings:6379
+      JWT_SECRET: your-secret-key-change-in-production
+    depends_on:
+      - redis-ratings
+    networks:
+      - spotify-network
+
 volumes:
   mongodb-users-data:
   mongodb-content-data:
+  redis-ratings-data:
 
 networks:
   spotify-network:
