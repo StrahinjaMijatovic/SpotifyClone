@@ -15,6 +15,7 @@ import { AuthService } from '../../services/auth.service';
 export class LoginComponent {
   username = '';
   password = '';
+  otpCode = '';
 
   loading = false;
   errorMessage: string | null = null;
@@ -22,11 +23,22 @@ export class LoginComponent {
 
   year = new Date().getFullYear();
 
-  constructor(private auth: AuthService, private router: Router) {}
+  step = 1;
+  tempToken = '';
+
+  constructor(private auth: AuthService, private router: Router) { }
 
   onSubmit(): void {
     this.errorMessage = null;
 
+    if (this.step === 1) {
+      this.handleLogin();
+    } else {
+      this.handleOTP();
+    }
+  }
+
+  handleLogin(): void {
     const u = this.username.trim();
     const p = this.password;
 
@@ -38,9 +50,32 @@ export class LoginComponent {
     this.loading = true;
 
     this.auth.login({ username: u, password: p }).subscribe({
-      next: () => this.router.navigate(['/home']),
+      next: (res) => {
+        this.tempToken = res.temp_token;
+        this.step = 2; // Move to OTP step
+        this.errorMessage = null;
+      },
       error: () => {
         this.errorMessage = 'Login nije uspeo. Proveri kredencijale.';
+        this.loading = false;
+      },
+      complete: () => (this.loading = false),
+    });
+  }
+
+  handleOTP(): void {
+    const code = this.otpCode.trim();
+    if (!code || code.length !== 6) {
+      this.errorMessage = 'Unesi 6-cifreni OTP kod.';
+      return;
+    }
+
+    this.loading = true;
+
+    this.auth.verifyOTP({ temp_token: this.tempToken, otp_code: code }).subscribe({
+      next: () => this.router.navigate(['/home']),
+      error: () => {
+        this.errorMessage = 'Pogrešan ili istekao OTP kod.';
         this.loading = false;
       },
       complete: () => (this.loading = false),

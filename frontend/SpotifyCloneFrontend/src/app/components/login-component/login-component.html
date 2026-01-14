@@ -18,44 +18,64 @@
             </div>
 
             <form (ngSubmit)="onSubmit()" novalidate>
-              <div class="mb-3">
-                <label class="form-label">Username</label>
-                <input
-                  class="form-control form-control-lg"
-                  type="text"
-                  name="username"
-                  [(ngModel)]="username"
-                  placeholder="npr. nikola123"
-                  required
-                />
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label">Password</label>
-                <div class="input-group input-group-lg">
+              <div *ngIf="step === 1">
+                <div class="mb-3">
+                  <label class="form-label">Username</label>
                   <input
-                    class="form-control"
-                    [type]="showPassword ? 'text' : 'password'"
-                    name="password"
-                    [(ngModel)]="password"
-                    placeholder="••••••••"
+                    class="form-control form-control-lg"
+                    type="text"
+                    name="username"
+                    [(ngModel)]="username"
+                    placeholder="npr. nikola123"
                     required
                   />
-                  <button
-                    class="btn btn-outline-secondary"
-                    type="button"
-                    (click)="showPassword = !showPassword"
-                  >
-                    {{ showPassword ? 'Hide' : 'Show' }}
-                  </button>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Password</label>
+                  <div class="input-group input-group-lg">
+                    <input
+                      class="form-control"
+                      [type]="showPassword ? 'text' : 'password'"
+                      name="password"
+                      [(ngModel)]="password"
+                      placeholder="••••••••"
+                      required
+                    />
+                    <button
+                      class="btn btn-outline-secondary"
+                      type="button"
+                      (click)="showPassword = !showPassword"
+                    >
+                      {{ showPassword ? 'Hide' : 'Show' }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="step === 2">
+                <div class="mb-3">
+                  <label class="form-label">Unesi OTP kod</label>
+                  <input
+                    class="form-control form-control-lg text-center letter-spacing-2"
+                    type="text"
+                    name="otpCode"
+                    [(ngModel)]="otpCode"
+                    placeholder="123456"
+                    maxlength="6"
+                    required
+                  />
+                  <div class="form-text text-center">
+                    Poslali smo kod na tvoj email.
+                  </div>
                 </div>
               </div>
 
               <button class="btn btn-success btn-lg w-100" type="submit" [disabled]="loading">
-                <span *ngIf="!loading">Login</span>
+                <span *ngIf="!loading">{{ step === 1 ? 'Login' : 'Verifikuj OTP' }}</span>
                 <span *ngIf="loading" class="d-inline-flex align-items-center gap-2">
                   <span class="spinner-border spinner-border-sm" role="status"></span>
-                  Logging in...
+                  {{ step === 1 ? 'Logging in...' : 'Verifying...' }}
                 </span>
               </button>
 

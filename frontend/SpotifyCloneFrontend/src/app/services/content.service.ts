@@ -7,7 +7,7 @@ import type { Album, Artist, Song, SearchResult } from '../models/content.models
 export class ContentService {
   private readonly apiBase = '/api/v1';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');

@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"errors"
 	"os"
 	"time"
@@ -17,6 +19,14 @@ func init() {
 	}
 }
 
+func generateJTI() (string, error) {
+	b := make([]byte, 16)
+	if _, err := rand.Read(b); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(b), nil
+}
+
 type Claims struct {
 	UserID   string `json:"user_id"`
 	Username string `json:"username"`
@@ -25,14 +35,20 @@ type Claims struct {
 }
 
 func GenerateJWT(userID, username, role string) (string, error) {
+	jti, err := generateJTI()
+	if err != nil {
+		return "", err
+	}
+
 	claims := Claims{
 		UserID:   userID,
 		Username: username,
 		Role:     role,
 		RegisteredClaims: jwt.RegisteredClaims{
+			ID:        jti, // IMPORTANT for logout blacklist
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			Issuer:    "spotify-clone",
+			Issuer:    "users-service",
 		},
 	}
 
@@ -47,14 +63,13 @@ func ValidateJWT(tokenString string) (*Claims, error) {
 		}
 		return jwtSecret, nil
 	})
-
 	if err != nil {
 		return nil, err
 	}
 
-	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
+	claims, ok := token.Claims.(*Claims)
+	if ok && token.Valid {
 		return claims, nil
 	}
-
 	return nil, errors.New("invalid token")
 }

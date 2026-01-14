@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"log"
 	"net/http"
 	"os"
@@ -50,7 +51,11 @@ func main() {
 	srv := &http.Server{
 		Addr:    ":" + port,
 		Handler: router,
+		TLSConfig: &tls.Config{
+			MinVersion: tls.VersionTLS12,
+		},
 	}
+	srv.ListenAndServeTLS("cert.pem", "key.pem")
 
 	go func() {
 		log.Printf("Ratings service running on %s", port)

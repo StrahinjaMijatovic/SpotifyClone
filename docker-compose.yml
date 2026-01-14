@@ -46,6 +46,16 @@ services:
     networks:
       - spotify-network
 
+  redis-users:
+    image: redis:7-alpine
+    container_name: redis-users
+    ports:
+      - "6381:6379"
+    volumes:
+      - redis-users-data:/data
+    networks:
+      - spotify-network
+
   cassandra-notifications:
     image: cassandra:4
     container_name: cassandra-notifications
@@ -82,13 +92,15 @@ services:
     environment:
       PORT: 8001
       MONGODB_URI: mongodb://admin:admin123@mongodb-users:27017/users?authSource=admin
+      REDIS_URI: redis://redis-users:6379
       JWT_SECRET: your-secret-key-change-in-production
-      EMAIL_HOST: smtp.gmail.com
-      EMAIL_PORT: 587
-      EMAIL_USER: your-email@gmail.com
-      EMAIL_PASS: your-password
+      BASE_URL: http://localhost:8080
+      MOCK_EMAIL: "true"
     depends_on:
       - mongodb-users
+      - redis-users
+    volumes:
+      - ./users-service/logs:/app/logs
     networks:
       - spotify-network
 
@@ -208,6 +220,7 @@ volumes:
   mongodb-content-data:
   redis-ratings-data:
   redis-subscriptions-data:
+  redis-users-data:
   cassandra-notifications-data:
   neo4j-recommendation-data:
 

@@ -3,6 +3,16 @@ export type LoginRequest = {
   password: string;
 };
 
+export type LoginInitiateResponse = {
+  message: string;
+  temp_token: string;
+};
+
+export type VerifyOTPRequest = {
+  temp_token: string;
+  otp_code: string;
+};
+
 export type LoginUser = {
   id: string;
   username: string;
@@ -12,9 +22,20 @@ export type LoginUser = {
   role: string;
 };
 
-export type LoginResponse = {
+export type VerifyOTPResponse = {
   token: string;
   user: LoginUser;
+};
+
+export type UpdateProfileRequest = {
+  first_name: string;
+  last_name: string;
+};
+
+export type UpdateProfileResponse = {
+  message: string;
+  first_name: string;
+  last_name: string;
 };
 
 export type RegisterRequest = {
@@ -30,3 +51,4 @@ export type RegisterResponse = {
   message: string;
   user_id: string;
 };
+
