@@ -10,6 +10,8 @@ import {
   RegisterResponse,
   UpdateProfileRequest,
   UpdateProfileResponse,
+  ChangePasswordRequest,
+  ResetPasswordConfirmRequest,
 } from '../models/auth.models';
 
 @Injectable({ providedIn: 'root' })
@@ -64,5 +66,31 @@ export class AuthService {
 
   deleteAccount(): Observable<any> {
     return this.http.delete(`${this.apiBase}/profile`);
+  }
+
+  changePassword(payload: ChangePasswordRequest): Observable<any> {
+    return this.http.post(`${this.apiBase}/change-password`, payload);
+  }
+
+  requestPasswordReset(email: string): Observable<any> {
+    return this.http.post(`${this.apiBase}/reset-password`, { email });
+  }
+
+  requestMagicLink(email: string): Observable<any> {
+    return this.http.post(`${this.apiBase}/magic-link`, { email });
+  }
+
+  magicLogin(token: string): Observable<any> {
+    return this.http.get(`${this.apiBase}/magic-login?token=${token}`).pipe(
+      tap((res: any) => {
+        if (res.token) {
+          localStorage.setItem('token', res.token);
+        }
+      })
+    );
+  }
+
+  confirmPasswordReset(payload: ResetPasswordConfirmRequest): Observable<any> {
+    return this.http.post(`${this.apiBase}/reset-password/confirm`, payload);
   }
 }

@@ -138,11 +138,11 @@ func Register(c *gin.Context) {
 	}
 
 	// Send verification email
-	baseURL := os.Getenv("BASE_URL")
-	if baseURL == "" {
-		baseURL = "http://localhost:8080"
+	frontendURL := os.Getenv("FRONTEND_URL")
+	if frontendURL == "" {
+		frontendURL = "http://localhost:4200"
 	}
-	verificationLink := fmt.Sprintf("%s/api/v1/verify-email?token=%s", baseURL, verificationToken)
+	verificationLink := fmt.Sprintf("%s/verify-email?token=%s", frontendURL, verificationToken)
 	emailBody := fmt.Sprintf("Hi %s,\n\nPlease verify your email by clicking this link:\n%s\n\nThis link expires in 24 hours.", req.FirstName, verificationLink)
 
 	go utils.SendEmail(req.Email, "Verify your email", emailBody)
@@ -417,11 +417,11 @@ func RequestMagicLink(c *gin.Context) {
 	usersDB.Collection("users").UpdateOne(ctx, bson.M{"_id": user.ID}, update)
 
 	// Send magic link email
-	baseURL := os.Getenv("BASE_URL")
-	if baseURL == "" {
-		baseURL = "http://localhost:8080"
+	frontendURL := os.Getenv("FRONTEND_URL")
+	if frontendURL == "" {
+		frontendURL = "http://localhost:4200"
 	}
-	magicLink := fmt.Sprintf("%s/api/v1/magic-login?token=%s", baseURL, token)
+	magicLink := fmt.Sprintf("%s/magic-login?token=%s", frontendURL, token)
 	emailBody := fmt.Sprintf("Hi %s,\n\nClick this link to login:\n%s\n\nThis link expires in 15 minutes.", user.FirstName, magicLink)
 
 	go utils.SendEmail(user.Email, "Magic Login Link", emailBody)
@@ -480,11 +480,11 @@ func ResetPassword(c *gin.Context) {
 	}
 
 	// Send reset email
-	baseURL := os.Getenv("BASE_URL")
-	if baseURL == "" {
-		baseURL = "http://localhost:8080"
+	frontendURL := os.Getenv("FRONTEND_URL")
+	if frontendURL == "" {
+		frontendURL = "http://localhost:4200"
 	}
-	resetLink := fmt.Sprintf("%s/api/v1/reset-password/confirm?token=%s", baseURL, resetToken)
+	resetLink := fmt.Sprintf("%s/reset-password?token=%s", frontendURL, resetToken)
 	emailBody := fmt.Sprintf("Hi %s,\n\nClick this link to reset your password:\n%s\n\nThis link expires in 1 hour.\n\nIf you didn't request this, please ignore this email.",
 		user.FirstName, resetLink)
 

@@ -32,11 +32,24 @@ export type UpdateProfileRequest = {
   last_name: string;
 };
 
-export type UpdateProfileResponse = {
+export interface UpdateProfileResponse {
   message: string;
-  first_name: string;
-  last_name: string;
-};
+  user: LoginUser;
+}
+
+export interface ChangePasswordRequest {
+  current_password: string;
+  new_password: string;
+}
+
+export interface ResetPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordConfirmRequest {
+  token: string;
+  new_password: string;
+}
 
 export type RegisterRequest = {
   username: string;

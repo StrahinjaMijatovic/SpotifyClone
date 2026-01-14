@@ -1,5 +1,6 @@
 <div class="min-vh-100 bg-dark text-light">
   <!-- Top bar -->
+  <!-- Top bar -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-black border-bottom border-secondary sticky-top">
     <div class="container py-2">
       <span class="navbar-brand fw-bold">
@@ -10,6 +11,9 @@
         <button class="btn btn-outline-light btn-sm" (click)="loadContent()">
           Refresh
         </button>
+        <button class="btn btn-outline-success btn-sm" (click)="goToProfile()">
+          Profile
+        </button>
         <button class="btn btn-danger btn-sm" (click)="logout()">
           Logout
         </button>
@@ -18,39 +22,7 @@
   </nav>
 
   <div class="container py-4">
-    <!-- Profile Settings -->
-    <div class="card bg-dark border-secondary mb-4">
-      <div class="card-body">
-        <h5 class="card-title mb-3 fw-bold">Podešavanja Profila</h5>
-
-        <div *ngIf="profileMessage" class="alert alert-success">
-          {{ profileMessage }}
-        </div>
-        <div *ngIf="errorMessage && !loading" class="alert alert-danger">
-          {{ errorMessage }}
-        </div>
-
-        <form (ngSubmit)="onUpdateProfile()" class="row g-3 align-items-end" *ngIf="userProfile">
-          <div class="col-md-4">
-            <label class="form-label text-secondary">Ime</label>
-            <input type="text" class="form-control bg-black text-light border-secondary"
-              [(ngModel)]="profileForm.first_name" name="first_name">
-          </div>
-          <div class="col-md-4">
-            <label class="form-label text-secondary">Prezime</label>
-            <input type="text" class="form-control bg-black text-light border-secondary"
-              [(ngModel)]="profileForm.last_name" name="last_name">
-          </div>
-          <div class="col-md-4">
-            <button type="submit" class="btn btn-primary me-2">Sačuvaj</button>
-            <button type="button" class="btn btn-danger" (click)="onDeleteAccount()">Obriši nalog</button>
-          </div>
-        </form>
-        <div *ngIf="!userProfile" class="text-secondary small">
-          Učitavam profil...
-        </div>
-      </div>
-    </div>
+    <!-- Search -->
 
     <!-- Search -->
     <div class="card bg-black border-secondary mb-4">

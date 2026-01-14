@@ -21,32 +21,16 @@
               <div *ngIf="step === 1">
                 <div class="mb-3">
                   <label class="form-label">Username</label>
-                  <input
-                    class="form-control form-control-lg"
-                    type="text"
-                    name="username"
-                    [(ngModel)]="username"
-                    placeholder="npr. nikola123"
-                    required
-                  />
+                  <input class="form-control form-control-lg" type="text" name="username" [(ngModel)]="username"
+                    placeholder="npr. nikola123" required />
                 </div>
 
                 <div class="mb-3">
                   <label class="form-label">Password</label>
                   <div class="input-group input-group-lg">
-                    <input
-                      class="form-control"
-                      [type]="showPassword ? 'text' : 'password'"
-                      name="password"
-                      [(ngModel)]="password"
-                      placeholder="••••••••"
-                      required
-                    />
-                    <button
-                      class="btn btn-outline-secondary"
-                      type="button"
-                      (click)="showPassword = !showPassword"
-                    >
+                    <input class="form-control" [type]="showPassword ? 'text' : 'password'" name="password"
+                      [(ngModel)]="password" placeholder="••••••••" required />
+                    <button class="btn btn-outline-secondary" type="button" (click)="showPassword = !showPassword">
                       {{ showPassword ? 'Hide' : 'Show' }}
                     </button>
                   </div>
@@ -56,32 +40,57 @@
               <div *ngIf="step === 2">
                 <div class="mb-3">
                   <label class="form-label">Unesi OTP kod</label>
-                  <input
-                    class="form-control form-control-lg text-center letter-spacing-2"
-                    type="text"
-                    name="otpCode"
-                    [(ngModel)]="otpCode"
-                    placeholder="123456"
-                    maxlength="6"
-                    required
-                  />
+                  <input class="form-control form-control-lg text-center letter-spacing-2" type="text" name="otpCode"
+                    [(ngModel)]="otpCode" placeholder="123456" maxlength="6" required />
                   <div class="form-text text-center">
                     Poslali smo kod na tvoj email.
                   </div>
                 </div>
               </div>
 
+              <!-- Step 3: Magic Link Request -->
+              <div *ngIf="step === 3">
+                <div class="mb-3">
+                  <label class="form-label">Email za Magični Link</label>
+                  <input class="form-control form-control-lg" type="email" name="magicEmail" [(ngModel)]="magicEmail"
+                    placeholder="tvoj@email.com" required />
+                  <div class="form-text text-center text-light">
+                    Poslaćemo ti link za automatsku prijavu.
+                  </div>
+                </div>
+              </div>
+
               <button class="btn btn-success btn-lg w-100" type="submit" [disabled]="loading">
-                <span *ngIf="!loading">{{ step === 1 ? 'Login' : 'Verifikuj OTP' }}</span>
+                <span *ngIf="!loading">
+                  {{ step === 1 ? 'Login' : (step === 2 ? 'Verifikuj OTP' : 'Pošalji Magični Link') }}
+                </span>
                 <span *ngIf="loading" class="d-inline-flex align-items-center gap-2">
                   <span class="spinner-border spinner-border-sm" role="status"></span>
-                  {{ step === 1 ? 'Logging in...' : 'Verifying...' }}
+                  Please wait...
                 </span>
               </button>
+
+              <div class="text-center mt-3" *ngIf="step === 1">
+                <button type="button" class="btn btn-link link-light text-decoration-none" (click)="toggleMagicLink()">
+                  ✨ Prijavi se Magičnim Linkom
+                </button>
+              </div>
+
+              <div class="text-center mt-3" *ngIf="step === 3">
+                <button type="button" class="btn btn-link link-light text-decoration-none" (click)="step = 1">
+                  &larr; Nazad na standardni login
+                </button>
+              </div>
 
               <div class="text-center mt-3">
                 <a class="link-light text-decoration-none" routerLink="/register">
                   Nemaš nalog? <span class="text-success fw-semibold">Registruj se</span>
+                </a>
+              </div>
+
+              <div class="text-center mt-2">
+                <a class="link-secondary text-decoration-none small" routerLink="/forgot-password">
+                  Zaboravljena lozinka?
                 </a>
               </div>
 

@@ -13,72 +13,86 @@ import { AuthService } from '../../services/auth.service';
   styleUrl: './login-component.css',
 })
 export class LoginComponent {
+  step = 1; // 1: Creds, 2: OTP, 3: Magic Link Request
+
   username = '';
   password = '';
   otpCode = '';
+  magicEmail = '';
 
+  showPassword = false;
   loading = false;
   errorMessage: string | null = null;
-  showPassword = false;
+
+  tempToken = ''; // from step 1
 
   year = new Date().getFullYear();
 
-  step = 1;
-  tempToken = '';
+  constructor(private authService: AuthService, private router: Router) { }
 
-  constructor(private auth: AuthService, private router: Router) { }
+  toggleMagicLink(): void {
+    this.step = 3;
+    this.errorMessage = null;
+  }
 
   onSubmit(): void {
     this.errorMessage = null;
 
     if (this.step === 1) {
       this.handleLogin();
-    } else {
+    } else if (this.step === 2) {
       this.handleOTP();
+    } else if (this.step === 3) {
+      this.handleMagicLinkRequest();
     }
   }
 
-  handleLogin(): void {
-    const u = this.username.trim();
-    const p = this.password;
-
-    if (!u || !p) {
-      this.errorMessage = 'Unesi username i password.';
-      return;
-    }
-
+  handleMagicLinkRequest(): void {
+    if (!this.magicEmail) return;
     this.loading = true;
 
-    this.auth.login({ username: u, password: p }).subscribe({
+    this.authService.requestMagicLink(this.magicEmail).subscribe({
+      next: (res) => {
+        this.loading = false;
+        alert(res.message || 'Ako nalog postoji, link je poslat!');
+        this.step = 1; // Return to login
+      },
+      error: () => {
+        this.loading = false;
+        this.errorMessage = 'Greška pri slanju zahteva.';
+      }
+    });
+  }
+
+  handleLogin(): void {
+    if (!this.username || !this.password) return;
+
+    this.loading = true;
+    this.authService.login({ username: this.username, password: this.password }).subscribe({
       next: (res) => {
         this.tempToken = res.temp_token;
         this.step = 2; // Move to OTP step
-        this.errorMessage = null;
-      },
-      error: () => {
-        this.errorMessage = 'Login nije uspeo. Proveri kredencijale.';
         this.loading = false;
       },
-      complete: () => (this.loading = false),
+      error: (err) => {
+        this.errorMessage = err?.error?.error || 'Login failed';
+        this.loading = false;
+      }
     });
   }
 
   handleOTP(): void {
-    const code = this.otpCode.trim();
-    if (!code || code.length !== 6) {
-      this.errorMessage = 'Unesi 6-cifreni OTP kod.';
-      return;
-    }
-
+    if (!this.otpCode) return;
     this.loading = true;
 
-    this.auth.verifyOTP({ temp_token: this.tempToken, otp_code: code }).subscribe({
-      next: () => this.router.navigate(['/home']),
-      error: () => {
-        this.errorMessage = 'Pogrešan ili istekao OTP kod.';
-        this.loading = false;
+    this.authService.verifyOTP({ temp_token: this.tempToken, otp_code: this.otpCode }).subscribe({
+      next: (res) => {
+        this.router.navigate(['/home']);
       },
-      complete: () => (this.loading = false),
+      error: (err) => {
+        this.errorMessage = err?.error?.error || 'Invalid OTP';
+        this.loading = false;
+      }
     });
   }
 }
