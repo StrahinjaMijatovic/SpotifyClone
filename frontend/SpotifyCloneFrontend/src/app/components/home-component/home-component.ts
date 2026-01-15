@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 
 import { ContentService } from '../../services/content.service';
 import { AuthService } from '../../services/auth.service';
-import type { Album, Artist, Song } from '../../models/content.models';
+import type { Artist } from '../../models/content.models';
 
 @Component({
   selector: 'app-home-component',
@@ -16,11 +16,7 @@ import type { Album, Artist, Song } from '../../models/content.models';
 })
 export class HomeComponent implements OnInit {
   searchQuery = '';
-
   artists: Artist[] = [];
-  albums: Album[] = [];
-  songs: Song[] = [];
-
   loading = false;
   errorMessage: string | null = null;
 
@@ -35,7 +31,7 @@ export class HomeComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.loadContent();
+    this.loadArtists();
   }
 
   goToProfile(): void {
@@ -46,24 +42,23 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/admin']);
   }
 
-  loadContent(): void {
+  goToArtist(artistId: string): void {
+    this.router.navigate(['/artist', artistId]);
+  }
+
+  loadArtists(): void {
     this.loading = true;
     this.errorMessage = null;
 
     this.contentService.getArtists().subscribe({
-      next: (data) => (this.artists = data ?? []),
-      error: () => (this.errorMessage = 'Ne mogu da učitam umetnike.'),
-    });
-
-    this.contentService.getAlbums().subscribe({
-      next: (data) => (this.albums = data ?? []),
-      error: () => (this.errorMessage = 'Ne mogu da učitam albume.'),
-    });
-
-    this.contentService.getSongs().subscribe({
-      next: (data) => (this.songs = data ?? []),
-      error: () => (this.errorMessage = 'Ne mogu da učitam pesme.'),
-      complete: () => (this.loading = false),
+      next: (data) => {
+        this.artists = data ?? [];
+        this.loading = false;
+      },
+      error: () => {
+        this.errorMessage = 'Ne mogu da učitam umetnike.';
+        this.loading = false;
+      },
     });
   }
 
@@ -77,17 +72,18 @@ export class HomeComponent implements OnInit {
     this.contentService.search(q).subscribe({
       next: (data) => {
         this.artists = data?.artists ?? [];
-        this.albums = data?.albums ?? [];
-        this.songs = data?.songs ?? [];
+        this.loading = false;
       },
-      error: () => (this.errorMessage = 'Pretraga nije uspela.'),
-      complete: () => (this.loading = false),
+      error: () => {
+        this.errorMessage = 'Pretraga nije uspela.';
+        this.loading = false;
+      },
     });
   }
 
   clearSearch(): void {
     this.searchQuery = '';
-    this.loadContent();
+    this.loadArtists();
   }
 
   logout(): void {

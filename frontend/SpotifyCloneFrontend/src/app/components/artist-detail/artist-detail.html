@@ -1,0 +1,70 @@
+<div class="min-vh-100 bg-dark text-light">
+  <!-- Top bar -->
+  <nav class="navbar navbar-dark bg-black border-bottom border-secondary sticky-top">
+    <div class="container py-2">
+      <button class="btn btn-outline-light btn-sm" (click)="goBack()">
+        &larr; Nazad
+      </button>
+      <span class="navbar-brand fw-bold mb-0">
+        <span class="text-success">Spotify</span> Clone
+      </span>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <!-- Loading -->
+    <div *ngIf="loading" class="text-center py-5">
+      <div class="spinner-border text-success" role="status"></div>
+      <p class="mt-2 text-secondary">Učitavanje...</p>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Artist info -->
+    <div *ngIf="artist && !loading">
+      <div class="card bg-black border-secondary mb-4">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h2 class="card-title fw-bold mb-2">{{ artist.name }}</h2>
+              <span class="badge bg-success bg-opacity-25 text-success border border-success mb-3">
+                Umetnik
+              </span>
+            </div>
+          </div>
+          <p class="card-text text-secondary">{{ artist.biography }}</p>
+        </div>
+      </div>
+
+      <!-- Albums -->
+      <h4 class="fw-bold mb-3">Albumi</h4>
+      <div *ngIf="albums.length === 0" class="text-secondary">
+        Ovaj umetnik nema albume.
+      </div>
+
+      <div class="row g-3" *ngIf="albums.length > 0">
+        <div class="col-12 col-md-6 col-lg-4" *ngFor="let album of albums">
+          <div class="card bg-black border-secondary h-100"
+               style="cursor: pointer;"
+               (click)="goToAlbum(album.id!)">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start gap-2">
+                <h5 class="card-title mb-1">{{ album.name }}</h5>
+                <span class="badge bg-primary bg-opacity-25 text-primary border border-primary">
+                  Album
+                </span>
+              </div>
+              <div class="small text-secondary">
+                <span *ngIf="album.date">{{ album.date | date:'mediumDate' }}</span>
+                <span *ngIf="!album.date">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

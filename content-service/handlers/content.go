@@ -219,7 +219,19 @@ func CreateAlbum(c *gin.Context) {
 func GetAlbums(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	cursor, err := contentDB.Collection("albums").Find(ctx, bson.M{})
+	filter := bson.M{}
+
+	// Filter by artist_id if provided
+	if artistID := c.Query("artist_id"); artistID != "" {
+		objID, err := primitive.ObjectIDFromHex(artistID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid artist ID"})
+			return
+		}
+		filter["artists"] = objID
+	}
+
+	cursor, err := contentDB.Collection("albums").Find(ctx, filter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch albums"})
 		return
@@ -233,6 +245,30 @@ func GetAlbums(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, albums)
+}
+
+func GetAlbum(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	id := c.Param("id")
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid album ID"})
+		return
+	}
+
+	var album models.Album
+	err = contentDB.Collection("albums").FindOne(ctx, bson.M{"_id": objID}).Decode(&album)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Album not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, album)
 }
 
 // Song handlers
@@ -302,7 +338,19 @@ func CreateSong(c *gin.Context) {
 func GetSongs(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	cursor, err := contentDB.Collection("songs").Find(ctx, bson.M{})
+	filter := bson.M{}
+
+	// Filter by album_id if provided
+	if albumID := c.Query("album_id"); albumID != "" {
+		objID, err := primitive.ObjectIDFromHex(albumID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid album ID"})
+			return
+		}
+		filter["album"] = objID
+	}
+
+	cursor, err := contentDB.Collection("songs").Find(ctx, filter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch songs"})
 		return

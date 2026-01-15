@@ -14,6 +14,7 @@ func setupRoutes(router *gin.Engine) {
 		api.GET("/artists", handlers.GetArtists)
 		api.GET("/artists/:id", handlers.GetArtist)
 		api.GET("/albums", handlers.GetAlbums)
+		api.GET("/albums/:id", handlers.GetAlbum)
 		api.GET("/songs", handlers.GetSongs)
 		api.GET("/search", handlers.SearchContent)
 

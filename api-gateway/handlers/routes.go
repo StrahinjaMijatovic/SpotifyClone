@@ -36,6 +36,7 @@ func SetupRoutes(router *gin.Engine) {
 		api.GET("/artists", proxy.ProxyToContentService)
 		api.GET("/artists/:id", proxy.ProxyToContentService)
 		api.GET("/albums", proxy.ProxyToContentService)
+		api.GET("/albums/:id", proxy.ProxyToContentService)
 		api.GET("/songs", proxy.ProxyToContentService)
 		api.GET("/search", proxy.ProxyToContentService)
 

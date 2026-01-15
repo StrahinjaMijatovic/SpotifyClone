@@ -39,9 +39,9 @@ export class ContentService {
     return this.http.get<any[]>(`${this.apiBase}/genres`);
   }
 
-  // Admin: Artists
+  // Get single artist
   getArtist(id: string): Observable<Artist> {
-    return this.http.get<Artist>(`${this.apiBase}/artists/${id}`);
+    return this.http.get<Artist>(`${this.apiBase}/artists/${id}`, { headers: this.getAuthHeaders() });
   }
 
   createArtist(data: { name: string; biography: string; genres: string[] }): Observable<Artist> {
@@ -50,6 +50,23 @@ export class ContentService {
 
   updateArtist(id: string, data: { name?: string; biography?: string; genres?: string[] }): Observable<any> {
     return this.http.put(`${this.apiBase}/artists/${id}`, data);
+  }
+
+  // Get single album
+  getAlbum(id: string): Observable<Album> {
+    return this.http.get<Album>(`${this.apiBase}/albums/${id}`, { headers: this.getAuthHeaders() });
+  }
+
+  // Get albums by artist
+  getAlbumsByArtist(artistId: string): Observable<Album[]> {
+    const params = new HttpParams().set('artist_id', artistId);
+    return this.http.get<Album[]>(`${this.apiBase}/albums`, { headers: this.getAuthHeaders(), params });
+  }
+
+  // Get songs by album
+  getSongsByAlbum(albumId: string): Observable<Song[]> {
+    const params = new HttpParams().set('album_id', albumId);
+    return this.http.get<Song[]>(`${this.apiBase}/songs`, { headers: this.getAuthHeaders(), params });
   }
 
   // Admin: Albums

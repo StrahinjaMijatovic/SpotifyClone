@@ -8,6 +8,8 @@ import { ResetPasswordComponent } from './components/reset-password-component/re
 import { MagicLoginComponent } from './components/magic-login-component/magic-login-component';
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard';
 import { VerifyEmailComponent } from './components/verify-email/verify-email';
+import { ArtistDetailComponent } from './components/artist-detail/artist-detail';
+import { AlbumDetailComponent } from './components/album-detail/album-detail';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -20,4 +22,6 @@ export const routes: Routes = [
   { path: 'verify-email', component: VerifyEmailComponent }, // expects ?token=
   { path: 'magic-login', component: MagicLoginComponent }, // expects ?token=
   { path: 'admin', component: AdminDashboardComponent }, // Admin only
+  { path: 'artist/:id', component: ArtistDetailComponent },
+  { path: 'album/:id', component: AlbumDetailComponent },
 ];
