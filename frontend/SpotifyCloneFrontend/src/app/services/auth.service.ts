@@ -30,7 +30,9 @@ export class AuthService {
     return this.http.post<VerifyOTPResponse>(`${this.apiBase}/verify-otp`, payload).pipe(
       tap((res) => {
         localStorage.setItem('token', res.token);
-        // Optionally store user info if needed
+        if (res.user && res.user.role) {
+          localStorage.setItem('user_role', res.user.role);
+        }
       })
     );
   }
@@ -52,8 +54,16 @@ export class AuthService {
     return !!this.getToken();
   }
 
+  isAdmin(): boolean {
+    return localStorage.getItem('user_role') === 'admin';
+  }
+
   register(payload: RegisterRequest): Observable<RegisterResponse> {
     return this.http.post<RegisterResponse>(`${this.apiBase}/register`, payload);
+  }
+
+  verifyEmail(token: string): Observable<any> {
+    return this.http.get(`${this.apiBase}/verify-email?token=${token}`);
   }
 
   getProfile(): Observable<any> {

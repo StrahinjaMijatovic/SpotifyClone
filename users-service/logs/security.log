@@ -127,3 +127,89 @@ This code expires in 5 minutes.
 2026/01/14 21:45:40 Connected to Redis
 2026/01/14 21:45:40 MongoDB indexes for users ensured
 2026/01/14 21:45:40 Users service starting on port 8001
+[2026-01-14 21:46:32] TYPE=success ACTION=magic_link_sent IP=172.19.0.1 DETAILS=Magic link sent to strahinja@gmail.com
+[2026-01-14 21:46:43] TYPE=success ACTION=magic_login IP=172.19.0.1 DETAILS=User Strahinja logged in via magic link
+[2026-01-14 21:48:19] TYPE=success ACTION=login_otp_sent IP=172.19.0.1 DETAILS=User Strahinja OTP sent
+[2026-01-14 21:48:29] TYPE=success ACTION=login IP=172.19.0.1 DETAILS=User Strahinja logged in
+[2026-01-14 21:48:31] TYPE=failed ACTION=auth IP=172.19.0.1 DETAILS=Missing Authorization header
+[2026-01-14 21:51:22] TYPE=success ACTION=login_otp_sent IP=172.19.0.1 DETAILS=User Strahinja OTP sent
+[2026-01-14 21:51:46] TYPE=success ACTION=magic_link_sent IP=172.19.0.1 DETAILS=Magic link sent to strahinja@gmail.com
+[2026-01-14 21:51:49] TYPE=success ACTION=magic_login IP=172.19.0.1 DETAILS=User Strahinja logged in via magic link
+[2026-01-14 21:52:11] TYPE=success ACTION=update_profile IP=172.19.0.1 DETAILS=User updated profile
+[2026-01-14 21:52:13] TYPE=success ACTION=update_profile IP=172.19.0.1 DETAILS=User updated profile
+[2026-01-14 21:52:24] TYPE=success ACTION=update_profile IP=172.19.0.1 DETAILS=User updated profile
+[2026-01-14 21:52:47] TYPE=failed ACTION=change_password IP=172.19.0.1 DETAILS=Password change too soon (<24h)
+2026/01/14 22:11:06 Connected to MongoDB
+2026/01/14 22:11:06 Connected to Redis
+2026/01/14 22:11:06 MongoDB indexes for users ensured
+2026/01/14 22:11:06 Users service starting on port 8001
+2026/01/14 22:16:19 Connected to MongoDB
+2026/01/14 22:16:19 Connected to Redis
+2026/01/14 22:16:19 MongoDB indexes for users ensured
+2026/01/14 22:16:19 Users service starting on port 8001
+[2026-01-14 22:20:09] TYPE=success ACTION=register IP=172.19.0.1 DETAILS=User Admin registered
+[2026-01-14 22:20:17] TYPE=failed ACTION=login IP=172.19.0.1 DETAILS=User Admin email not verified
+[2026-01-14 22:21:06] TYPE=failed ACTION=login IP=172.19.0.1 DETAILS=User Admin email not verified
+[2026-01-14 22:21:43] TYPE=failed ACTION=login IP=172.19.0.1 DETAILS=User Admin email not verified
+2026/01/14 22:31:33 Connected to MongoDB
+2026/01/14 22:31:33 Connected to Redis
+2026/01/14 22:31:33 MongoDB indexes for users ensured
+2026/01/14 22:31:33 Users service starting on port 8001
+[2026-01-14 22:33:17] TYPE=validation_failed ACTION=register IP=172.19.0.1 DETAILS=Username already exists
+[2026-01-14 22:33:33] TYPE=failed ACTION=login IP=172.19.0.1 DETAILS=User Admin email not verified
+[2026-01-14 22:34:12] TYPE=success ACTION=register IP=172.19.0.1 DETAILS=User Administrator registered
+[2026-01-14 22:34:15] TYPE=failed ACTION=email_verification IP=172.19.0.1 DETAILS=Invalid or expired token
+2026/01/14 22:35:55 Connected to MongoDB
+2026/01/14 22:35:55 Connected to Redis
+2026/01/14 22:35:55 MongoDB indexes for users ensured
+2026/01/14 22:35:55 Users service starting on port 8001
+[2026-01-14 22:36:36] TYPE=success ACTION=email_verification IP=172.19.0.1 DETAILS=User Administrator verified email
+[2026-01-14 22:36:52] TYPE=success ACTION=login_otp_sent IP=172.19.0.1 DETAILS=User Administrator OTP sent
+[2026-01-14 22:37:39] TYPE=success ACTION=login_otp_sent IP=172.19.0.1 DETAILS=User Administrator OTP sent
+[2026-01-14 22:38:33] TYPE=success ACTION=magic_link_sent IP=172.19.0.1 DETAILS=Magic link sent to administrator@gmail.com
+[2026-01-14 22:38:36] TYPE=success ACTION=magic_login IP=172.19.0.1 DETAILS=User Administrator logged in via magic link
+2026/01/14 22:48:05 Connected to MongoDB
+2026/01/14 22:48:05 Connected to Redis
+2026/01/14 22:48:05 MongoDB indexes for users ensured
+2026/01/14 22:48:05 Users service starting on port 8001
+[2026-01-14 22:49:25] TYPE=success ACTION=magic_link_sent IP=172.19.0.15 DETAILS=Magic link sent to strahinja@gmail.com
+[2026-01-14 22:49:33] TYPE=success ACTION=magic_login IP=172.19.0.15 DETAILS=User Strahinja logged in via magic link
+[2026-01-14 22:54:06] TYPE=failed ACTION=magic_login IP=172.19.0.15 DETAILS=Invalid or expired token
+[2026-01-14 22:54:48] TYPE=failed ACTION=login IP=172.19.0.15 DETAILS=User admin invalid password
+[2026-01-14 22:55:49] TYPE=failed ACTION=login IP=172.19.0.15 DETAILS=User Admin not found
+[2026-01-14 22:56:11] TYPE=failed ACTION=login IP=172.19.0.15 DETAILS=User admin invalid password
+2026/01/15 20:03:59 Connected to MongoDB
+2026/01/15 20:03:59 Connected to Redis
+2026/01/15 20:03:59 MongoDB indexes for users ensured
+2026/01/15 20:03:59 Users service starting on port 8001
+[2026-01-15 20:06:04] TYPE=failed ACTION=login IP=172.19.0.9 DETAILS=User admin invalid password
+[2026-01-15 20:06:17] TYPE=failed ACTION=login IP=172.19.0.9 DETAILS=User Administrator not found
+[2026-01-15 20:06:25] TYPE=failed ACTION=login IP=172.19.0.9 DETAILS=User Admin not found
+[2026-01-15 20:06:28] TYPE=failed ACTION=login IP=172.19.0.9 DETAILS=User Admin not found
+[2026-01-15 20:18:00] TYPE=failed ACTION=login IP=172.19.0.9 DETAILS=User admin invalid password
+[2026-01-15 20:18:12] TYPE=failed ACTION=login IP=172.19.0.9 DETAILS=User admin account locked after 5 failed attempts
+[2026-01-15 20:18:12] TYPE=failed ACTION=login IP=172.19.0.9 DETAILS=User admin invalid password
+[2026-01-15 20:18:55] TYPE=success ACTION=reset_password_sent IP=172.19.0.9 DETAILS=Reset link sent to admin@spotify.com
+[2026-01-15 20:19:31] TYPE=success ACTION=reset_password_confirm IP=172.19.0.9 DETAILS=User admin reset password
+[2026-01-15 20:21:09] TYPE=failed ACTION=login IP=172.19.0.9 DETAILS=User admin invalid password
+[2026-01-15 20:21:40] TYPE=failed ACTION=login IP=172.19.0.9 DETAILS=User admin invalid password
+[2026-01-15 20:21:58] TYPE=success ACTION=login_otp_sent IP=172.19.0.9 DETAILS=User admin OTP sent
+[2026-01-15 20:22:54] TYPE=success ACTION=login_otp_sent IP=172.19.0.9 DETAILS=User admin OTP sent
+[2026-01-15 20:24:58] TYPE=success ACTION=login_otp_sent IP=172.19.0.9 DETAILS=User admin OTP sent
+[2026-01-15 20:25:07] TYPE=success ACTION=login IP=172.19.0.9 DETAILS=User admin logged in
+[2026-01-15 20:29:05] TYPE=success ACTION=login_otp_sent IP=172.19.0.9 DETAILS=User admin OTP sent
+[2026-01-15 20:31:36] TYPE=success ACTION=login_otp_sent IP=172.19.0.9 DETAILS=User admin OTP sent
+2026/01/15 20:32:55 Connected to MongoDB
+2026/01/15 20:32:55 Connected to Redis
+2026/01/15 20:32:55 MongoDB indexes for users ensured
+2026/01/15 20:32:55 Users service starting on port 8001
+[2026-01-15 20:33:51] TYPE=success ACTION=login_otp_sent IP=172.19.0.9 DETAILS=User admin OTP sent
+[2026-01-15 20:34:26] TYPE=success ACTION=login_otp_sent IP=172.19.0.9 DETAILS=User admin OTP sent
+[2026-01-15 20:36:03] TYPE=success ACTION=login_otp_sent IP=172.19.0.9 DETAILS=User admin OTP sent
+[2026-01-15 20:36:08] TYPE=success ACTION=login IP=172.19.0.9 DETAILS=User admin logged in
+[2026-01-15 20:40:39] TYPE=success ACTION=register IP=172.19.0.9 DETAILS=User Strahinja registered
+[2026-01-15 20:40:43] TYPE=success ACTION=email_verification IP=172.19.0.9 DETAILS=User Strahinja verified email
+[2026-01-15 20:41:00] TYPE=success ACTION=login_otp_sent IP=172.19.0.9 DETAILS=User Strahinja OTP sent
+[2026-01-15 20:41:05] TYPE=success ACTION=login IP=172.19.0.9 DETAILS=User Strahinja logged in
+[2026-01-15 20:42:39] TYPE=success ACTION=login_otp_sent IP=172.19.0.9 DETAILS=User admin OTP sent
+[2026-01-15 20:42:47] TYPE=success ACTION=login IP=172.19.0.9 DETAILS=User admin logged in

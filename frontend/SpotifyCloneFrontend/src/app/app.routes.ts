@@ -6,6 +6,8 @@ import { ProfileComponent } from './components/profile-component/profile-compone
 import { ForgotPasswordComponent } from './components/forgot-password-component/forgot-password-component';
 import { ResetPasswordComponent } from './components/reset-password-component/reset-password-component';
 import { MagicLoginComponent } from './components/magic-login-component/magic-login-component';
+import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard';
+import { VerifyEmailComponent } from './components/verify-email/verify-email';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -15,5 +17,7 @@ export const routes: Routes = [
   { path: 'profile', component: ProfileComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent }, // expects ?token=
+  { path: 'verify-email', component: VerifyEmailComponent }, // expects ?token=
   { path: 'magic-login', component: MagicLoginComponent }, // expects ?token=
+  { path: 'admin', component: AdminDashboardComponent }, // Admin only
 ];

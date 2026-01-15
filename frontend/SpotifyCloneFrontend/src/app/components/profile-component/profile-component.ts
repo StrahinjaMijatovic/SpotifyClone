@@ -87,6 +87,12 @@ import { AuthService } from '../../services/auth.service';
             </div>
           </div>
 
+          <div class="text-center mt-4 mb-5">
+            <button class="btn btn-secondary px-4" (click)="goHome()">
+              &larr; Nazad na Početnu
+            </button>
+          </div>
+
         </div>
       </div>
     </div>

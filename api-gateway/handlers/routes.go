@@ -9,6 +9,21 @@ func SetupRoutes(router *gin.Engine) {
 	api := router.Group("/api/v1")
 	{
 		// Users service routes
+		api.POST("/register", proxy.ProxyToUsersService)
+		api.POST("/login", proxy.ProxyToUsersService)
+		api.POST("/verify-otp", proxy.ProxyToUsersService)
+		api.GET("/verify-email", proxy.ProxyToUsersService)
+		api.POST("/magic-link", proxy.ProxyToUsersService)
+		api.GET("/magic-login", proxy.ProxyToUsersService)
+		api.POST("/reset-password", proxy.ProxyToUsersService)
+		api.POST("/reset-password/confirm", proxy.ProxyToUsersService)
+		api.POST("/change-password", proxy.ProxyToUsersService)
+		api.GET("/profile", proxy.ProxyToUsersService)
+		api.PUT("/profile", proxy.ProxyToUsersService)
+		api.DELETE("/profile", proxy.ProxyToUsersService)
+		api.POST("/logout", proxy.ProxyToUsersService)
+
+		// Legacy auth routes (keeping for compatibility)
 		api.POST("/auth/register", proxy.ProxyToUsersService)
 		api.POST("/auth/login", proxy.ProxyToUsersService)
 		api.POST("/auth/reset-password", proxy.ProxyToUsersService)

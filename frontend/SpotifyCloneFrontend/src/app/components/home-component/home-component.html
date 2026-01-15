@@ -11,6 +11,9 @@
         <button class="btn btn-outline-light btn-sm" (click)="loadContent()">
           Refresh
         </button>
+        <button *ngIf="isAdmin" class="btn btn-outline-warning btn-sm" (click)="goToAdmin()">
+          🎵 Admin Panel
+        </button>
         <button class="btn btn-outline-success btn-sm" (click)="goToProfile()">
           Profile
         </button>

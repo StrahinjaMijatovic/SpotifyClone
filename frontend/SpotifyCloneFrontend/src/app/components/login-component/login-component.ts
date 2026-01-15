@@ -67,16 +67,17 @@ export class LoginComponent {
   handleLogin(): void {
     if (!this.username || !this.password) return;
 
-    this.loading = true;
+    // Odmah prikaži OTP polje
+    this.step = 2;
+    this.errorMessage = null;
+
     this.authService.login({ username: this.username, password: this.password }).subscribe({
       next: (res) => {
         this.tempToken = res.temp_token;
-        this.step = 2; // Move to OTP step
-        this.loading = false;
       },
       error: (err) => {
+        this.step = 1;
         this.errorMessage = err?.error?.error || 'Login failed';
-        this.loading = false;
       }
     });
   }

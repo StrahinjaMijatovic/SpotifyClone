@@ -1,0 +1,234 @@
+<div class="container-fluid py-4 bg-black min-vh-100">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-light fw-bold">
+                    <span class="text-success">🎵</span> Admin Dashboard
+                </h2>
+                <button class="btn btn-outline-light" (click)="goHome()">
+                    &larr; Nazad na Početnu
+                </button>
+            </div>
+
+            <!-- Tabs -->
+            <ul class="nav nav-tabs mb-4">
+                <li class="nav-item">
+                    <button class="nav-link" [class.active]="activeTab === 'artists'" (click)="activeTab = 'artists'">
+                        Umetnici
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" [class.active]="activeTab === 'albums'" (click)="activeTab = 'albums'">
+                        Albumi
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" [class.active]="activeTab === 'songs'" (click)="activeTab = 'songs'">
+                        Pesme
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Artists Tab -->
+            <div *ngIf="activeTab === 'artists'" class="tab-content">
+                <div class="card bg-dark border-secondary mb-4">
+                    <div class="card-body">
+                        <h5 class="text-light mb-3">Dodaj Novog Umetnika</h5>
+
+                        <div *ngIf="artistMessage" class="alert alert-success">{{ artistMessage }}</div>
+                        <div *ngIf="artistError" class="alert alert-danger">{{ artistError }}</div>
+
+                        <form (ngSubmit)="createArtist()" class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary">Ime Umetnika</label>
+                                <input type="text" class="form-control bg-black text-light border-secondary"
+                                    [(ngModel)]="artistForm.name" name="name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary">Žanrovi (ID-evi odvojeni zarezom)</label>
+                                <input type="text" class="form-control bg-black text-light border-secondary"
+                                    [(ngModel)]="artistForm.genresInput" name="genres"
+                                    placeholder="npr: 507f1f77bcf86cd799439011, 507f1f77bcf86cd799439012">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-secondary">Biografija</label>
+                                <textarea class="form-control bg-black text-light border-secondary"
+                                    [(ngModel)]="artistForm.biography" name="biography" rows="3" required></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-success">Kreiraj Umetnika</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card bg-dark border-secondary">
+                    <div class="card-body">
+                        <h5 class="text-light mb-3">Svi Umetnici</h5>
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Ime</th>
+                                        <th>Biografija</th>
+                                        <th>Akcije</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let artist of artists">
+                                        <td>{{ artist.name }}</td>
+                                        <td>{{ artist.biography | slice:0:100 }}...</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" (click)="editArtist(artist)">
+                                                Izmeni
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="artists.length === 0">
+                                        <td colspan="3" class="text-center text-secondary">Nema umetnika</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Albums Tab -->
+            <div *ngIf="activeTab === 'albums'" class="tab-content">
+                <div class="card bg-dark border-secondary mb-4">
+                    <div class="card-body">
+                        <h5 class="text-light mb-3">Dodaj Novi Album</h5>
+
+                        <div *ngIf="albumMessage" class="alert alert-success">{{ albumMessage }}</div>
+                        <div *ngIf="albumError" class="alert alert-danger">{{ albumError }}</div>
+
+                        <form (ngSubmit)="createAlbum()" class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary">Naziv Albuma</label>
+                                <input type="text" class="form-control bg-black text-light border-secondary"
+                                    [(ngModel)]="albumForm.name" name="name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary">Datum Izdanja</label>
+                                <input type="date" class="form-control bg-black text-light border-secondary"
+                                    [(ngModel)]="albumForm.date" name="date" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary">Žanr ID</label>
+                                <input type="text" class="form-control bg-black text-light border-secondary"
+                                    [(ngModel)]="albumForm.genre" name="genre" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary">Umetnici (ID-evi odvojeni zarezom)</label>
+                                <input type="text" class="form-control bg-black text-light border-secondary"
+                                    [(ngModel)]="albumForm.artistsInput" name="artists" required>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-success">Kreiraj Album</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card bg-dark border-secondary">
+                    <div class="card-body">
+                        <h5 class="text-light mb-3">Svi Albumi</h5>
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Naziv</th>
+                                        <th>Datum</th>
+                                        <th>ID</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let album of albums">
+                                        <td>{{ album.name }}</td>
+                                        <td>{{ album.date | date:'shortDate' }}</td>
+                                        <td><code class="text-success">{{ album.id }}</code></td>
+                                    </tr>
+                                    <tr *ngIf="albums.length === 0">
+                                        <td colspan="3" class="text-center text-secondary">Nema albuma</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Songs Tab -->
+            <div *ngIf="activeTab === 'songs'" class="tab-content">
+                <div class="card bg-dark border-secondary mb-4">
+                    <div class="card-body">
+                        <h5 class="text-light mb-3">Dodaj Novu Pesmu</h5>
+
+                        <div *ngIf="songMessage" class="alert alert-success">{{ songMessage }}</div>
+                        <div *ngIf="songError" class="alert alert-danger">{{ songError }}</div>
+
+                        <form (ngSubmit)="createSong()" class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary">Naziv Pesme</label>
+                                <input type="text" class="form-control bg-black text-light border-secondary"
+                                    [(ngModel)]="songForm.name" name="name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary">Trajanje (sekunde)</label>
+                                <input type="number" class="form-control bg-black text-light border-secondary"
+                                    [(ngModel)]="songForm.duration" name="duration" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-secondary">Žanr ID</label>
+                                <input type="text" class="form-control bg-black text-light border-secondary"
+                                    [(ngModel)]="songForm.genre" name="genre" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-secondary">Album ID (mora postojati!)</label>
+                                <input type="text" class="form-control bg-black text-light border-secondary"
+                                    [(ngModel)]="songForm.album" name="album" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-secondary">Umetnici (ID-evi odvojeni zarezom)</label>
+                                <input type="text" class="form-control bg-black text-light border-secondary"
+                                    [(ngModel)]="songForm.artistsInput" name="artists" required>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-success">Kreiraj Pesmu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card bg-dark border-secondary">
+                    <div class="card-body">
+                        <h5 class="text-light mb-3">Sve Pesme</h5>
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Naziv</th>
+                                        <th>Trajanje</th>
+                                        <th>Album ID</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let song of songs">
+                                        <td>{{ song.name }}</td>
+                                        <td>{{ song.duration }}s</td>
+                                        <td><code class="text-success">{{ song.album }}</code></td>
+                                    </tr>
+                                    <tr *ngIf="songs.length === 0">
+                                        <td colspan="3" class="text-center text-secondary">Nema pesama</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

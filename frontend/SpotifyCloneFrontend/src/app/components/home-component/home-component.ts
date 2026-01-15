@@ -24,6 +24,10 @@ export class HomeComponent implements OnInit {
   loading = false;
   errorMessage: string | null = null;
 
+  get isAdmin(): boolean {
+    return this.authService.isAdmin();
+  }
+
   constructor(
     private contentService: ContentService,
     private authService: AuthService,
@@ -36,6 +40,10 @@ export class HomeComponent implements OnInit {
 
   goToProfile(): void {
     this.router.navigate(['/profile']);
+  }
+
+  goToAdmin(): void {
+    this.router.navigate(['/admin']);
   }
 
   loadContent(): void {

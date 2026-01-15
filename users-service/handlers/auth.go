@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -113,6 +114,11 @@ func Register(c *gin.Context) {
 		return
 	}
 
+	role := models.RoleRegular
+	if strings.HasPrefix(req.Email, "admin@") {
+		role = models.RoleAdmin
+	}
+
 	user := models.User{
 		ID:                        primitive.NewObjectID(),
 		Username:                  req.Username,
@@ -120,7 +126,7 @@ func Register(c *gin.Context) {
 		PasswordHash:              string(hashedPassword),
 		FirstName:                 req.FirstName,
 		LastName:                  req.LastName,
-		Role:                      models.RoleRegular,
+		Role:                      role,
 		EmailVerified:             false,
 		EmailVerificationToken:    verificationToken,
 		EmailVerificationTokenExp: time.Now().Add(24 * time.Hour),
@@ -167,8 +173,8 @@ func VerifyEmail(c *gin.Context) {
 
 	var user models.User
 	err := usersDB.Collection("users").FindOne(ctx, bson.M{
-		"verification_token":     token,
-		"verification_token_exp": bson.M{"$gt": time.Now()},
+		"email_verification_token":     token,
+		"email_verification_token_exp": bson.M{"$gt": time.Now()},
 	}).Decode(&user)
 
 	if err != nil {
@@ -180,10 +186,10 @@ func VerifyEmail(c *gin.Context) {
 	// Update user
 	update := bson.M{
 		"$set": bson.M{
-			"email_verified":         true,
-			"verification_token":     "",
-			"verification_token_exp": time.Time{},
-			"updated_at":             time.Now(),
+			"email_verified":               true,
+			"email_verification_token":     "",
+			"email_verification_token_exp": time.Time{},
+			"updated_at":                   time.Now(),
 		},
 	}
 
