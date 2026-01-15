@@ -80,7 +80,7 @@ func corsMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
 
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
@@ -96,6 +96,7 @@ func setupRoutes(router *gin.Engine) {
 		api.POST("/ratings", middleware.AuthMiddleware(), handlers.CreateRating)
 		api.GET("/ratings", middleware.AuthMiddleware(), handlers.GetRatings)
 		api.GET("/ratings/:songId", handlers.GetSongRatings)
+		api.DELETE("/ratings/:songId", middleware.AuthMiddleware(), handlers.DeleteRating)
 	}
 
 	router.GET("/health", func(c *gin.Context) {

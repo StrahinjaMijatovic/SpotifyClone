@@ -51,18 +51,46 @@
       </div>
 
       <div class="list-group" *ngIf="songs.length > 0">
-        <div class="list-group-item bg-black border-secondary d-flex justify-content-between align-items-center"
+        <div class="list-group-item bg-black border-secondary"
              *ngFor="let song of songs; let i = index">
-          <div class="d-flex align-items-center gap-3">
-            <span class="text-secondary" style="width: 24px;">{{ i + 1 }}</span>
-            <div>
-              <h6 class="mb-0 text-light">{{ song.name }}</h6>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+              <span class="text-secondary" style="width: 24px;">{{ i + 1 }}</span>
+              <div>
+                <h6 class="mb-0 text-light">{{ song.name }}</h6>
+                <!-- Average rating -->
+                <small class="text-secondary" *ngIf="getSongCount(song.id!) > 0">
+                  Prosek: {{ getSongAverage(song.id!).toFixed(1) }} ({{ getSongCount(song.id!) }} ocena)
+                </small>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+              <span class="badge bg-warning bg-opacity-25 text-warning border border-warning">
+                {{ formatDuration(song.duration) }}
+              </span>
             </div>
           </div>
-          <div class="d-flex align-items-center gap-3">
-            <span class="badge bg-warning bg-opacity-25 text-warning border border-warning">
-              {{ formatDuration(song.duration) }}
-            </span>
+
+          <!-- Rating stars -->
+          <div class="mt-2 d-flex align-items-center gap-2">
+            <span class="text-secondary small me-1">Tvoja ocena:</span>
+            <div class="rating-stars" [class.disabled]="ratingInProgress === song.id">
+              <span *ngFor="let star of [1,2,3,4,5]"
+                    class="star"
+                    [class.filled]="star <= getMyRating(song.id!)"
+                    [class.hover]="star <= getMyRating(song.id!)"
+                    (click)="rateSong(song.id!, star)"
+                    style="cursor: pointer; font-size: 1.2rem;">
+                {{ star <= getMyRating(song.id!) ? '★' : '☆' }}
+              </span>
+            </div>
+            <button *ngIf="getMyRating(song.id!) > 0"
+                    class="btn btn-outline-danger btn-sm ms-2"
+                    (click)="deleteRating(song.id!)"
+                    [disabled]="ratingInProgress === song.id">
+              Obriši
+            </button>
+            <span *ngIf="ratingInProgress === song.id" class="spinner-border spinner-border-sm text-success ms-2"></span>
           </div>
         </div>
       </div>

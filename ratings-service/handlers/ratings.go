@@ -144,3 +144,29 @@ func GetSongRatings(c *gin.Context) {
 		"count":   len(ratings),
 	})
 }
+
+func DeleteRating(c *gin.Context) {
+	userID := c.GetString("user_id")
+	songID := strings.TrimSpace(c.Param("songId"))
+
+	if songID == "" {
+		c.JSON(400, gin.H{"error": "songId required"})
+		return
+	}
+
+	key := "rating:" + songID + ":" + userID
+	ctx := c.Request.Context()
+
+	result, err := redisClient.Del(ctx, key).Result()
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Redis error"})
+		return
+	}
+
+	if result == 0 {
+		c.JSON(404, gin.H{"error": "Rating not found"})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Rating deleted"})
+}

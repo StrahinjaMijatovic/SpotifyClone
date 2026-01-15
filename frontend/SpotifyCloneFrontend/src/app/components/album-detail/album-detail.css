@@ -1,3 +1,26 @@
 .list-group-item:hover {
   background-color: #1a1a1a !important;
 }
+
+.rating-stars {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.rating-stars .star {
+  color: #6c757d;
+  transition: color 0.15s ease;
+}
+
+.rating-stars .star.filled {
+  color: #ffc107;
+}
+
+.rating-stars .star:hover {
+  color: #ffc107;
+}
+
+.rating-stars.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}

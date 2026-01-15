@@ -49,7 +49,8 @@ func SetupRoutes(router *gin.Engine) {
 		// Ratings service routes
 		api.POST("/ratings", proxy.ProxyToRatingsService)
 		api.GET("/ratings", proxy.ProxyToRatingsService)
-		api.GET("/ratings/:songId", proxy.ProxyToRatingsService) // ✅ songId
+		api.GET("/ratings/:songId", proxy.ProxyToRatingsService)
+		api.DELETE("/ratings/:songId", proxy.ProxyToRatingsService)
 
 		// Subscriptions service routes
 		api.POST("/subscriptions", proxy.ProxyToSubscriptionsService)

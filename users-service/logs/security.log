@@ -228,3 +228,18 @@ This code expires in 5 minutes.
 [2026-01-15 21:06:48] TYPE=success ACTION=login IP=172.19.0.11 DETAILS=User Strahinja logged in
 [2026-01-15 21:07:06] TYPE=success ACTION=login_otp_sent IP=172.19.0.11 DETAILS=User admin OTP sent
 [2026-01-15 21:07:10] TYPE=success ACTION=login IP=172.19.0.11 DETAILS=User admin logged in
+2026/01/15 21:15:29 Connected to MongoDB
+2026/01/15 21:15:29 Connected to Redis
+2026/01/15 21:15:29 MongoDB indexes for users ensured
+2026/01/15 21:15:29 Users service starting on port 8001
+[2026-01-15 21:17:34] TYPE=success ACTION=login_otp_sent IP=172.19.0.9 DETAILS=User Strahinja OTP sent
+[2026-01-15 21:17:41] TYPE=success ACTION=login IP=172.19.0.9 DETAILS=User Strahinja logged in
+[2026-01-15 21:18:18] TYPE=success ACTION=login_otp_sent IP=172.19.0.9 DETAILS=User Strahinja OTP sent
+[2026-01-15 21:18:24] TYPE=success ACTION=login IP=172.19.0.9 DETAILS=User Strahinja logged in
+[2026-01-15 21:18:39] TYPE=success ACTION=login_otp_sent IP=172.19.0.9 DETAILS=User admin OTP sent
+[2026-01-15 21:18:45] TYPE=success ACTION=login IP=172.19.0.9 DETAILS=User admin logged in
+[2026-01-15 22:00:26] TYPE=failed ACTION=login IP=172.19.0.9 DETAILS=User Strahinja invalid password
+[2026-01-15 22:00:34] TYPE=failed ACTION=login IP=172.19.0.9 DETAILS=User Strahinja invalid password
+[2026-01-15 22:00:35] TYPE=failed ACTION=login IP=172.19.0.9 DETAILS=User Strahinja invalid password
+[2026-01-15 22:00:50] TYPE=success ACTION=login_otp_sent IP=172.19.0.9 DETAILS=User Strahinja OTP sent
+[2026-01-15 22:00:55] TYPE=success ACTION=login IP=172.19.0.9 DETAILS=User Strahinja logged in
