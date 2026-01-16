@@ -287,3 +287,20 @@ This code expires in 5 minutes.
 [2026-01-16 20:50:51] TYPE=success ACTION=login IP=172.19.0.9 DETAILS=User Strahinja logged in
 [2026-01-16 20:51:05] TYPE=failed ACTION=login IP=172.19.0.9 DETAILS=User Strahinja invalid password
 [2026-01-16 20:51:44] TYPE=success ACTION=login_otp_sent IP=172.19.0.9 DETAILS=User Strahinja OTP sent
+2026/01/16 21:39:57 Password expiry configured: max age = 60 dana
+2026/01/16 21:39:58 Connected to MongoDB
+2026/01/16 21:39:58 Connected to Redis
+2026/01/16 21:39:58 MongoDB indexes for users ensured
+2026/01/16 21:39:58 Users service starting on HTTP port 8001 (TLS disabled)
+[2026-01-16 21:41:03] TYPE=failed ACTION=auth IP=172.19.0.15 DETAILS=Missing Authorization header
+[2026-01-16 21:41:49] TYPE=validation_failed ACTION=register IP=172.19.0.15 DETAILS=Invalid request data
+[2026-01-16 21:43:00] TYPE=success ACTION=register IP=172.19.0.15 DETAILS=User Milan registered
+[2026-01-16 21:43:08] TYPE=failed ACTION=login IP=172.19.0.15 DETAILS=User Milan email not verified
+[2026-01-16 21:43:18] TYPE=success ACTION=email_verification IP=172.19.0.15 DETAILS=User Milan verified email
+[2026-01-16 21:43:35] TYPE=success ACTION=login_otp_sent IP=172.19.0.15 DETAILS=User Milan OTP sent
+[2026-01-16 21:43:47] TYPE=success ACTION=login IP=172.19.0.15 DETAILS=User Milan logged in
+[2026-01-16 21:44:00] TYPE=failed ACTION=change_password IP=172.19.0.15 DETAILS=Password change too soon (<24h)
+[2026-01-16 21:44:18] TYPE=success ACTION=update_profile IP=172.19.0.15 DETAILS=User updated profile
+[2026-01-16 21:44:21] TYPE=success ACTION=update_profile IP=172.19.0.15 DETAILS=User updated profile
+[2026-01-16 21:44:49] TYPE=success ACTION=login_otp_sent IP=172.19.0.15 DETAILS=User admin OTP sent
+[2026-01-16 21:44:54] TYPE=success ACTION=login IP=172.19.0.15 DETAILS=User admin logged in

@@ -9,14 +9,14 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   template: `
-    <div class="min-vh-100 d-flex align-items-center bg-black">
+    <div class="min-vh-100 d-flex align-items-center bg-white">
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-12 col-md-6 col-lg-4">
-            <div class="card bg-dark border-secondary shadow-lg">
+            <div class="card bg-light border-secondary shadow-lg">
               <div class="card-body p-4 p-md-5">
                 <div class="text-center mb-4">
-                  <h3 class="fw-bold text-light">Zaboravljena lozinka?</h3>
+                  <h3 class="fw-bold text-black">Zaboravljena lozinka?</h3>
                   <p class="text-secondary small">Unesi email i poslaćemo ti link za resetovanje.</p>
                 </div>
 

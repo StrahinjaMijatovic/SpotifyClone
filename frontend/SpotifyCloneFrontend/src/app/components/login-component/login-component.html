@@ -9,8 +9,7 @@
                 <span class="dot"></span>
                 <span class="fw-bold">Spotify Clone</span>
               </div>
-              <h2 class="mt-3 mb-1 fw-bold">Prijava</h2>
-              <p class="text-secondary mb-0">Uloguj se da pristupiš sadržaju</p>
+              <h2 class="mt-3 mb-1 fw-bold">Log in</h2>
             </div>
 
             <div *ngIf="errorMessage" class="alert alert-danger">
@@ -22,7 +21,7 @@
                 <div class="mb-3">
                   <label class="form-label">Username</label>
                   <input class="form-control form-control-lg" type="text" name="username" [(ngModel)]="username"
-                    placeholder="npr. nikola123" required />
+                    placeholder="" required />
                 </div>
 
                 <div class="mb-3">
@@ -76,8 +75,8 @@
               </button>
 
               <div class="text-center mt-3" *ngIf="step === 1">
-                <button type="button" class="btn btn-link link-light text-decoration-none" (click)="toggleMagicLink()">
-                  ✨ Prijavi se Magičnim Linkom
+                <button type="button" class="btn btn-link link-black text-decoration-none" (click)="toggleMagicLink()">
+                   Prijavi se Magičnim Linkom
                 </button>
               </div>
 
@@ -98,16 +97,8 @@
                   Zaboravljena lozinka?
                 </a>
               </div>
-
-              <div class="text-center mt-4 small text-secondary">
-                Tip: Ako ti gateway nije podešen, promeni API base u <code>auth.service.ts</code>
-              </div>
             </form>
           </div>
-        </div>
-
-        <div class="text-center mt-4 small text-secondary">
-          © {{ year }} Spotify Clone
         </div>
       </div>
     </div>

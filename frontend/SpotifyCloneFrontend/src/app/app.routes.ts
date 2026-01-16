@@ -19,10 +19,10 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
-  { path: 'reset-password', component: ResetPasswordComponent }, // expects ?token=
-  { path: 'verify-email', component: VerifyEmailComponent }, // expects ?token=
-  { path: 'magic-login', component: MagicLoginComponent }, // expects ?token=
-  { path: 'admin', component: AdminDashboardComponent }, // Admin only
+  { path: 'reset-password', component: ResetPasswordComponent }, // ocekuje token
+  { path: 'verify-email', component: VerifyEmailComponent }, // ocekuje token
+  { path: 'magic-login', component: MagicLoginComponent }, // ocekuje token
+  { path: 'admin', component: AdminDashboardComponent },
   { path: 'artist/:id', component: ArtistDetailComponent },
   { path: 'album/:id', component: AlbumDetailComponent },
   { path: 'notifications', component: NotificationsComponent },
