@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"log"
 	"net/http"
 	"os"
@@ -23,9 +24,43 @@ func main() {
 
 	handlers.SetupRoutes(router)
 
-	log.Printf("API Gateway starting on port %s", port)
-	if err := http.ListenAndServe(":"+port, router); err != nil {
-		log.Fatal("Failed to start server:", err)
+	// TLS Configuration
+	tlsEnabled := os.Getenv("TLS_ENABLED")
+	certFile := os.Getenv("TLS_CERT_FILE")
+	keyFile := os.Getenv("TLS_KEY_FILE")
+
+	if certFile == "" {
+		certFile = "certs/cert.pem"
+	}
+	if keyFile == "" {
+		keyFile = "certs/key.pem"
+	}
+
+	srv := &http.Server{
+		Addr:    ":" + port,
+		Handler: router,
+		TLSConfig: &tls.Config{
+			MinVersion:               tls.VersionTLS12,
+			PreferServerCipherSuites: true,
+			CipherSuites: []uint16{
+				tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+				tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+				tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+				tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+			},
+		},
+	}
+
+	if tlsEnabled == "true" {
+		log.Printf("API Gateway starting on HTTPS port %s", port)
+		if err := srv.ListenAndServeTLS(certFile, keyFile); err != nil {
+			log.Fatal("Failed to start HTTPS server:", err)
+		}
+	} else {
+		log.Printf("API Gateway starting on HTTP port %s (TLS disabled)", port)
+		if err := srv.ListenAndServe(); err != nil {
+			log.Fatal("Failed to start server:", err)
+		}
 	}
 }
 

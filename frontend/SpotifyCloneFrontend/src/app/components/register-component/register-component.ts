@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { AuthService } from '../../services/auth.service';
+import { RecaptchaService } from '../../services/recaptcha.service';
 
 @Component({
   selector: 'app-register',
@@ -12,7 +13,7 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './register-component.html',
   styleUrl: './register-component.css',
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit, AfterViewInit {
   username = '';
   email = '';
   firstName = '';
@@ -29,7 +30,45 @@ export class RegisterComponent {
 
   year = new Date().getFullYear();
 
-  constructor(private auth: AuthService, private router: Router) {}
+  // reCAPTCHA
+  recaptchaToken = '';
+  recaptchaWidgetId: number | null = null;
+  recaptchaLoaded = false;
+
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+    private recaptchaService: RecaptchaService
+  ) {}
+
+  ngOnInit(): void {
+    this.recaptchaService.load().then(() => {
+      this.recaptchaLoaded = true;
+    }).catch(err => {
+      console.error('Failed to load reCAPTCHA:', err);
+    });
+  }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.renderRecaptcha();
+    }, 500);
+  }
+
+  renderRecaptcha(): void {
+    if (!this.recaptchaLoaded) {
+      setTimeout(() => this.renderRecaptcha(), 500);
+      return;
+    }
+
+    const widgetId = this.recaptchaService.render('recaptcha-register', (token: string) => {
+      this.recaptchaToken = token;
+    });
+
+    if (widgetId !== null) {
+      this.recaptchaWidgetId = widgetId;
+    }
+  }
 
   onSubmit(): void {
     this.errorMessage = null;
@@ -50,6 +89,12 @@ export class RegisterComponent {
       return;
     }
 
+    // Check reCAPTCHA
+    if (!this.recaptchaToken) {
+      this.errorMessage = 'Molimo potvrdite da niste robot (reCAPTCHA)';
+      return;
+    }
+
     this.loading = true;
 
     this.auth
@@ -60,18 +105,22 @@ export class RegisterComponent {
         last_name: lastName,
         password: this.password,
         password_confirm: this.passwordConfirm,
+        recaptcha_token: this.recaptchaToken,
       })
       .subscribe({
         next: (res) => {
           this.successMessage = res?.message ?? 'Registracija uspešna! Možeš da se prijaviš.';
-          // mali delay nije potreban, ali UX je lepši
           setTimeout(() => this.router.navigate(['/login']), 600);
         },
         error: (err) => {
-          // ako backend vrati {error:"..."} pokušaj da prikažeš to
           const msg = err?.error?.error || err?.error?.message;
           this.errorMessage = msg || 'Registracija nije uspela. Pokušaj ponovo.';
           this.loading = false;
+          // Reset reCAPTCHA on error
+          this.recaptchaToken = '';
+          if (this.recaptchaWidgetId !== null) {
+            this.recaptchaService.reset(this.recaptchaWidgetId);
+          }
         },
         complete: () => (this.loading = false),
       });

@@ -17,6 +17,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 
+	"example.com/users-service/config"
 	"example.com/users-service/models"
 	"example.com/users-service/utils"
 )
@@ -265,19 +266,35 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	// Check password age
-	passwordAge := time.Since(user.PasswordChangedAt)
-	if passwordAge > 60*24*time.Hour {
-		utils.LogSecurityEvent("failed", "login", c.ClientIP(), fmt.Sprintf("User %s password expired", req.Username))
-		c.JSON(http.StatusForbidden, gin.H{"error": "Password expired. Please reset your password."})
+	// Check password age (configurable via PASSWORD_MAX_AGE_DAYS or PASSWORD_MAX_AGE_MINUTES env vars)
+	if config.IsPasswordExpired(user.PasswordChangedAt) {
+		passwordAge := config.GetPasswordAge(user.PasswordChangedAt)
+		maxAge := config.GetPasswordMaxAgeString()
+		utils.LogSecurityEvent("failed", "login", c.ClientIP(),
+			fmt.Sprintf("User %s password expired (age: %v, max: %s)", req.Username, passwordAge.Round(time.Minute), maxAge))
+		c.JSON(http.StatusForbidden, gin.H{
+			"error":       "Lozinka je istekla. Molimo resetujte vašu lozinku.",
+			"error_code":  "PASSWORD_EXPIRED",
+			"password_age": passwordAge.String(),
+			"max_age":     maxAge,
+			"message":     fmt.Sprintf("Vaša lozinka je starija od dozvoljenog perioda od %s. Morate resetovati lozinku da biste nastavili.", maxAge),
+		})
 		return
 	}
 
-	// Send password expiry warning (50 days)
-	if passwordAge > 50*24*time.Hour && passwordAge < 51*24*time.Hour {
-		daysLeft := 60 - int(passwordAge.Hours()/24)
-		emailBody := fmt.Sprintf("Hi %s,\n\nYour password will expire in %d days. Please change it soon.", user.FirstName, daysLeft)
-		go utils.SendEmail(user.Email, "Password Expiry Warning", emailBody)
+	// Send password expiry warning (at 80% of max age)
+	warningThreshold := config.PasswordMaxAgeDuration * 80 / 100
+	passwordAge := config.GetPasswordAge(user.PasswordChangedAt)
+	if passwordAge > warningThreshold {
+		daysLeft := config.GetDaysUntilExpiry(user.PasswordChangedAt)
+		var timeUnit string
+		if config.PasswordMaxAgeDays == 0 {
+			timeUnit = "minuta"
+		} else {
+			timeUnit = "dana"
+		}
+		emailBody := fmt.Sprintf("Zdravo %s,\n\nVaša lozinka će isteći za %d %s. Molimo promenite je što pre.", user.FirstName, daysLeft, timeUnit)
+		go utils.SendEmail(user.Email, "Upozorenje o isteku lozinke", emailBody)
 	}
 
 	// Generate OTP

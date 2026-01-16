@@ -96,11 +96,20 @@ services:
       JWT_SECRET: your-secret-key-change-in-production
       BASE_URL: http://localhost:8080
       MOCK_EMAIL: "true"
+      # Password expiry configuration (default: 60 days)
+      # PASSWORD_MAX_AGE_DAYS: 60
+      # For demo/simulation use minutes instead:
+      # PASSWORD_MAX_AGE_MINUTES: 2
+      # TLS/HTTPS configuration
+      # TLS_ENABLED: "true"
+      # TLS_CERT_FILE: /app/certs/cert.pem
+      # TLS_KEY_FILE: /app/certs/key.pem
     depends_on:
       - mongodb-users
       - redis-users
     volumes:
       - ./users-service/logs:/app/logs
+      - ./certs:/app/certs:ro
     networks:
       - spotify-network
 
@@ -194,6 +203,7 @@ services:
     container_name: api-gateway
     ports:
       - "8080:8080"
+      - "8443:8443"  # HTTPS port
     environment:
       PORT: 8080
       USERS_SERVICE_URL: http://users-service:8001
@@ -204,6 +214,10 @@ services:
       RECOMMENDATION_SERVICE_URL: http://recommendation-service:8006
       JWT_SECRET: your-secret-key-change-in-production
       REDIS_URI: redis://redis-ratings:6379
+      # TLS/HTTPS configuration
+      # TLS_ENABLED: "true"
+      # TLS_CERT_FILE: /app/certs/cert.pem
+      # TLS_KEY_FILE: /app/certs/key.pem
     depends_on:
       - users-service
       - content-service
@@ -212,6 +226,8 @@ services:
       - notifications-service
       - recommendation-service
       - redis-ratings
+    volumes:
+      - ./certs:/app/certs:ro
     networks:
       - spotify-network
 

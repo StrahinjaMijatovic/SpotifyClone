@@ -243,3 +243,47 @@ This code expires in 5 minutes.
 [2026-01-15 22:00:35] TYPE=failed ACTION=login IP=172.19.0.9 DETAILS=User Strahinja invalid password
 [2026-01-15 22:00:50] TYPE=success ACTION=login_otp_sent IP=172.19.0.9 DETAILS=User Strahinja OTP sent
 [2026-01-15 22:00:55] TYPE=success ACTION=login IP=172.19.0.9 DETAILS=User Strahinja logged in
+2026/01/15 22:08:25 Connected to MongoDB
+2026/01/15 22:08:25 Connected to Redis
+2026/01/15 22:08:25 MongoDB indexes for users ensured
+2026/01/15 22:08:25 Users service starting on port 8001
+[2026-01-15 22:09:40] TYPE=success ACTION=login_otp_sent IP=172.19.0.11 DETAILS=User Strahinja OTP sent
+[2026-01-15 22:09:48] TYPE=success ACTION=login IP=172.19.0.11 DETAILS=User Strahinja logged in
+[2026-01-15 22:14:29] TYPE=success ACTION=login_otp_sent IP=172.19.0.11 DETAILS=User Strahinja OTP sent
+[2026-01-15 22:14:40] TYPE=success ACTION=login IP=172.19.0.11 DETAILS=User Strahinja logged in
+2026/01/15 22:15:47 Connected to MongoDB
+2026/01/15 22:15:47 Connected to Redis
+2026/01/15 22:15:47 MongoDB indexes for users ensured
+2026/01/15 22:15:47 Users service starting on port 8001
+[2026-01-15 22:16:54] TYPE=success ACTION=login_otp_sent IP=172.19.0.9 DETAILS=User Strahinja OTP sent
+[2026-01-15 22:17:05] TYPE=success ACTION=login IP=172.19.0.9 DETAILS=User Strahinja logged in
+2026/01/16 19:29:41 Connected to MongoDB
+2026/01/16 19:29:41 Connected to Redis
+2026/01/16 19:29:41 MongoDB indexes for users ensured
+2026/01/16 19:29:41 Users service starting on port 8001
+[2026-01-16 19:32:23] TYPE=success ACTION=login_otp_sent IP=172.19.0.10 DETAILS=User Strahinja OTP sent
+[2026-01-16 19:32:34] TYPE=success ACTION=login IP=172.19.0.10 DETAILS=User Strahinja logged in
+[2026-01-16 19:32:44] TYPE=success ACTION=magic_link_sent IP=172.19.0.10 DETAILS=Magic link sent to strahinja@gmail.com
+[2026-01-16 19:32:48] TYPE=success ACTION=magic_login IP=172.19.0.10 DETAILS=User Strahinja logged in via magic link
+[2026-01-16 19:35:11] TYPE=failed ACTION=login IP=172.19.0.10 DETAILS=User Strahinja invalid password
+[2026-01-16 19:35:56] TYPE=success ACTION=login_otp_sent IP=172.19.0.10 DETAILS=User Strahinja OTP sent
+[2026-01-16 19:36:05] TYPE=success ACTION=login IP=172.19.0.10 DETAILS=User Strahinja logged in
+[2026-01-16 19:36:24] TYPE=failed ACTION=change_password IP=172.19.0.10 DETAILS=Password change too soon (<24h)
+[2026-01-16 19:37:33] TYPE=success ACTION=login_otp_sent IP=172.19.0.10 DETAILS=User admin OTP sent
+[2026-01-16 19:37:42] TYPE=success ACTION=login IP=172.19.0.10 DETAILS=User admin logged in
+[2026-01-16 19:37:51] TYPE=failed ACTION=change_password IP=172.19.0.10 DETAILS=Password change too soon (<24h)
+2026/01/16 19:48:51 Password expiry configured: max age = 60 dana
+2026/01/16 19:48:53 Connected to MongoDB
+2026/01/16 19:48:53 Connected to Redis
+2026/01/16 19:48:53 MongoDB indexes for users ensured
+2026/01/16 19:48:53 Users service starting on port 8001
+[2026-01-16 19:51:29] TYPE=failed ACTION=login IP=172.19.0.11 DETAILS=User expired_user not found
+2026/01/16 20:48:52 Password expiry configured: max age = 60 dana
+2026/01/16 20:48:53 Connected to MongoDB
+2026/01/16 20:48:53 Connected to Redis
+2026/01/16 20:48:53 MongoDB indexes for users ensured
+2026/01/16 20:48:53 Users service starting on HTTP port 8001 (TLS disabled)
+[2026-01-16 20:50:41] TYPE=success ACTION=login_otp_sent IP=172.19.0.9 DETAILS=User Strahinja OTP sent
+[2026-01-16 20:50:51] TYPE=success ACTION=login IP=172.19.0.9 DETAILS=User Strahinja logged in
+[2026-01-16 20:51:05] TYPE=failed ACTION=login IP=172.19.0.9 DETAILS=User Strahinja invalid password
+[2026-01-16 20:51:44] TYPE=success ACTION=login_otp_sent IP=172.19.0.9 DETAILS=User Strahinja OTP sent

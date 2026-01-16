@@ -1,0 +1,10 @@
+# Docker Compose override file for password expiry demonstration
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.demo.yml up -d
+#
+# This sets PASSWORD_MAX_AGE_MINUTES=2 for quick demonstration of password expiry
+
+services:
+  users-service:
+    environment:
+      # Override password expiry to 2 minutes for demonstration
+      PASSWORD_MAX_AGE_MINUTES: 2

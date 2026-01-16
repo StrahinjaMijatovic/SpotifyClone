@@ -10,6 +10,7 @@ import { AdminDashboardComponent } from './components/admin-dashboard/admin-dash
 import { VerifyEmailComponent } from './components/verify-email/verify-email';
 import { ArtistDetailComponent } from './components/artist-detail/artist-detail';
 import { AlbumDetailComponent } from './components/album-detail/album-detail';
+import { NotificationsComponent } from './components/notifications/notifications';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -24,4 +25,5 @@ export const routes: Routes = [
   { path: 'admin', component: AdminDashboardComponent }, // Admin only
   { path: 'artist/:id', component: ArtistDetailComponent },
   { path: 'album/:id', component: AlbumDetailComponent },
+  { path: 'notifications', component: NotificationsComponent },
 ];

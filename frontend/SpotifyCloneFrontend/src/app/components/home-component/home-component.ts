@@ -42,6 +42,10 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/admin']);
   }
 
+  goToNotifications(): void {
+    this.router.navigate(['/notifications']);
+  }
+
   goToArtist(artistId: string): void {
     this.router.navigate(['/artist', artistId]);
   }

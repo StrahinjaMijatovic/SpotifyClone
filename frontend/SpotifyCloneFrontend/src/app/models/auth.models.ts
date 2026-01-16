@@ -1,6 +1,7 @@
 export type LoginRequest = {
   username: string;
   password: string;
+  recaptcha_token?: string;
 };
 
 export type LoginInitiateResponse = {
@@ -58,6 +59,7 @@ export type RegisterRequest = {
   last_name: string;
   password: string;
   password_confirm: string;
+  recaptcha_token?: string;
 };
 
 export type RegisterResponse = {

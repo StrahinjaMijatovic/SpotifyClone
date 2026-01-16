@@ -2,12 +2,14 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 
+	"example.com/users-service/config"
 	"example.com/users-service/handlers"
 	"example.com/users-service/middleware"
 	"example.com/users-service/utils"
@@ -29,6 +31,10 @@ func main() {
 		log.Fatal("Failed to initialize logger:", err)
 	}
 	defer utils.CloseLogger()
+
+	// Initialize password expiry config
+	config.InitPasswordConfig()
+	log.Printf("Password expiry configured: max age = %s", config.GetPasswordMaxAgeString())
 
 	// Start log rotation goroutine
 	go func() {
@@ -100,16 +106,45 @@ func main() {
 	// Routes
 	setupRoutes(router)
 
+	// TLS Configuration
+	tlsEnabled := os.Getenv("TLS_ENABLED")
+	certFile := os.Getenv("TLS_CERT_FILE")
+	keyFile := os.Getenv("TLS_KEY_FILE")
+
+	if certFile == "" {
+		certFile = "certs/cert.pem"
+	}
+	if keyFile == "" {
+		keyFile = "certs/key.pem"
+	}
+
 	// Start server
 	srv := &http.Server{
 		Addr:    ":" + port,
 		Handler: router,
+		TLSConfig: &tls.Config{
+			MinVersion:               tls.VersionTLS12,
+			PreferServerCipherSuites: true,
+			CipherSuites: []uint16{
+				tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+				tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+				tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+				tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+			},
+		},
 	}
 
 	go func() {
-		log.Printf("Users service starting on port %s", port)
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Failed to start server: %v", err)
+		if tlsEnabled == "true" {
+			log.Printf("Users service starting on HTTPS port %s", port)
+			if err := srv.ListenAndServeTLS(certFile, keyFile); err != nil && err != http.ErrServerClosed {
+				log.Fatalf("Failed to start HTTPS server: %v", err)
+			}
+		} else {
+			log.Printf("Users service starting on HTTP port %s (TLS disabled)", port)
+			if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+				log.Fatalf("Failed to start server: %v", err)
+			}
 		}
 	}()
 

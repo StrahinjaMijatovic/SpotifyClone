@@ -1,0 +1,21 @@
+.list-group-item {
+  transition: background-color 0.2s ease;
+}
+
+.list-group-item:hover {
+  background-color: #1a1a1a !important;
+}
+
+.list-group-item.unread {
+  border-left: 3px solid #1db954 !important;
+}
+
+.notification-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1a1a1a;
+  border-radius: 50%;
+}

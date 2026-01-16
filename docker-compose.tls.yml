@@ -1,0 +1,24 @@
+# Docker Compose override file for HTTPS/TLS mode
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.tls.yml up -d
+#
+# Prerequisites:
+#   1. Generate certificates first: ./generate-certs.sh (Linux/Mac) or ./generate-certs.ps1 (Windows)
+#   2. Certificates should be in ./certs/ directory
+
+services:
+  users-service:
+    environment:
+      TLS_ENABLED: "true"
+      TLS_CERT_FILE: /app/certs/cert.pem
+      TLS_KEY_FILE: /app/certs/key.pem
+
+  api-gateway:
+    ports:
+      - "8443:8080"  # Map container's 8080 to host's 8443 for HTTPS
+    environment:
+      PORT: 8080
+      TLS_ENABLED: "true"
+      TLS_CERT_FILE: /app/certs/cert.pem
+      TLS_KEY_FILE: /app/certs/key.pem
+      # Update service URLs to use HTTPS when TLS is enabled between services
+      # USERS_SERVICE_URL: https://users-service:8001

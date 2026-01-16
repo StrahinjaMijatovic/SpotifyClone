@@ -11,14 +11,17 @@
         <button class="btn btn-outline-light btn-sm" (click)="loadArtists()">
           Osveži
         </button>
+        <button class="btn btn-outline-info btn-sm" (click)="goToNotifications()">
+          🔔 Notifikacije
+        </button>
         <button *ngIf="isAdmin" class="btn btn-outline-warning btn-sm" (click)="goToAdmin()">
           🎵 Admin Panel
         </button>
         <button class="btn btn-outline-success btn-sm" (click)="goToProfile()">
-          Profile
+          Profil
         </button>
         <button class="btn btn-danger btn-sm" (click)="logout()">
-          Logout
+          Odjava
         </button>
       </div>
     </div>

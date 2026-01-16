@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { AuthService } from '../../services/auth.service';
+import { RecaptchaService } from '../../services/recaptcha.service';
 
 @Component({
   selector: 'app-login',
@@ -12,7 +13,7 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './login-component.html',
   styleUrl: './login-component.css',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit, AfterViewInit {
   step = 1; // 1: Creds, 2: OTP, 3: Magic Link Request
 
   username = '';
@@ -28,7 +29,48 @@ export class LoginComponent {
 
   year = new Date().getFullYear();
 
-  constructor(private authService: AuthService, private router: Router) { }
+  // reCAPTCHA
+  recaptchaToken = '';
+  recaptchaWidgetId: number | null = null;
+  recaptchaLoaded = false;
+
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private recaptchaService: RecaptchaService
+  ) { }
+
+  ngOnInit(): void {
+    // Load reCAPTCHA script
+    this.recaptchaService.load().then(() => {
+      this.recaptchaLoaded = true;
+    }).catch(err => {
+      console.error('Failed to load reCAPTCHA:', err);
+    });
+  }
+
+  ngAfterViewInit(): void {
+    // Render reCAPTCHA after view is initialized
+    setTimeout(() => {
+      this.renderRecaptcha();
+    }, 500);
+  }
+
+  renderRecaptcha(): void {
+    if (!this.recaptchaLoaded) {
+      // Retry after a short delay if not loaded yet
+      setTimeout(() => this.renderRecaptcha(), 500);
+      return;
+    }
+
+    const widgetId = this.recaptchaService.render('recaptcha-login', (token: string) => {
+      this.recaptchaToken = token;
+    });
+
+    if (widgetId !== null) {
+      this.recaptchaWidgetId = widgetId;
+    }
+  }
 
   toggleMagicLink(): void {
     this.step = 3;
@@ -67,17 +109,32 @@ export class LoginComponent {
   handleLogin(): void {
     if (!this.username || !this.password) return;
 
+    // Check reCAPTCHA
+    if (!this.recaptchaToken) {
+      this.errorMessage = 'Molimo potvrdite da niste robot (reCAPTCHA)';
+      return;
+    }
+
     // Odmah prikaži OTP polje
     this.step = 2;
     this.errorMessage = null;
 
-    this.authService.login({ username: this.username, password: this.password }).subscribe({
+    this.authService.login({
+      username: this.username,
+      password: this.password,
+      recaptcha_token: this.recaptchaToken
+    }).subscribe({
       next: (res) => {
         this.tempToken = res.temp_token;
       },
       error: (err) => {
         this.step = 1;
         this.errorMessage = err?.error?.error || 'Login failed';
+        // Reset reCAPTCHA on error
+        this.recaptchaToken = '';
+        if (this.recaptchaWidgetId !== null) {
+          this.recaptchaService.reset(this.recaptchaWidgetId);
+        }
       }
     });
   }
