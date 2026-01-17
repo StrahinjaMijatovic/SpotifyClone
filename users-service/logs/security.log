@@ -304,3 +304,23 @@ This code expires in 5 minutes.
 [2026-01-16 21:44:21] TYPE=success ACTION=update_profile IP=172.19.0.15 DETAILS=User updated profile
 [2026-01-16 21:44:49] TYPE=success ACTION=login_otp_sent IP=172.19.0.15 DETAILS=User admin OTP sent
 [2026-01-16 21:44:54] TYPE=success ACTION=login IP=172.19.0.15 DETAILS=User admin logged in
+2026/01/16 21:49:51 Password expiry configured: max age = 60 dana
+2026/01/16 21:49:52 Connected to MongoDB
+2026/01/16 21:49:52 Connected to Redis
+2026/01/16 21:49:52 MongoDB indexes for users ensured
+2026/01/16 21:49:52 Users service starting on HTTP port 8001 (TLS disabled)
+[2026-01-16 22:01:32] TYPE=success ACTION=login_otp_sent IP=172.19.0.9 DETAILS=User Strahinja OTP sent
+[2026-01-16 22:01:49] TYPE=success ACTION=login IP=172.19.0.9 DETAILS=User Strahinja logged in
+[2026-01-16 22:05:55] TYPE=success ACTION=register IP=172.19.0.9 DETAILS=User Filip registered
+[2026-01-16 22:06:02] TYPE=success ACTION=email_verification IP=172.19.0.9 DETAILS=User Filip verified email
+[2026-01-16 22:06:12] TYPE=success ACTION=login_otp_sent IP=172.19.0.9 DETAILS=User Filip OTP sent
+[2026-01-16 22:06:18] TYPE=success ACTION=login IP=172.19.0.9 DETAILS=User Filip logged in
+[2026-01-16 22:06:30] TYPE=success ACTION=delete_account IP=172.19.0.9 DETAILS=User deleted account
+[2026-01-16 22:06:55] TYPE=failed ACTION=login IP=172.19.0.9 DETAILS=User Filip not found
+2026/01/17 06:51:06 Password expiry configured: max age = 60 dana
+2026/01/17 06:51:08 Connected to MongoDB
+2026/01/17 06:51:08 Connected to Redis
+2026/01/17 06:51:08 MongoDB indexes for users ensured
+2026/01/17 06:51:08 Users service starting on HTTP port 8001 (TLS disabled)
+[2026-01-17 06:52:18] TYPE=validation_failed ACTION=register IP=172.19.0.11 DETAILS=Invalid request data
+[2026-01-17 06:52:54] TYPE=validation_failed ACTION=register IP=172.19.0.11 DETAILS=Blacklisted password

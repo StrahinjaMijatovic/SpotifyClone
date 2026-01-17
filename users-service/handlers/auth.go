@@ -82,6 +82,13 @@ func Register(c *gin.Context) {
 		return
 	}
 
+	// Check password blacklist
+	if utils.IsPasswordBlacklisted(req.Password) {
+		utils.LogSecurityEvent("validation_failed", "register", c.ClientIP(), "Blacklisted password")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "This password is too common. Please choose a more unique password"})
+		return
+	}
+
 	ctx := c.Request.Context()
 
 	// Check if username exists
@@ -534,6 +541,13 @@ func ResetPasswordConfirm(c *gin.Context) {
 		return
 	}
 
+	// Check password blacklist
+	if utils.IsPasswordBlacklisted(req.NewPassword) {
+		utils.LogSecurityEvent("validation_failed", "reset_password_confirm", c.ClientIP(), "Blacklisted password")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "This password is too common. Please choose a more unique password"})
+		return
+	}
+
 	ctx := c.Request.Context()
 
 	var user models.User
@@ -731,6 +745,13 @@ func ChangePassword(c *gin.Context) {
 	if !utils.ValidatePasswordStrength(req.NewPassword) {
 		utils.LogSecurityEvent("validation_failed", "change_password", c.ClientIP(), "Weak password")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Password must contain uppercase, lowercase, number and special character"})
+		return
+	}
+
+	// Check password blacklist
+	if utils.IsPasswordBlacklisted(req.NewPassword) {
+		utils.LogSecurityEvent("validation_failed", "change_password", c.ClientIP(), "Blacklisted password")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "This password is too common. Please choose a more unique password"})
 		return
 	}
 

@@ -1,11 +1,51 @@
 package utils
 
 import (
+	"bufio"
 	"html"
+	"os"
 	"regexp"
 	"strings"
+	"sync"
 	"unicode"
 )
+
+var (
+	passwordBlacklist     map[string]bool
+	passwordBlacklistOnce sync.Once
+)
+
+// loadPasswordBlacklist loads the password blacklist from file
+func loadPasswordBlacklist() {
+	passwordBlacklist = make(map[string]bool)
+
+	file, err := os.Open("data/password_blacklist.txt")
+	if err != nil {
+		// Try alternative path (when running from different directory)
+		file, err = os.Open("users-service/data/password_blacklist.txt")
+		if err != nil {
+			return
+		}
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		// Skip empty lines and comments
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		// Store lowercase for case-insensitive matching
+		passwordBlacklist[strings.ToLower(line)] = true
+	}
+}
+
+// IsPasswordBlacklisted checks if password is in the blacklist
+func IsPasswordBlacklisted(password string) bool {
+	passwordBlacklistOnce.Do(loadPasswordBlacklist)
+	return passwordBlacklist[strings.ToLower(password)]
+}
 
 // ValidatePasswordStrength checks if password meets requirements
 func ValidatePasswordStrength(password string) bool {
