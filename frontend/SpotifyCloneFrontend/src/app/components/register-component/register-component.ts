@@ -35,6 +35,21 @@ export class RegisterComponent implements OnInit, AfterViewInit {
   recaptchaWidgetId: number | null = null;
   recaptchaLoaded = false;
 
+  // Mapiranje backend poruka na srpski
+  private errorMessages: { [key: string]: string } = {
+    'Invalid email format': 'Neispravan format email adrese.',
+    'This password is too common. Please choose a more unique password': 'Ova lozinka je previše česta. Izaberi jedinstvenu lozinku.',
+    'Password must contain uppercase, lowercase, number and special character': 'Lozinka mora sadržati veliko slovo, malo slovo, broj i specijalni znak.',
+    'Username must be 3-50 alphanumeric characters or underscore': 'Korisničko ime mora imati 3-50 alfanumeričkih karaktera ili donju crtu.',
+    'Names must contain only letters and be 2-50 characters': 'Ime i prezime moraju sadržati samo slova i biti dužine 2-50 karaktera.',
+    'Input contains invalid characters': 'Unos sadrži nedozvoljene karaktere.',
+    'Username already exists': 'Korisničko ime već postoji.',
+    'Email already exists': 'Email adresa već postoji.',
+    'Invalid request data': 'Neispravni podaci. Proveri unos.',
+    'Invalid reCAPTCHA': 'Neispravan reCAPTCHA. Pokušaj ponovo.',
+    'reCAPTCHA verification failed': 'reCAPTCHA verifikacija nije uspela. Pokušaj ponovo.',
+  };
+
   constructor(
     private auth: AuthService,
     private router: Router,
@@ -114,7 +129,7 @@ export class RegisterComponent implements OnInit, AfterViewInit {
         },
         error: (err) => {
           const msg = err?.error?.error || err?.error?.message;
-          this.errorMessage = msg || 'Registracija nije uspela. Pokušaj ponovo.';
+          this.errorMessage = this.translateError(msg) || 'Registracija nije uspela. Pokušaj ponovo.';
           this.loading = false;
           // Reset reCAPTCHA on error
           this.recaptchaToken = '';
@@ -124,5 +139,10 @@ export class RegisterComponent implements OnInit, AfterViewInit {
         },
         complete: () => (this.loading = false),
       });
+  }
+
+  private translateError(message: string | undefined): string | null {
+    if (!message) return null;
+    return this.errorMessages[message] || message;
   }
 }

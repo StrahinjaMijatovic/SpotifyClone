@@ -324,3 +324,20 @@ This code expires in 5 minutes.
 2026/01/17 06:51:08 Users service starting on HTTP port 8001 (TLS disabled)
 [2026-01-17 06:52:18] TYPE=validation_failed ACTION=register IP=172.19.0.11 DETAILS=Invalid request data
 [2026-01-17 06:52:54] TYPE=validation_failed ACTION=register IP=172.19.0.11 DETAILS=Blacklisted password
+2026/01/17 06:56:50 Password expiry configured: max age = 60 dana
+2026/01/17 06:56:51 Connected to MongoDB
+2026/01/17 06:56:51 Connected to Redis
+2026/01/17 06:56:51 MongoDB indexes for users ensured
+2026/01/17 06:56:51 Users service starting on HTTP port 8001 (TLS disabled)
+2026/01/17 07:08:40 Password expiry configured: max age = 60 dana
+2026/01/17 07:08:42 Connected to MongoDB
+2026/01/17 07:08:42 Connected to Redis
+2026/01/17 07:08:42 MongoDB indexes for users ensured
+2026/01/17 07:08:42 Users service starting on HTTP port 8001 (TLS disabled)
+2026/01/17 07:13:50 Password expiry configured: max age = 60 dana
+2026/01/17 07:13:50 Connected to MongoDB
+2026/01/17 07:13:50 Connected to Redis
+2026/01/17 07:13:50 MongoDB indexes for users ensured
+2026/01/17 07:13:50 Users service starting on HTTP port 8001 (TLS disabled)
+[2026-01-17 07:14:19] TYPE=success ACTION=login_otp_sent IP=172.19.0.1 DETAILS=User Strahinja OTP sent
+[2026-01-17 07:14:26] TYPE=success ACTION=login IP=172.19.0.1 DETAILS=User Strahinja logged in

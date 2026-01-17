@@ -231,6 +231,20 @@ services:
     networks:
       - spotify-network
 
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend/SpotifyCloneFrontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - spotify-network
+    restart: unless-stopped
+
 volumes:
   mongodb-users-data:
   mongodb-content-data:

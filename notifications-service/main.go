@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"crypto/tls"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -14,6 +15,12 @@ import (
 	"example.com/notifications-service/middleware"
 	"github.com/gin-gonic/gin"
 	"github.com/gocql/gocql"
+)
+
+const (
+	maxRetries     = 30              // Maksimalan broj pokušaja
+	initialBackoff = 2 * time.Second // Početno čekanje
+	maxBackoff     = 30 * time.Second // Maksimalno čekanje između pokušaja
 )
 
 var cassandraSession *gocql.Session
@@ -40,21 +47,15 @@ func main() {
 		log.Fatal("Failed to init Cassandra schema:", err)
 	}
 
-	// 2) Onda konekcija na keyspace
-	cluster := gocql.NewCluster(hosts...)
-	cluster.Keyspace = keyspace
-	cluster.Consistency = gocql.Quorum
-	cluster.Timeout = 10 * time.Second
-	cluster.ConnectTimeout = 10 * time.Second
-
-	session, err := cluster.CreateSession()
+	// 2) Onda konekcija na keyspace (sa retry logikom)
+	session, err := connectToKeyspace(hosts, keyspace)
 	if err != nil {
 		log.Fatal("Failed to connect to Cassandra:", err)
 	}
 	cassandraSession = session
 	defer cassandraSession.Close()
 
-	log.Println("Connected to Cassandra")
+	log.Println("Connected to Cassandra keyspace:", keyspace)
 
 	router := gin.Default()
 	router.Use(corsMiddleware())
@@ -109,14 +110,70 @@ func parseHosts(raw string) []string {
 	return out
 }
 
-func createKeyspaceAndTable(hosts []string, keyspace string) error {
-	// Session bez keyspace-a (system)
-	cluster := gocql.NewCluster(hosts...)
-	cluster.Consistency = gocql.Quorum
-	cluster.Timeout = 10 * time.Second
-	cluster.ConnectTimeout = 10 * time.Second
+// waitForCassandra čeka da Cassandra postane dostupna sa retry logikom
+func waitForCassandra(hosts []string) (*gocql.Session, error) {
+	var session *gocql.Session
+	var err error
+	backoff := initialBackoff
 
-	s, err := cluster.CreateSession()
+	for i := 0; i < maxRetries; i++ {
+		cluster := gocql.NewCluster(hosts...)
+		cluster.Consistency = gocql.Quorum
+		cluster.Timeout = 10 * time.Second
+		cluster.ConnectTimeout = 10 * time.Second
+
+		session, err = cluster.CreateSession()
+		if err == nil {
+			log.Println("Successfully connected to Cassandra")
+			return session, nil
+		}
+
+		log.Printf("Waiting for Cassandra (attempt %d/%d): %v", i+1, maxRetries, err)
+		time.Sleep(backoff)
+
+		// Eksponencijalni backoff sa maksimumom
+		backoff *= 2
+		if backoff > maxBackoff {
+			backoff = maxBackoff
+		}
+	}
+
+	return nil, fmt.Errorf("failed to connect to Cassandra after %d attempts: %v", maxRetries, err)
+}
+
+// connectToKeyspace kreira sesiju na specifičan keyspace sa retry logikom
+func connectToKeyspace(hosts []string, keyspace string) (*gocql.Session, error) {
+	var session *gocql.Session
+	var err error
+	backoff := initialBackoff
+
+	for i := 0; i < maxRetries; i++ {
+		cluster := gocql.NewCluster(hosts...)
+		cluster.Keyspace = keyspace
+		cluster.Consistency = gocql.Quorum
+		cluster.Timeout = 10 * time.Second
+		cluster.ConnectTimeout = 10 * time.Second
+
+		session, err = cluster.CreateSession()
+		if err == nil {
+			return session, nil
+		}
+
+		log.Printf("Waiting for Cassandra keyspace %s (attempt %d/%d): %v", keyspace, i+1, maxRetries, err)
+		time.Sleep(backoff)
+
+		backoff *= 2
+		if backoff > maxBackoff {
+			backoff = maxBackoff
+		}
+	}
+
+	return nil, fmt.Errorf("failed to connect to keyspace %s after %d attempts: %v", keyspace, maxRetries, err)
+}
+
+func createKeyspaceAndTable(hosts []string, keyspace string) error {
+	// Čekaj da Cassandra postane dostupna
+	s, err := waitForCassandra(hosts)
 	if err != nil {
 		return err
 	}
@@ -130,14 +187,8 @@ func createKeyspaceAndTable(hosts []string, keyspace string) error {
 		return err
 	}
 
-	// Table u keyspace-u
-	cluster2 := gocql.NewCluster(hosts...)
-	cluster2.Keyspace = keyspace
-	cluster2.Consistency = gocql.Quorum
-	cluster2.Timeout = 10 * time.Second
-	cluster2.ConnectTimeout = 10 * time.Second
-
-	s2, err := cluster2.CreateSession()
+	// Table u keyspace-u (koristi retry logiku)
+	s2, err := connectToKeyspace(hosts, keyspace)
 	if err != nil {
 		return err
 	}
