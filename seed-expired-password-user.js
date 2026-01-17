@@ -35,6 +35,8 @@ const expiredPasswordUser = {
     locked_until: new Date(0)
 };
 
+
+
 // Check if user already exists and delete it
 const existingUser = db.users.findOne({ username: "expired_user" });
 if (existingUser) {
@@ -67,3 +69,5 @@ print("");
 print("============================================");
 print("");
 print("Total users in database: " + db.users.countDocuments());
+
+

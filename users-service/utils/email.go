@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-// SendEmail sends email (can be mocked for testing)
+// SendEmail sends email
 func SendEmail(to, subject, body string) error {
 	// For testing, just log metadata (NEVER log body, OTP, tokens)
 	if os.Getenv("MOCK_EMAIL") == "true" {

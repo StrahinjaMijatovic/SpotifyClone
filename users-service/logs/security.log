@@ -341,3 +341,42 @@ This code expires in 5 minutes.
 2026/01/17 07:13:50 Users service starting on HTTP port 8001 (TLS disabled)
 [2026-01-17 07:14:19] TYPE=success ACTION=login_otp_sent IP=172.19.0.1 DETAILS=User Strahinja OTP sent
 [2026-01-17 07:14:26] TYPE=success ACTION=login IP=172.19.0.1 DETAILS=User Strahinja logged in
+2026/01/17 07:26:42 Password expiry configured: max age = 60 dana
+2026/01/17 07:26:43 Connected to MongoDB
+2026/01/17 07:26:43 Connected to Redis
+2026/01/17 07:26:43 MongoDB indexes for users ensured
+2026/01/17 07:26:43 Users service starting on HTTP port 8001 (TLS disabled)
+[2026-01-17 07:27:25] TYPE=failed ACTION=login IP=172.19.0.1 DETAILS=User Strahinja invalid password
+[2026-01-17 07:27:48] TYPE=failed ACTION=login IP=172.19.0.1 DETAILS=User Strahinja invalid password
+[2026-01-17 07:28:13] TYPE=failed ACTION=login IP=172.19.0.1 DETAILS=User Strahinja invalid password
+[2026-01-17 07:28:29] TYPE=success ACTION=reset_password_sent IP=172.19.0.1 DETAILS=Reset link sent to strahinja@gmail.com
+[2026-01-17 07:28:38] TYPE=success ACTION=reset_password_confirm IP=172.19.0.1 DETAILS=User Strahinja reset password
+[2026-01-17 07:28:55] TYPE=success ACTION=login_otp_sent IP=172.19.0.1 DETAILS=User Strahinja OTP sent
+[2026-01-17 07:29:01] TYPE=success ACTION=login IP=172.19.0.1 DETAILS=User Strahinja logged in
+[2026-01-17 07:30:37] TYPE=success ACTION=register IP=172.19.0.1 DETAILS=User Marko registered
+[2026-01-17 07:30:46] TYPE=success ACTION=email_verification IP=172.19.0.1 DETAILS=User Marko verified email
+[2026-01-17 07:30:55] TYPE=success ACTION=login_otp_sent IP=172.19.0.1 DETAILS=User Marko OTP sent
+[2026-01-17 07:31:00] TYPE=success ACTION=login IP=172.19.0.1 DETAILS=User Marko logged in
+[2026-01-17 07:31:33] TYPE=success ACTION=login_otp_sent IP=172.19.0.1 DETAILS=User admin OTP sent
+[2026-01-17 07:31:38] TYPE=success ACTION=login IP=172.19.0.1 DETAILS=User admin logged in
+2026/01/17 07:39:12 Password expiry configured: max age = 60 dana
+2026/01/17 07:39:13 Connected to MongoDB
+2026/01/17 07:39:13 Connected to Redis
+2026/01/17 07:39:13 MongoDB indexes for users ensured
+2026/01/17 07:39:13 Users service starting on HTTP port 8001 (TLS disabled)
+[2026-01-17 07:40:00] TYPE=success ACTION=login_otp_sent IP=172.19.0.1 DETAILS=User admin OTP sent
+[2026-01-17 07:40:07] TYPE=success ACTION=login IP=172.19.0.1 DETAILS=User admin logged in
+2026/01/17 07:58:43 Password expiry configured: max age = 60 dana
+2026/01/17 07:58:44 Connected to MongoDB
+2026/01/17 07:58:44 Connected to Redis
+2026/01/17 07:58:44 MongoDB indexes for users ensured
+2026/01/17 07:58:44 Users service starting on HTTP port 8001 (TLS disabled)
+[2026-01-17 08:00:01] TYPE=failed ACTION=login IP=172.19.0.1 DETAILS=User locked@test.com not found
+2026/01/17 08:19:05 Password expiry configured: max age = 60 dana
+2026/01/17 08:19:06 Connected to MongoDB
+2026/01/17 08:19:06 Connected to Redis
+2026/01/17 08:19:06 MongoDB indexes for users ensured
+2026/01/17 08:19:06 Users service starting on HTTP port 8001 (TLS disabled)
+[2026-01-17 08:19:41] TYPE=failed ACTION=login IP=172.19.0.1 DETAILS=User Strahinja invalid password
+[2026-01-17 08:20:15] TYPE=failed ACTION=login IP=172.19.0.1 DETAILS=User Strahinja invalid password
+[2026-01-17 08:20:36] TYPE=failed ACTION=login IP=172.19.0.1 DETAILS=User Strahinja invalid password

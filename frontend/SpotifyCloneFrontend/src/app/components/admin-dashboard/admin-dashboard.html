@@ -45,10 +45,15 @@
                                     [(ngModel)]="artistForm.name" name="name" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-secondary">Žanrovi (ID-evi odvojeni zarezom)</label>
-                                <input type="text" class="form-control bg-black text-light border-secondary"
-                                    [(ngModel)]="artistForm.genresInput" name="genres"
-                                    placeholder="npr: 507f1f77bcf86cd799439011, 507f1f77bcf86cd799439012">
+                                <label class="form-label text-secondary">Žanrovi</label>
+                                <select multiple class="form-select bg-black text-light border-secondary"
+                                    [(ngModel)]="artistForm.selectedGenres" name="genres" required
+                                    style="min-height: 100px;">
+                                    <option *ngFor="let genre of genres" [value]="genre.id">
+                                        {{ genre.name }}
+                                    </option>
+                                </select>
+                                <small class="text-secondary">Drži Ctrl za višestruki izbor</small>
                             </div>
                             <div class="col-12">
                                 <label class="form-label text-secondary">Biografija</label>
@@ -115,14 +120,25 @@
                                     [(ngModel)]="albumForm.date" name="date" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-secondary">Žanr ID</label>
-                                <input type="text" class="form-control bg-black text-light border-secondary"
+                                <label class="form-label text-secondary">Žanr</label>
+                                <select class="form-select bg-black text-light border-secondary"
                                     [(ngModel)]="albumForm.genre" name="genre" required>
+                                    <option value="" disabled>-- Izaberi žanr --</option>
+                                    <option *ngFor="let genre of genres" [value]="genre.id">
+                                        {{ genre.name }}
+                                    </option>
+                                </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-secondary">Umetnici (ID-evi odvojeni zarezom)</label>
-                                <input type="text" class="form-control bg-black text-light border-secondary"
-                                    [(ngModel)]="albumForm.artistsInput" name="artists" required>
+                                <label class="form-label text-secondary">Umetnici</label>
+                                <select multiple class="form-select bg-black text-light border-secondary"
+                                    [(ngModel)]="albumForm.selectedArtists" name="artists" required
+                                    style="min-height: 100px;">
+                                    <option *ngFor="let artist of artists" [value]="artist.id">
+                                        {{ artist.name }}
+                                    </option>
+                                </select>
+                                <small class="text-secondary">Drži Ctrl za višestruki izbor</small>
                             </div>
                             <div class="col-12">
                                 <button type="submit" class="btn btn-success">Kreiraj Album</button>
@@ -180,19 +196,35 @@
                                     [(ngModel)]="songForm.duration" name="duration" required>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label text-secondary">Žanr ID</label>
-                                <input type="text" class="form-control bg-black text-light border-secondary"
+                                <label class="form-label text-secondary">Žanr</label>
+                                <select class="form-select bg-black text-light border-secondary"
                                     [(ngModel)]="songForm.genre" name="genre" required>
+                                    <option value="" disabled>-- Izaberi žanr --</option>
+                                    <option *ngFor="let genre of genres" [value]="genre.id">
+                                        {{ genre.name }}
+                                    </option>
+                                </select>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label text-secondary">Album ID (mora postojati!)</label>
-                                <input type="text" class="form-control bg-black text-light border-secondary"
+                                <label class="form-label text-secondary">Album</label>
+                                <select class="form-select bg-black text-light border-secondary"
                                     [(ngModel)]="songForm.album" name="album" required>
+                                    <option value="" disabled>-- Izaberi album --</option>
+                                    <option *ngFor="let album of albums" [value]="album.id">
+                                        {{ album.name }}
+                                    </option>
+                                </select>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label text-secondary">Umetnici (ID-evi odvojeni zarezom)</label>
-                                <input type="text" class="form-control bg-black text-light border-secondary"
-                                    [(ngModel)]="songForm.artistsInput" name="artists" required>
+                                <label class="form-label text-secondary">Umetnici</label>
+                                <select multiple class="form-select bg-black text-light border-secondary"
+                                    [(ngModel)]="songForm.selectedArtists" name="artists" required
+                                    style="min-height: 80px;">
+                                    <option *ngFor="let artist of artists" [value]="artist.id">
+                                        {{ artist.name }}
+                                    </option>
+                                </select>
+                                <small class="text-secondary">Ctrl + klik</small>
                             </div>
                             <div class="col-12">
                                 <button type="submit" class="btn btn-success">Kreiraj Pesmu</button>

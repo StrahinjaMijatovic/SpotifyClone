@@ -15,21 +15,24 @@ import { AuthService } from '../../services/auth.service';
 export class AdminDashboardComponent implements OnInit {
   activeTab = 'artists';
 
+  // Genres (shared)
+  genres: any[] = [];
+
   // Artists
   artists: any[] = [];
-  artistForm = { name: '', biography: '', genresInput: '' };
+  artistForm = { name: '', biography: '', selectedGenres: [] as string[] };
   artistMessage: string | null = null;
   artistError: string | null = null;
 
   // Albums
   albums: any[] = [];
-  albumForm = { name: '', date: '', genre: '', artistsInput: '' };
+  albumForm = { name: '', date: '', genre: '', selectedArtists: [] as string[] };
   albumMessage: string | null = null;
   albumError: string | null = null;
 
   // Songs
   songs: any[] = [];
-  songForm = { name: '', duration: 0, genre: '', album: '', artistsInput: '' };
+  songForm = { name: '', duration: 0, genre: '', album: '', selectedArtists: [] as string[] };
   songMessage: string | null = null;
   songError: string | null = null;
 
@@ -47,9 +50,18 @@ export class AdminDashboardComponent implements OnInit {
       return;
     }
 
+    this.loadGenres();
     this.loadArtists();
     this.loadAlbums();
     this.loadSongs();
+  }
+
+  // Genres
+  loadGenres(): void {
+    this.contentService.getGenres().subscribe({
+      next: (data) => this.genres = data,
+      error: () => console.error('Greška pri učitavanju žanrova')
+    });
   }
 
   goHome(): void {
@@ -68,21 +80,19 @@ export class AdminDashboardComponent implements OnInit {
     this.artistMessage = null;
     this.artistError = null;
 
-    if (!this.artistForm.name || !this.artistForm.biography || !this.artistForm.genresInput) {
-      this.artistError = 'Popuni sva polja!';
+    if (!this.artistForm.name || !this.artistForm.biography || this.artistForm.selectedGenres.length === 0) {
+      this.artistError = 'Popuni sva polja i izaberi barem jedan žanr!';
       return;
     }
-
-    const genres = this.artistForm.genresInput.split(',').map(g => g.trim());
 
     this.contentService.createArtist({
       name: this.artistForm.name,
       biography: this.artistForm.biography,
-      genres: genres
+      genres: this.artistForm.selectedGenres
     }).subscribe({
       next: () => {
         this.artistMessage = 'Umetnik uspešno kreiran!';
-        this.artistForm = { name: '', biography: '', genresInput: '' };
+        this.artistForm = { name: '', biography: '', selectedGenres: [] };
         this.loadArtists();
       },
       error: (err) => this.artistError = err?.error?.error || 'Greška pri kreiranju umetnika'
@@ -93,7 +103,7 @@ export class AdminDashboardComponent implements OnInit {
     // Pre-populate form for editing
     this.artistForm.name = artist.name;
     this.artistForm.biography = artist.biography;
-    this.artistForm.genresInput = artist.genres?.join(', ') || '';
+    this.artistForm.selectedGenres = artist.genres || [];
 
     // Scroll to form
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -111,22 +121,20 @@ export class AdminDashboardComponent implements OnInit {
     this.albumMessage = null;
     this.albumError = null;
 
-    if (!this.albumForm.name || !this.albumForm.date || !this.albumForm.genre || !this.albumForm.artistsInput) {
-      this.albumError = 'Popuni sva polja!';
+    if (!this.albumForm.name || !this.albumForm.date || !this.albumForm.genre || this.albumForm.selectedArtists.length === 0) {
+      this.albumError = 'Popuni sva polja i izaberi barem jednog umetnika!';
       return;
     }
-
-    const artists = this.albumForm.artistsInput.split(',').map(a => a.trim());
 
     this.contentService.createAlbum({
       name: this.albumForm.name,
       date: this.albumForm.date,
       genre: this.albumForm.genre,
-      artists: artists
+      artists: this.albumForm.selectedArtists
     }).subscribe({
       next: () => {
         this.albumMessage = 'Album uspešno kreiran!';
-        this.albumForm = { name: '', date: '', genre: '', artistsInput: '' };
+        this.albumForm = { name: '', date: '', genre: '', selectedArtists: [] };
         this.loadAlbums();
       },
       error: (err) => this.albumError = err?.error?.error || 'Greška pri kreiranju albuma'
@@ -146,23 +154,21 @@ export class AdminDashboardComponent implements OnInit {
     this.songError = null;
 
     if (!this.songForm.name || !this.songForm.duration || !this.songForm.genre ||
-      !this.songForm.album || !this.songForm.artistsInput) {
-      this.songError = 'Popuni sva polja!';
+      !this.songForm.album || this.songForm.selectedArtists.length === 0) {
+      this.songError = 'Popuni sva polja i izaberi barem jednog umetnika!';
       return;
     }
-
-    const artists = this.songForm.artistsInput.split(',').map(a => a.trim());
 
     this.contentService.createSong({
       name: this.songForm.name,
       duration: this.songForm.duration,
       genre: this.songForm.genre,
       album: this.songForm.album,
-      artists: artists
+      artists: this.songForm.selectedArtists
     }).subscribe({
       next: () => {
         this.songMessage = 'Pesma uspešno kreirana!';
-        this.songForm = { name: '', duration: 0, genre: '', album: '', artistsInput: '' };
+        this.songForm = { name: '', duration: 0, genre: '', album: '', selectedArtists: [] };
         this.loadSongs();
       },
       error: (err) => this.songError = err?.error?.error || 'Greška pri kreiranju pesme'
