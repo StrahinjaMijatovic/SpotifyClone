@@ -128,7 +128,7 @@ export class AdminDashboardComponent implements OnInit {
 
     this.contentService.createAlbum({
       name: this.albumForm.name,
-      date: this.albumForm.date,
+      date: this.albumForm.date + 'T00:00:00Z',
       genre: this.albumForm.genre,
       artists: this.albumForm.selectedArtists
     }).subscribe({

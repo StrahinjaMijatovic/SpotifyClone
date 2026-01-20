@@ -380,3 +380,42 @@ This code expires in 5 minutes.
 [2026-01-17 08:19:41] TYPE=failed ACTION=login IP=172.19.0.1 DETAILS=User Strahinja invalid password
 [2026-01-17 08:20:15] TYPE=failed ACTION=login IP=172.19.0.1 DETAILS=User Strahinja invalid password
 [2026-01-17 08:20:36] TYPE=failed ACTION=login IP=172.19.0.1 DETAILS=User Strahinja invalid password
+[2026-01-17 09:12:18] TYPE=success ACTION=register IP=172.19.0.1 DETAILS=User Nikola registered
+[2026-01-17 09:12:26] TYPE=success ACTION=email_verification IP=172.19.0.1 DETAILS=User Nikola verified email
+[2026-01-17 09:13:02] TYPE=success ACTION=login_otp_sent IP=172.19.0.1 DETAILS=User Nikola OTP sent
+[2026-01-17 09:13:10] TYPE=success ACTION=login IP=172.19.0.1 DETAILS=User Nikola logged in
+[2026-01-17 09:13:47] TYPE=success ACTION=update_profile IP=172.19.0.1 DETAILS=User updated profile
+[2026-01-17 09:20:13] TYPE=failed ACTION=login IP=172.19.0.1 DETAILS=User admin invalid password
+[2026-01-17 09:20:39] TYPE=success ACTION=login_otp_sent IP=172.19.0.1 DETAILS=User admin OTP sent
+[2026-01-17 09:20:47] TYPE=success ACTION=login IP=172.19.0.1 DETAILS=User admin logged in
+[2026-01-17 09:37:09] TYPE=success ACTION=register IP=172.19.0.1 DETAILS=User Aleksa registered
+[2026-01-17 09:37:15] TYPE=success ACTION=email_verification IP=172.19.0.1 DETAILS=User Aleksa verified email
+[2026-01-17 09:37:36] TYPE=success ACTION=login_otp_sent IP=172.19.0.1 DETAILS=User Aleksa OTP sent
+[2026-01-17 09:37:44] TYPE=success ACTION=login IP=172.19.0.1 DETAILS=User Aleksa logged in
+[2026-01-17 09:39:07] TYPE=failed ACTION=change_password IP=172.19.0.1 DETAILS=Password change too soon (<24h)
+[2026-01-17 09:39:09] TYPE=failed ACTION=change_password IP=172.19.0.1 DETAILS=Password change too soon (<24h)
+[2026-01-17 09:41:18] TYPE=failed ACTION=login IP=172.19.0.1 DETAILS=User Strahinja invalid password
+[2026-01-17 09:41:45] TYPE=failed ACTION=login IP=172.19.0.1 DETAILS=User Strahinja account locked after 5 failed attempts
+[2026-01-17 09:41:45] TYPE=failed ACTION=login IP=172.19.0.1 DETAILS=User Strahinja invalid password
+[2026-01-17 09:41:52] TYPE=success ACTION=reset_password_sent IP=172.19.0.1 DETAILS=Reset link sent to strahinja@gmail.com
+[2026-01-17 09:42:00] TYPE=success ACTION=reset_password_confirm IP=172.19.0.1 DETAILS=User Strahinja reset password
+[2026-01-17 09:42:20] TYPE=success ACTION=login_otp_sent IP=172.19.0.1 DETAILS=User Strahinja OTP sent
+[2026-01-17 09:42:27] TYPE=success ACTION=login IP=172.19.0.1 DETAILS=User Strahinja logged in
+[2026-01-17 09:42:37] TYPE=failed ACTION=change_password IP=172.19.0.1 DETAILS=Password change too soon (<24h)
+[2026-01-17 09:47:35] TYPE=success ACTION=reset_password_sent IP=172.19.0.1 DETAILS=Reset link sent to strahinja@gmail.com
+[2026-01-17 09:47:56] TYPE=success ACTION=reset_password_confirm IP=172.19.0.1 DETAILS=User Strahinja reset password
+[2026-01-17 09:48:12] TYPE=success ACTION=login_otp_sent IP=172.19.0.1 DETAILS=User Strahinja OTP sent
+[2026-01-17 09:48:18] TYPE=success ACTION=login IP=172.19.0.1 DETAILS=User Strahinja logged in
+2026/01/20 18:52:49 Password expiry configured: max age = 60 dana
+2026/01/20 18:52:51 Connected to MongoDB
+2026/01/20 18:52:51 Connected to Redis
+2026/01/20 18:52:51 MongoDB indexes for users ensured
+2026/01/20 18:52:51 Users service starting on HTTP port 8001 (TLS disabled)
+[2026-01-20 18:53:44] TYPE=failed ACTION=login IP=172.19.0.1 DETAILS=User admin invalid password
+[2026-01-20 18:54:04] TYPE=success ACTION=login_otp_sent IP=172.19.0.1 DETAILS=User admin OTP sent
+[2026-01-20 18:54:10] TYPE=success ACTION=login IP=172.19.0.1 DETAILS=User admin logged in
+2026/01/20 19:01:29 Password expiry configured: max age = 60 dana
+2026/01/20 19:01:29 Connected to MongoDB
+2026/01/20 19:01:29 Connected to Redis
+2026/01/20 19:01:29 MongoDB indexes for users ensured
+2026/01/20 19:01:29 Users service starting on HTTP port 8001 (TLS disabled)
