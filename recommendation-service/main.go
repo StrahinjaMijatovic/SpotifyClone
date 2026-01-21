@@ -103,7 +103,7 @@ func corsMiddleware() gin.HandlerFunc {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, DELETE, OPTIONS")
 
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
@@ -117,6 +117,9 @@ func setupRoutes(router *gin.Engine) {
 	api := router.Group("/api/v1")
 	{
 		api.GET("/recommendations", middleware.AuthMiddleware(), handlers.GetRecommendations)
+
+		// Admin route - delete song from recommendation graph (used when song is deleted)
+		api.DELETE("/recommendations/songs/:songId", middleware.AuthMiddleware(), middleware.AdminMiddleware(), handlers.DeleteSong)
 	}
 
 	router.GET("/health", func(c *gin.Context) {

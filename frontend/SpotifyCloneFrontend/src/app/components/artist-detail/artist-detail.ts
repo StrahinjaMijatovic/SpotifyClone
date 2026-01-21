@@ -17,6 +17,8 @@ export class ArtistDetailComponent implements OnInit {
   albums: Album[] = [];
   loading = true;
   errorMessage: string | null = null;
+  isSubscribed = false;
+  subscriptionLoading = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -30,6 +32,47 @@ export class ArtistDetailComponent implements OnInit {
     if (artistId) {
       this.loadArtist(artistId);
       this.loadAlbums(artistId);
+      this.checkSubscription(artistId);
+    }
+  }
+
+  checkSubscription(artistId: string): void {
+    this.contentService.checkSubscription(artistId, 'artist').subscribe({
+      next: (data) => {
+        this.isSubscribed = data.subscribed;
+      },
+      error: () => {
+        this.isSubscribed = false;
+      }
+    });
+  }
+
+  toggleSubscription(): void {
+    if (!this.artist?.id) return;
+
+    this.subscriptionLoading = true;
+    const artistId = this.artist.id;
+
+    if (this.isSubscribed) {
+      this.contentService.unsubscribe(artistId, 'artist').subscribe({
+        next: () => {
+          this.isSubscribed = false;
+          this.subscriptionLoading = false;
+        },
+        error: () => {
+          this.subscriptionLoading = false;
+        }
+      });
+    } else {
+      this.contentService.subscribe(artistId, 'artist').subscribe({
+        next: () => {
+          this.isSubscribed = true;
+          this.subscriptionLoading = false;
+        },
+        error: () => {
+          this.subscriptionLoading = false;
+        }
+      });
     }
   }
 

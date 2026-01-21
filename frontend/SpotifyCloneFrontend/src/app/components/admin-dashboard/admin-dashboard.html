@@ -243,6 +243,7 @@
                                         <th>Naziv</th>
                                         <th>Trajanje</th>
                                         <th>Album ID</th>
+                                        <th>Akcije</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -250,9 +251,17 @@
                                         <td>{{ song.name }}</td>
                                         <td>{{ song.duration }}s</td>
                                         <td><code class="text-success">{{ song.album }}</code></td>
+                                        <td>
+                                            <button
+                                                class="btn btn-sm btn-outline-danger"
+                                                (click)="deleteSong(song)"
+                                                [disabled]="deletingsongId === song.id">
+                                                {{ deletingsongId === song.id ? 'Brisanje...' : 'Obriši' }}
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr *ngIf="songs.length === 0">
-                                        <td colspan="3" class="text-center text-secondary">Nema pesama</td>
+                                        <td colspan="4" class="text-center text-secondary">Nema pesama</td>
                                     </tr>
                                 </tbody>
                             </table>

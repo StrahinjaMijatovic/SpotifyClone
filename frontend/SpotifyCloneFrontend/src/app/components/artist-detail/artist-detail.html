@@ -34,6 +34,15 @@
                 Umetnik
               </span>
             </div>
+            <button
+              class="btn"
+              [class.btn-outline-success]="!isSubscribed"
+              [class.btn-success]="isSubscribed"
+              [disabled]="subscriptionLoading"
+              (click)="toggleSubscription()">
+              <span *ngIf="subscriptionLoading" class="spinner-border spinner-border-sm me-1"></span>
+              {{ isSubscribed ? 'Pretplaćen' : 'Pretplati se' }}
+            </button>
           </div>
           <p class="card-text text-secondary">{{ artist.biography }}</p>
         </div>

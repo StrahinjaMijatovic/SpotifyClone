@@ -35,6 +35,7 @@ export class AdminDashboardComponent implements OnInit {
   songForm = { name: '', duration: 0, genre: '', album: '', selectedArtists: [] as string[] };
   songMessage: string | null = null;
   songError: string | null = null;
+  deletingsongId: string | null = null;
 
   constructor(
     private contentService: ContentService,
@@ -172,6 +173,28 @@ export class AdminDashboardComponent implements OnInit {
         this.loadSongs();
       },
       error: (err) => this.songError = err?.error?.error || 'Greška pri kreiranju pesme'
+    });
+  }
+
+  deleteSong(song: any): void {
+    if (!confirm(`Da li ste sigurni da želite da obrišete pesmu "${song.name}"?\n\nOvo će takođe obrisati sve ocene i preporuke vezane za ovu pesmu.`)) {
+      return;
+    }
+
+    this.deletingsongId = song.id;
+    this.songMessage = null;
+    this.songError = null;
+
+    this.contentService.deleteSong(song.id).subscribe({
+      next: () => {
+        this.songMessage = `Pesma "${song.name}" je uspešno obrisana zajedno sa svim ocenama i preporukama.`;
+        this.deletingsongId = null;
+        this.loadSongs();
+      },
+      error: (err) => {
+        this.songError = err?.error?.error || 'Greška pri brisanju pesme';
+        this.deletingsongId = null;
+      }
     });
   }
 }

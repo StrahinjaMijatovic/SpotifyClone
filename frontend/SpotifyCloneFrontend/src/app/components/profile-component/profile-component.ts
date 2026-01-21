@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { ContentService } from '../../services/content.service';
+import type { Artist, Genre } from '../../models/content.models';
 
 @Component({
   selector: 'app-profile',
@@ -47,11 +49,60 @@ import { AuthService } from '../../services/auth.service';
             </div>
           </div>
 
+          <!-- Subscriptions -->
+          <div class="card bg-dark border-secondary mb-4">
+            <div class="card-body">
+              <h5 class="card-title text-light mb-3">Moje Pretplate</h5>
+
+              <div *ngIf="subscriptionsLoading" class="text-secondary">
+                Učitavanje pretplata...
+              </div>
+
+              <!-- Subscribed Artists -->
+              <div class="mb-4" *ngIf="!subscriptionsLoading">
+                <h6 class="text-success mb-2">Umetnici</h6>
+                <div *ngIf="subscribedArtists.length === 0" class="text-secondary small">
+                  Niste pretplaćeni na nijednog umetnika.
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                  <div *ngFor="let artist of subscribedArtists"
+                       class="badge bg-success bg-opacity-25 text-success border border-success d-flex align-items-center gap-2 p-2">
+                    <span style="cursor: pointer;" (click)="goToArtist(artist.id!)">{{ artist.name }}</span>
+                    <button class="btn btn-sm btn-outline-danger border-0 p-0 ms-1"
+                            (click)="onUnsubscribe(artist.id!, 'artist')"
+                            title="Otkaži pretplatu">
+                      &times;
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Subscribed Genres -->
+              <div *ngIf="!subscriptionsLoading">
+                <h6 class="text-primary mb-2">Žanrovi</h6>
+                <div *ngIf="subscribedGenres.length === 0" class="text-secondary small">
+                  Niste pretplaćeni na nijedan žanr.
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                  <div *ngFor="let genre of subscribedGenres"
+                       class="badge bg-primary bg-opacity-25 text-primary border border-primary d-flex align-items-center gap-2 p-2">
+                    <span>{{ genre.name }}</span>
+                    <button class="btn btn-sm btn-outline-danger border-0 p-0 ms-1"
+                            (click)="onUnsubscribe(genre.id!, 'genre')"
+                            title="Otkaži pretplatu">
+                      &times;
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Change Password -->
           <div class="card bg-dark border-secondary mb-4">
             <div class="card-body">
               <h5 class="card-title text-light mb-3">Promena Lozinke</h5>
-              
+
               <div *ngIf="passwordMessage" class="alert alert-success">
                 {{ passwordMessage }}
               </div>
@@ -110,10 +161,54 @@ export class ProfileComponent implements OnInit {
   passwordMessage: string | null = null;
   passwordError: string | null = null;
 
-  constructor(private auth: AuthService, private router: Router) { }
+  subscribedArtists: Artist[] = [];
+  subscribedGenres: Genre[] = [];
+  subscriptionsLoading = false;
+
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+    private contentService: ContentService
+  ) { }
 
   ngOnInit(): void {
     this.loadProfile();
+    this.loadSubscriptions();
+  }
+
+  loadSubscriptions(): void {
+    this.subscriptionsLoading = true;
+    this.contentService.getSubscriptions().subscribe({
+      next: (data) => {
+        console.log('Subscriptions loaded:', data);
+        this.subscribedArtists = data?.artists ?? [];
+        this.subscribedGenres = data?.genres ?? [];
+        this.subscriptionsLoading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load subscriptions:', err);
+        this.subscriptionsLoading = false;
+      }
+    });
+  }
+
+  onUnsubscribe(targetId: string, type: 'artist' | 'genre'): void {
+    this.contentService.unsubscribe(targetId, type).subscribe({
+      next: () => {
+        if (type === 'artist') {
+          this.subscribedArtists = this.subscribedArtists.filter(a => a.id !== targetId);
+        } else {
+          this.subscribedGenres = this.subscribedGenres.filter(g => g.id !== targetId);
+        }
+      },
+      error: () => {
+        alert('Greška pri otkazivanju pretplate.');
+      }
+    });
+  }
+
+  goToArtist(artistId: string): void {
+    this.router.navigate(['/artist', artistId]);
   }
 
   loadProfile(): void {

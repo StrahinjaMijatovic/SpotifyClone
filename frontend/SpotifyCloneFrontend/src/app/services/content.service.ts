@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import type { Album, Artist, Song, SearchResult } from '../models/content.models';
+import type { Album, Artist, Song, SearchResult, UserSubscriptions } from '../models/content.models';
 
 @Injectable({ providedIn: 'root' })
 export class ContentService {
@@ -14,8 +14,12 @@ export class ContentService {
     return token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : new HttpHeaders();
   }
 
-  getArtists(): Observable<Artist[]> {
-    return this.http.get<Artist[]>(`${this.apiBase}/artists`, { headers: this.getAuthHeaders() });
+  getArtists(genreId?: string): Observable<Artist[]> {
+    let params = new HttpParams();
+    if (genreId) {
+      params = params.set('genre_id', genreId);
+    }
+    return this.http.get<Artist[]>(`${this.apiBase}/artists`, { headers: this.getAuthHeaders(), params });
   }
 
   getAlbums(): Observable<Album[]> {
@@ -77,5 +81,28 @@ export class ContentService {
   // Admin: Songs
   createSong(data: { name: string; duration: number; genre: string; album: string; artists: string[] }): Observable<Song> {
     return this.http.post<Song>(`${this.apiBase}/songs`, data);
+  }
+
+  deleteSong(id: string): Observable<any> {
+    return this.http.delete(`${this.apiBase}/songs/${id}`, { headers: this.getAuthHeaders() });
+  }
+
+  // Subscriptions
+  subscribe(targetId: string, type: 'artist' | 'genre'): Observable<any> {
+    return this.http.post(`${this.apiBase}/subscriptions`, { target_id: targetId, type }, { headers: this.getAuthHeaders() });
+  }
+
+  unsubscribe(targetId: string, type: 'artist' | 'genre'): Observable<any> {
+    const params = new HttpParams().set('type', type);
+    return this.http.delete(`${this.apiBase}/subscriptions/${targetId}`, { headers: this.getAuthHeaders(), params });
+  }
+
+  getSubscriptions(): Observable<UserSubscriptions> {
+    return this.http.get<UserSubscriptions>(`${this.apiBase}/subscriptions`, { headers: this.getAuthHeaders() });
+  }
+
+  checkSubscription(targetId: string, type: 'artist' | 'genre'): Observable<{ subscribed: boolean }> {
+    const params = new HttpParams().set('type', type);
+    return this.http.get<{ subscribed: boolean }>(`${this.apiBase}/subscriptions/${targetId}`, { headers: this.getAuthHeaders(), params });
   }
 }

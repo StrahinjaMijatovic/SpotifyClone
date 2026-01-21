@@ -170,3 +170,36 @@ func DeleteRating(c *gin.Context) {
 
 	c.JSON(200, gin.H{"message": "Rating deleted"})
 }
+
+// DeleteAllSongRatings deletes all ratings for a specific song (admin only)
+func DeleteAllSongRatings(c *gin.Context) {
+	songID := strings.TrimSpace(c.Param("songId"))
+
+	if songID == "" {
+		c.JSON(400, gin.H{"error": "songId required"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	// Find all rating keys for this song
+	keys, err := scanKeys(ctx, "rating:"+songID+":*")
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Redis error"})
+		return
+	}
+
+	if len(keys) == 0 {
+		c.JSON(200, gin.H{"message": "No ratings found for song", "deleted_count": 0})
+		return
+	}
+
+	// Delete all found keys
+	result, err := redisClient.Del(ctx, keys...).Result()
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to delete ratings"})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "All ratings for song deleted", "deleted_count": result})
+}

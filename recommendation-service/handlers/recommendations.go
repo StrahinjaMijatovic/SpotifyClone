@@ -61,3 +61,48 @@ func GetRecommendations(c *gin.Context) {
 
 	c.JSON(http.StatusOK, recommendations)
 }
+
+// DeleteSong removes a song node and all its relationships from the graph (admin only)
+func DeleteSong(c *gin.Context) {
+	songID := c.Param("songId")
+	if songID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Song ID required"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	session := driver.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer session.Close(ctx)
+
+	// Delete the song node and all its relationships (RATED, HAS_GENRE)
+	result, err := session.Run(ctx,
+		`MATCH (s:Song {id: $songID})
+		 DETACH DELETE s
+		 RETURN COUNT(s) as deleted`,
+		map[string]any{"songID": songID},
+	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete song from graph"})
+		return
+	}
+
+	var deletedCount int64 = 0
+	if result.Next(ctx) {
+		record := result.Record()
+		if count, ok := record.Get("deleted"); ok {
+			deletedCount = count.(int64)
+		}
+	}
+
+	if err := result.Err(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process deletion"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":       "Song removed from recommendation graph",
+		"song_id":       songID,
+		"nodes_deleted": deletedCount,
+	})
+}

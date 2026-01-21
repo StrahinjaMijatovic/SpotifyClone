@@ -27,3 +27,14 @@ export type SearchResult = {
   albums: Album[];
   songs: Song[];
 };
+
+export type Genre = {
+  id?: string;
+  name: string;
+  description?: string;
+};
+
+export type UserSubscriptions = {
+  artists: Artist[];
+  genres: Genre[];
+};

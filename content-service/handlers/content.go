@@ -80,7 +80,19 @@ func CreateArtist(c *gin.Context) {
 func GetArtists(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	cursor, err := contentDB.Collection("artists").Find(ctx, bson.M{})
+	filter := bson.M{}
+
+	// Filter by genre_id if provided
+	if genreID := c.Query("genre_id"); genreID != "" {
+		objID, err := primitive.ObjectIDFromHex(genreID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid genre ID"})
+			return
+		}
+		filter["genres"] = objID
+	}
+
+	cursor, err := contentDB.Collection("artists").Find(ctx, filter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch artists"})
 		return
@@ -366,6 +378,43 @@ func GetSongs(c *gin.Context) {
 	c.JSON(http.StatusOK, songs)
 }
 
+func DeleteSong(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	id := c.Param("id")
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid song ID"})
+		return
+	}
+
+	// Check if song exists first
+	var song models.Song
+	err = contentDB.Collection("songs").FindOne(ctx, bson.M{"_id": objID}).Decode(&song)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Song not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+		return
+	}
+
+	// Delete the song
+	result, err := contentDB.Collection("songs").DeleteOne(ctx, bson.M{"_id": objID})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete song"})
+		return
+	}
+
+	if result.DeletedCount == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Song not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Song deleted successfully", "song_id": id})
+}
+
 func SearchContent(c *gin.Context) {
 	query := c.Query("q")
 	if query == "" {
@@ -428,4 +477,203 @@ func SearchContent(c *gin.Context) {
 		"albums":  albums,
 		"songs":   songs,
 	})
+}
+
+// Subscription handlers
+func Subscribe(c *gin.Context) {
+	var req models.SubscribeRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
+		return
+	}
+
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	targetID, err := primitive.ObjectIDFromHex(req.TargetID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid target ID"})
+		return
+	}
+
+	// Verify target exists
+	var targetExists bool
+	if req.Type == models.SubscriptionArtist {
+		count, _ := contentDB.Collection("artists").CountDocuments(ctx, bson.M{"_id": targetID})
+		targetExists = count > 0
+	} else if req.Type == models.SubscriptionGenre {
+		count, _ := contentDB.Collection("genres").CountDocuments(ctx, bson.M{"_id": targetID})
+		targetExists = count > 0
+	}
+
+	if !targetExists {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Target not found"})
+		return
+	}
+
+	// Check if already subscribed
+	existingCount, _ := contentDB.Collection("subscriptions").CountDocuments(ctx, bson.M{
+		"user_id":   userID.(string),
+		"target_id": targetID,
+		"type":      req.Type,
+	})
+
+	if existingCount > 0 {
+		c.JSON(http.StatusConflict, gin.H{"error": "Already subscribed"})
+		return
+	}
+
+	subscription := models.Subscription{
+		ID:        primitive.NewObjectID(),
+		UserID:    userID.(string),
+		TargetID:  targetID,
+		Type:      req.Type,
+		CreatedAt: time.Now(),
+	}
+
+	_, err = contentDB.Collection("subscriptions").InsertOne(ctx, subscription)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create subscription"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, subscription)
+}
+
+func Unsubscribe(c *gin.Context) {
+	targetID := c.Param("target_id")
+	subType := c.Query("type")
+
+	if subType != string(models.SubscriptionArtist) && subType != string(models.SubscriptionGenre) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid subscription type"})
+		return
+	}
+
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	objID, err := primitive.ObjectIDFromHex(targetID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid target ID"})
+		return
+	}
+
+	result, err := contentDB.Collection("subscriptions").DeleteOne(ctx, bson.M{
+		"user_id":   userID.(string),
+		"target_id": objID,
+		"type":      subType,
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to unsubscribe"})
+		return
+	}
+
+	if result.DeletedCount == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Subscription not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Unsubscribed successfully"})
+}
+
+func GetUserSubscriptions(c *gin.Context) {
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	// Get all subscriptions for user
+	cursor, err := contentDB.Collection("subscriptions").Find(ctx, bson.M{"user_id": userID.(string)})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch subscriptions"})
+		return
+	}
+	defer cursor.Close(ctx)
+
+	var subscriptions []models.Subscription
+	if err := cursor.All(ctx, &subscriptions); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to decode subscriptions"})
+		return
+	}
+
+	// Separate artist and genre IDs
+	var artistIDs, genreIDs []primitive.ObjectID
+	for _, sub := range subscriptions {
+		if sub.Type == models.SubscriptionArtist {
+			artistIDs = append(artistIDs, sub.TargetID)
+		} else if sub.Type == models.SubscriptionGenre {
+			genreIDs = append(genreIDs, sub.TargetID)
+		}
+	}
+
+	// Fetch artists - initialize as empty slice to avoid null in JSON
+	artists := make([]models.Artist, 0)
+	if len(artistIDs) > 0 {
+		artistCursor, err := contentDB.Collection("artists").Find(ctx, bson.M{"_id": bson.M{"$in": artistIDs}})
+		if err == nil {
+			artistCursor.All(ctx, &artists)
+			artistCursor.Close(ctx)
+		}
+	}
+
+	// Fetch genres - initialize as empty slice to avoid null in JSON
+	genres := make([]models.Genre, 0)
+	if len(genreIDs) > 0 {
+		genreCursor, err := contentDB.Collection("genres").Find(ctx, bson.M{"_id": bson.M{"$in": genreIDs}})
+		if err == nil {
+			genreCursor.All(ctx, &genres)
+			genreCursor.Close(ctx)
+		}
+	}
+
+	c.JSON(http.StatusOK, models.UserSubscriptions{
+		Artists: artists,
+		Genres:  genres,
+	})
+}
+
+func CheckSubscription(c *gin.Context) {
+	targetID := c.Param("target_id")
+	subType := c.Query("type")
+
+	if subType != string(models.SubscriptionArtist) && subType != string(models.SubscriptionGenre) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid subscription type"})
+		return
+	}
+
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	objID, err := primitive.ObjectIDFromHex(targetID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid target ID"})
+		return
+	}
+
+	count, _ := contentDB.Collection("subscriptions").CountDocuments(ctx, bson.M{
+		"user_id":   userID.(string),
+		"target_id": objID,
+		"type":      subType,
+	})
+
+	c.JSON(http.StatusOK, gin.H{"subscribed": count > 0})
 }

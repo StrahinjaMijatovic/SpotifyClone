@@ -69,3 +69,29 @@ type CreateSongRequest struct {
 	Album    string   `json:"album" binding:"required"`
 	Artists  []string `json:"artists" binding:"required,min=1"`
 }
+
+// Subscription types
+type SubscriptionType string
+
+const (
+	SubscriptionArtist SubscriptionType = "artist"
+	SubscriptionGenre  SubscriptionType = "genre"
+)
+
+type Subscription struct {
+	ID        primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	UserID    string             `json:"user_id" bson:"user_id"`
+	TargetID  primitive.ObjectID `json:"target_id" bson:"target_id"`
+	Type      SubscriptionType   `json:"type" bson:"type"`
+	CreatedAt time.Time          `json:"created_at" bson:"created_at"`
+}
+
+type SubscribeRequest struct {
+	TargetID string           `json:"target_id" binding:"required"`
+	Type     SubscriptionType `json:"type" binding:"required,oneof=artist genre"`
+}
+
+type UserSubscriptions struct {
+	Artists []Artist `json:"artists"`
+	Genres  []Genre  `json:"genres"`
+}
