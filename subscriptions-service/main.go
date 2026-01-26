@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"crypto/tls"
 	"log"
 	"net/http"
 	"os"
@@ -42,7 +41,8 @@ func main() {
 	log.Println("Connected to Redis")
 
 	router := gin.Default()
-	router.Use(corsMiddleware())
+	// CORS is handled by the API Gateway
+	// router.Use(corsMiddleware())
 
 	handlers.InitHandlers(redisClient)
 	setupRoutes(router)
@@ -50,11 +50,7 @@ func main() {
 	srv := &http.Server{
 		Addr:    ":" + port,
 		Handler: router,
-		TLSConfig: &tls.Config{
-			MinVersion: tls.VersionTLS12,
-		},
 	}
-	srv.ListenAndServeTLS("cert.pem", "key.pem")
 
 	go func() {
 		log.Printf("Subscriptions service starting on port %s", port)
@@ -104,6 +100,7 @@ func setupRoutes(router *gin.Engine) {
 	{
 		api.POST("/subscriptions", middleware.AuthMiddleware(), handlers.CreateSubscription)
 		api.GET("/subscriptions", middleware.AuthMiddleware(), handlers.GetSubscriptions)
+		api.GET("/subscriptions/:target_id", middleware.AuthMiddleware(), handlers.CheckSubscription)
 		api.DELETE("/subscriptions/:id", middleware.AuthMiddleware(), handlers.DeleteSubscription)
 	}
 

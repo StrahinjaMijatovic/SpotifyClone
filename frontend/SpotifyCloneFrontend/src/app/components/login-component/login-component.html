@@ -1,104 +1,109 @@
-<div class="login-page">
-  <div class="container py-5">
-    <div class="row justify-content-center">
-      <div class="col-12 col-md-8 col-lg-5">
-        <div class="card login-card border-0 shadow-lg">
-          <div class="card-body p-4 p-md-5">
-            <div class="text-center mb-4">
-              <div class="brand-pill d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill">
-                <span class="dot"></span>
-                <span class="fw-bold">Spotify Clone</span>
-              </div>
-              <h2 class="mt-3 mb-1 fw-bold">Log in</h2>
-            </div>
+<div class="d-flex align-items-center justify-content-center min-vh-100 py-5">
+  <div class="container" style="max-width: 500px;">
+    <!-- Brand Header -->
+    <div class="text-center mb-5">
+      <div class="d-inline-flex align-items-center gap-2">
+        <!-- Simple Dot/Icon Placeholder, can be replaced by SVG logo -->
+        <div style="width: 40px; height: 40px; background: var(--brand-color); border-radius: 50%;"></div>
+        <h1 style="font-size: 2rem; margin: 0; letter-spacing: -0.05em;">Spotify Clone</h1>
+      </div>
+    </div>
 
-            <div *ngIf="errorMessage" class="alert alert-danger">
-              {{ errorMessage }}
-            </div>
+    <div class="card shadow-elevated">
+      <div class="text-center mb-4">
+        <h2 style="font-size: 1.5rem;">Log in to continue</h2>
+      </div>
 
-            <form (ngSubmit)="onSubmit()" novalidate>
-              <div *ngIf="step === 1">
-                <div class="mb-3">
-                  <label class="form-label">Username</label>
-                  <input class="form-control form-control-lg" type="text" name="username" [(ngModel)]="username"
-                    placeholder="" required />
-                </div>
+      <div *ngIf="errorMessage" class="alert alert-danger mb-4"
+        style="background: rgba(229, 9, 20, 0.1); border: 1px solid var(--text-negative); color: var(--text-negative);">
+        {{ errorMessage }}
+      </div>
 
-                <div class="mb-3">
-                  <label class="form-label">Password</label>
-                  <div class="input-group input-group-lg">
-                    <input class="form-control" [type]="showPassword ? 'text' : 'password'" name="password"
-                      [(ngModel)]="password" placeholder="••••••••" required />
-                    <button class="btn btn-outline-secondary" type="button" (click)="showPassword = !showPassword">
-                      {{ showPassword ? 'Hide' : 'Show' }}
-                    </button>
-                  </div>
-                </div>
-
-                <!-- reCAPTCHA -->
-                <div class="mb-3 d-flex justify-content-center">
-                  <div id="recaptcha-login"></div>
-                </div>
-              </div>
-
-              <div *ngIf="step === 2">
-                <div class="mb-3">
-                  <label class="form-label">Unesi OTP kod</label>
-                  <input class="form-control form-control-lg text-center letter-spacing-2" type="text" name="otpCode"
-                    [(ngModel)]="otpCode" placeholder="123456" maxlength="6" required />
-                  <div class="form-text text-center">
-                    Poslali smo kod na tvoj email.
-                  </div>
-                </div>
-              </div>
-
-              <!-- Step 3: Magic Link Request -->
-              <div *ngIf="step === 3">
-                <div class="mb-3">
-                  <label class="form-label">Email za Magični Link</label>
-                  <input class="form-control form-control-lg" type="email" name="magicEmail" [(ngModel)]="magicEmail"
-                    placeholder="tvoj@email.com" required />
-                  <div class="form-text text-center text-light">
-                    Poslaćemo ti link za automatsku prijavu.
-                  </div>
-                </div>
-              </div>
-
-              <button class="btn btn-success btn-lg w-100" type="submit" [disabled]="loading">
-                <span *ngIf="!loading">
-                  {{ step === 1 ? 'Login' : (step === 2 ? 'Verifikuj OTP' : 'Pošalji Magični Link') }}
-                </span>
-                <span *ngIf="loading" class="d-inline-flex align-items-center gap-2">
-                  <span class="spinner-border spinner-border-sm" role="status"></span>
-                  Verifikujem...
-                </span>
-              </button>
-
-              <div class="text-center mt-3" *ngIf="step === 1">
-                <button type="button" class="btn btn-link link-black text-decoration-none" (click)="toggleMagicLink()">
-                   Prijavi se Magičnim Linkom
-                </button>
-              </div>
-
-              <div class="text-center mt-3" *ngIf="step === 3">
-                <button type="button" class="btn btn-link link-light text-decoration-none" (click)="step = 1">
-                  &larr; Nazad na standardni login
-                </button>
-              </div>
-
-              <div class="text-center mt-3">
-                <a class="link-light text-decoration-none" routerLink="/register">
-                  Nemaš nalog? <span class="text-success fw-semibold">Registruj se</span>
-                </a>
-              </div>
-
-              <div class="text-center mt-2">
-                <a class="link-secondary text-decoration-none small" routerLink="/forgot-password">
-                  Zaboravljena lozinka?
-                </a>
-              </div>
-            </form>
+      <form (ngSubmit)="onSubmit()" novalidate>
+        <!-- Step 1: Credentials -->
+        <div *ngIf="step === 1">
+          <div class="form-group">
+            <label class="form-label">Email or Username</label>
+            <input class="form-input" type="text" name="username" [(ngModel)]="username" placeholder="Email or Username"
+              required />
           </div>
+
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="position-relative">
+              <input class="form-input" [type]="showPassword ? 'text' : 'password'" name="password"
+                [(ngModel)]="password" placeholder="Password" required />
+              <button type="button" (click)="showPassword = !showPassword"
+                style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-subdued); cursor: pointer; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.1em; font-weight: 700;">
+                {{ showPassword ? 'Hide' : 'Show' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- reCAPTCHA -->
+          <div class="mb-4 d-flex justify-content-center">
+            <div id="recaptcha-login"></div>
+          </div>
+
+          <button class="btn-primary w-100 mb-3" type="submit" [disabled]="loading">
+            Log In
+          </button>
+
+          <div class="text-center">
+            <button type="button" class="btn-link"
+              style="background:none; border:none; color: var(--text-base); text-decoration: underline; font-size: 0.9rem;"
+              (click)="toggleMagicLink()">
+              Login with Magic Link
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: OTP -->
+        <div *ngIf="step === 2">
+          <div class="form-group text-center">
+            <p>We've sent a code to your email.</p>
+            <label class="form-label">Enter OTP</label>
+            <input class="form-input text-center" style="letter-spacing: 0.5em; font-size: 1.5rem;" type="text"
+              name="otpCode" [(ngModel)]="otpCode" placeholder="XXXXXX" maxlength="6" required />
+          </div>
+          <button class="btn-primary w-100" type="submit" [disabled]="loading">
+            Verify
+          </button>
+        </div>
+
+        <!-- Step 3: Magic Link -->
+        <div *ngIf="step === 3">
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-input" type="email" name="magicEmail" [(ngModel)]="magicEmail"
+              placeholder="name@domain.com" required />
+            <p class="mt-2" style="font-size: 0.85rem;">We'll send you a link to log in instantly.</p>
+          </div>
+
+          <button class="btn-primary w-100 mb-3" type="submit" [disabled]="loading">
+            Send Link
+          </button>
+
+          <div class="text-center">
+            <button type="button" class="btn-secondary" style="font-size: 0.8rem; padding: 4px 12px;"
+              (click)="step = 1">
+              Back to Login
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <div class="mt-4 pt-4 border-top border-secondary" style="border-color: #2a2a2a !important;">
+        <div class="text-center">
+          <p class="mb-2">Don't have an account?</p>
+          <a routerLink="/register" class="text-decoration-none"
+            style="color: var(--text-base); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
+            Sign up for Spotify Clone
+          </a>
+        </div>
+        <div class="text-center mt-3">
+          <a routerLink="/forgot-password" class="text-decoration-none"
+            style="color: var(--text-subdued); font-size: 0.9rem;">Forgot your password?</a>
         </div>
       </div>
     </div>

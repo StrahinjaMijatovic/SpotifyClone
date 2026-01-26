@@ -1,0 +1,139 @@
+<div class="d-flex flex-column min-vh-100" style="background: linear-gradient(to bottom, #1e1e1e 0%, #121212 100%);">
+
+    <!-- Navbar -->
+    <nav class="d-flex align-items-center justify-content-between px-4 py-3 sticky-top"
+        style="background-color: rgba(0,0,0,0.7); backdrop-filter: blur(10px); z-index: 1000;">
+        <div class="d-flex align-items-center gap-4">
+            <button class="btn btn-link text-decoration-none text-white p-0" (click)="goHome()">
+                <span class="fs-4">←</span>
+            </button>
+            <span class="fw-bold fs-5 text-white">Profile Settings</span>
+        </div>
+    </nav>
+
+    <div class="container px-4 py-4 flex-grow-1" style="max-width: 800px;">
+
+        <!-- Profile Header/Card -->
+        <div class="d-flex align-items-center gap-4 mb-5 p-4 rounded"
+            style="background: linear-gradient(to right, #282828, #181818);">
+            <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-lg"
+                style="width: 100px; height: 100px; background: var(--brand-color); font-size: 2.5rem;">
+                {{ profileForm.first_name.charAt(0) }}{{ profileForm.last_name.charAt(0) }}
+            </div>
+            <div>
+                <h2 class="fw-bold text-white mb-1">{{ profileForm.first_name }} {{ profileForm.last_name }}</h2>
+                <p class="text-subdued mb-0">Subscription Plan: Free</p>
+            </div>
+        </div>
+
+        <!-- Personal Details -->
+        <div class="mb-5 fade-in">
+            <h3 class="fw-bold text-white mb-3 fs-4">Edit Profile</h3>
+
+            <div *ngIf="profileMessage" class="alert alert-success mb-4"
+                style="background: rgba(29, 185, 84, 0.1); border: 1px solid var(--text-positive); color: var(--text-positive);">
+                {{ profileMessage }}</div>
+            <div *ngIf="profileError" class="alert alert-danger mb-4"
+                style="background: rgba(229, 9, 20, 0.1); border: 1px solid var(--text-negative); color: var(--text-negative);">
+                {{ profileError }}</div>
+
+            <form (ngSubmit)="onUpdateProfile()" class="row g-3" *ngIf="userProfile">
+                <div class="col-md-6 form-group">
+                    <label class="form-label">First Name</label>
+                    <input type="text" class="form-input" [(ngModel)]="profileForm.first_name" name="first_name">
+                </div>
+                <div class="col-md-6 form-group">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" class="form-input" [(ngModel)]="profileForm.last_name" name="last_name">
+                </div>
+                <div class="col-12 text-end">
+                    <button type="submit" class="btn-primary" style="padding: 12px 32px; border-radius: 500px;">Save
+                        Profile</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Subscriptions -->
+        <div class="mb-5 fade-in">
+            <h3 class="fw-bold text-white mb-3 fs-4">Following</h3>
+
+            <div *ngIf="subscriptionsLoading" class="text-center py-3">
+                <div class="spinner-border text-success spinner-border-sm" role="status"></div>
+            </div>
+
+            <div *ngIf="!subscriptionsLoading">
+                <!-- Artists -->
+                <h4 class="fs-6 text-subdued text-uppercase fw-bold mb-3 mt-4"
+                    style="font-size: 0.8rem; letter-spacing: 0.1em;">Artists</h4>
+                <div *ngIf="subscribedArtists.length === 0" class="text-subdued small mb-3">You are not following any
+                    artists.</div>
+
+                <div class="d-flex flex-wrap gap-2 mb-4">
+                    <div *ngFor="let artist of subscribedArtists"
+                        class="d-flex align-items-center gap-2 px-3 py-2 rounded-pill"
+                        style="background: #282828; border: 1px solid #333;">
+                        <span class="text-white fw-bold small" style="cursor: pointer;"
+                            (click)="goToArtist(artist.id!)">{{ artist.name }}</span>
+                        <button class="btn btn-link p-0 text-subdued hover-danger" style="line-height: 1;"
+                            (click)="onUnsubscribe(artist.id!, 'artist')">✕</button>
+                    </div>
+                </div>
+
+                <!-- Genres -->
+                <h4 class="fs-6 text-subdued text-uppercase fw-bold mb-3"
+                    style="font-size: 0.8rem; letter-spacing: 0.1em;">Genres</h4>
+                <div *ngIf="subscribedGenres.length === 0" class="text-subdued small mb-3">You are not following any
+                    genres.</div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <div *ngFor="let genre of subscribedGenres"
+                        class="d-flex align-items-center gap-2 px-3 py-2 rounded-pill"
+                        style="background: #282828; border: 1px solid #333;">
+                        <span class="text-white fw-bold small">{{ genre.name }}</span>
+                        <button class="btn btn-link p-0 text-subdued hover-danger" style="line-height: 1;"
+                            (click)="onUnsubscribe(genre.id!, 'genre')">✕</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Password Change -->
+        <div class="mb-5 fade-in">
+            <h3 class="fw-bold text-white mb-3 fs-4">Security</h3>
+
+            <div *ngIf="passwordMessage" class="alert alert-success mb-4"
+                style="background: rgba(29, 185, 84, 0.1); border: 1px solid var(--text-positive); color: var(--text-positive);">
+                {{ passwordMessage }}</div>
+            <div *ngIf="passwordError" class="alert alert-danger mb-4"
+                style="background: rgba(229, 9, 20, 0.1); border: 1px solid var(--text-negative); color: var(--text-negative);">
+                {{ passwordError }}</div>
+
+            <form (ngSubmit)="onChangePassword()" class="row g-3">
+                <div class="col-12 form-group">
+                    <label class="form-label">Current Password</label>
+                    <input type="password" class="form-input" [(ngModel)]="passwordForm.current_password"
+                        name="current_password" required>
+                </div>
+                <div class="col-12 form-group">
+                    <label class="form-label">New Password</label>
+                    <input type="password" class="form-input" [(ngModel)]="passwordForm.new_password"
+                        name="new_password" required>
+                </div>
+                <div class="col-12 text-end">
+                    <button type="submit" class="btn btn-outline-light rounded-pill px-4 fw-bold">Change
+                        Password</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="mb-5 pt-4 border-top border-secondary fade-in" style="border-color: #333 !important;">
+            <h3 class="fw-bold text-danger mb-2 fs-4">Danger Zone</h3>
+            <p class="text-subdued mb-3">Once you delete your account, there is no going back. Please be certain.</p>
+            <button class="btn btn-danger rounded-pill px-4 fw-bold" (click)="onDeleteAccount()">
+                Delete Account
+            </button>
+        </div>
+
+    </div>
+</div>

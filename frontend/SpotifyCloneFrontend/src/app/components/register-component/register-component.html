@@ -1,144 +1,102 @@
-<div class="register-page">
-  <div class="container py-5">
-    <div class="row justify-content-center">
-      <div class="col-12 col-md-10 col-lg-6">
-        <div class="card register-card border-0 shadow-lg">
-          <div class="card-body p-4 p-md-5">
-            <div class="text-center mb-4">
-              <div class="brand-pill d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill">
-                <span class="dot"></span>
-                <span class="fw-bold">Spotify Clone</span>
-              </div>
-              <h2 class="mt-3 mb-1 fw-bold">Registration</h2>
-            </div>
+<div class="d-flex align-items-center justify-content-center min-vh-100 py-5">
+  <div class="container" style="max-width: 600px;">
+    <!-- Brand Header -->
+    <div class="text-center mb-5">
+      <div class="d-inline-flex align-items-center gap-2">
+        <!-- Simple Dot/Icon Placeholder, can be replaced by SVG logo -->
+        <div style="width: 40px; height: 40px; background: var(--brand-color); border-radius: 50%;"></div>
+        <h1 style="font-size: 2rem; margin: 0; letter-spacing: -0.05em;">Spotify Clone</h1>
+      </div>
+    </div>
 
-            <div *ngIf="errorMessage" class="alert alert-danger">
-              {{ errorMessage }}
-            </div>
+    <div class="card shadow-elevated">
+      <div class="text-center mb-4">
+        <h2 style="font-size: 1.5rem;">Sign up for free</h2>
+      </div>
 
-            <div *ngIf="successMessage" class="alert alert-success">
-              {{ successMessage }}
-            </div>
+      <div *ngIf="errorMessage" class="alert alert-danger mb-4"
+        style="background: rgba(229, 9, 20, 0.1); border: 1px solid var(--text-negative); color: var(--text-negative);">
+        {{ errorMessage }}
+      </div>
 
-            <form (ngSubmit)="onSubmit()" novalidate>
-              <div class="row g-3">
-                <div class="col-12 col-md-6">
-                  <label class="form-label">Username</label>
-                  <input
-                    class="form-control form-control-lg"
-                    type="text"
-                    name="username"
-                    [(ngModel)]="username"
-                    placeholder="filip"
-                    required
-                  />
-                </div>
+      <div *ngIf="successMessage" class="alert alert-success mb-4"
+        style="background: rgba(29, 185, 84, 0.1); border: 1px solid var(--text-positive); color: var(--text-positive);">
+        {{ successMessage }}
+      </div>
 
-                <div class="col-12 col-md-6">
-                  <label class="form-label">Email</label>
-                  <input
-                    class="form-control form-control-lg"
-                    type="email"
-                    name="email"
-                    [(ngModel)]="email"
-                    placeholder="filip@mail.com"
-                    required
-                  />
-                </div>
+      <form (ngSubmit)="onSubmit()" novalidate>
 
-                <div class="col-12 col-md-6">
-                  <label class="form-label">First name</label>
-                  <input
-                    class="form-control form-control-lg"
-                    type="text"
-                    name="firstName"
-                    [(ngModel)]="firstName"
-                    placeholder="Filip"
-                    required
-                  />
-                </div>
+        <div class="form-group">
+          <label class="form-label">What's your email?</label>
+          <input class="form-input" type="email" name="email" [(ngModel)]="email" placeholder="Enter your email."
+            required />
+        </div>
 
-                <div class="col-12 col-md-6">
-                  <label class="form-label">Last name</label>
-                  <input
-                    class="form-control form-control-lg"
-                    type="text"
-                    name="lastName"
-                    [(ngModel)]="lastName"
-                    placeholder="Akin"
-                    required
-                  />
-                </div>
+        <div class="form-group">
+          <label class="form-label">Create a password</label>
+          <div class="position-relative">
+            <input class="form-input" [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="password"
+              placeholder="Create a password." required />
+            <button type="button" (click)="showPassword = !showPassword"
+              style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-subdued); cursor: pointer; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.1em; font-weight: 700;">
+              {{ showPassword ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+          <p class="mt-1" style="font-size: 0.8rem; color: var(--text-subdued);">Use at least 8 characters, one number,
+            and one special character.</p>
+        </div>
 
-                <div class="col-12">
-                  <label class="form-label">Password</label>
-                  <div class="input-group input-group-lg">
-                    <input
-                      class="form-control"
-                      [type]="showPassword ? 'text' : 'password'"
-                      name="password"
-                      [(ngModel)]="password"
-                      placeholder="••••••••"
-                      required
-                    />
-                    <button
-                      class="btn btn-outline-secondary"
-                      type="button"
-                      (click)="showPassword = !showPassword"
-                    >
-                      {{ showPassword ? 'Hide' : 'Show' }}
-                    </button>
-                  </div>
-                  <div class="form-text text-secondary">
-                    Minimum 8 karaktera, veliko + malo slovo, broj i specijalni znak (kao u backendu).
-                  </div>
-                </div>
-
-                <div class="col-12">
-                  <label class="form-label">Confirm Password</label>
-                  <div class="input-group input-group-lg">
-                    <input
-                      class="form-control"
-                      [type]="showPasswordConfirm ? 'text' : 'password'"
-                      name="passwordConfirm"
-                      [(ngModel)]="passwordConfirm"
-                      placeholder="••••••••"
-                      required
-                    />
-                    <button
-                      class="btn btn-outline-secondary"
-                      type="button"
-                      (click)="showPasswordConfirm = !showPasswordConfirm"
-                    >
-                      {{ showPasswordConfirm ? 'Hide' : 'Show' }}
-                    </button>
-                  </div>
-                </div>
-
-                <!-- reCAPTCHA -->
-                <div class="col-12 mt-3 d-flex justify-content-center">
-                  <div id="recaptcha-register"></div>
-                </div>
-
-                <div class="col-12 mt-2">
-                  <button class="btn btn-success btn-lg w-100" type="submit" [disabled]="loading">
-                    <span *ngIf="!loading">Register</span>
-                    <span *ngIf="loading" class="d-inline-flex align-items-center gap-2">
-                      <span class="spinner-border spinner-border-sm" role="status"></span>
-                      Creating account...
-                    </span>
-                  </button>
-                </div>
-              </div>
-
-              <div class="mt-4 text-center">
-                <a class="link-light text-decoration-none" routerLink="/login">
-                  Već imaš nalog? <span class="text-success fw-semibold">Login</span>
-                </a>
-              </div>
-            </form>
+        <div class="form-group">
+          <label class="form-label">Confirm password</label>
+          <div class="position-relative">
+            <input class="form-input" [type]="showPasswordConfirm ? 'text' : 'password'" name="passwordConfirm"
+              [(ngModel)]="passwordConfirm" placeholder="Confirm your password." required />
+            <!-- Using showPassword same toggle for simplicity or verify logic -->
+            <button type="button" (click)=" showPasswordConfirm = ! showPasswordConfirm"
+              style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-subdued); cursor: pointer; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.1em; font-weight: 700;">
+              {{ showPasswordConfirm ? 'Hide' : 'Show' }}
+            </button>
           </div>
         </div>
+
+        <div class="form-group">
+          <label class="form-label">What should we call you?</label>
+          <input class="form-input" type="text" name="username" [(ngModel)]="username"
+            placeholder="Enter a profile name." required />
+          <p class="mt-1" style="font-size: 0.8rem; color: var(--text-subdued);">This appears on your profile.</p>
+        </div>
+
+        <div class="row">
+          <div class="col-6 form-group">
+            <label class="form-label">First Name</label>
+            <input class="form-input" type="text" name="firstName" [(ngModel)]="firstName" placeholder="First Name"
+              required />
+          </div>
+          <div class="col-6 form-group">
+            <label class="form-label">Last Name</label>
+            <input class="form-input" type="text" name="lastName" [(ngModel)]="lastName" placeholder="Last Name"
+              required />
+          </div>
+        </div>
+
+        <!-- reCAPTCHA -->
+        <div class="mb-4 d-flex justify-content-center">
+          <div id="recaptcha-register"></div>
+        </div>
+
+        <button class="btn-primary w-100 rounded-pill" type="submit" [disabled]="loading"
+          style="font-size: 1.1rem; padding: 14px;">
+          Sign Up
+        </button>
+
+      </form>
+
+      <div class="mt-4 pt-4 border-top border-secondary text-center" style="border-color: #2a2a2a !important;">
+        <p class="mb-2">Have an account?</p>
+        <a routerLink="/login" class="text-decoration-none"
+          style="color: var(--text-base); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
+          Log in
+        </a>
       </div>
     </div>
   </div>

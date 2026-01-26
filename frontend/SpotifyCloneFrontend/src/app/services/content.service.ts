@@ -88,8 +88,8 @@ export class ContentService {
   }
 
   // Subscriptions
-  subscribe(targetId: string, type: 'artist' | 'genre'): Observable<any> {
-    return this.http.post(`${this.apiBase}/subscriptions`, { target_id: targetId, type }, { headers: this.getAuthHeaders() });
+  subscribe(targetId: string, type: 'artist' | 'genre', targetName?: string): Observable<any> {
+    return this.http.post(`${this.apiBase}/subscriptions`, { target_id: targetId, type, name: targetName }, { headers: this.getAuthHeaders() });
   }
 
   unsubscribe(targetId: string, type: 'artist' | 'genre'): Observable<any> {

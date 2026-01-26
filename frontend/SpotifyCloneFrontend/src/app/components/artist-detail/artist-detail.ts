@@ -64,7 +64,7 @@ export class ArtistDetailComponent implements OnInit {
         }
       });
     } else {
-      this.contentService.subscribe(artistId, 'artist').subscribe({
+      this.contentService.subscribe(artistId, 'artist', this.artist?.name).subscribe({
         next: () => {
           this.isSubscribed = true;
           this.subscriptionLoading = false;

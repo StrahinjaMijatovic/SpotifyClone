@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -37,7 +37,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(
     private contentService: ContentService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -87,9 +88,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.contentService.getGenres().subscribe({
       next: (data) => {
         this.genres = data ?? [];
+        this.cdr.detectChanges();
       },
       error: () => {
         console.error('Failed to load genres');
+        this.cdr.detectChanges();
       },
     });
   }
@@ -105,10 +108,12 @@ export class HomeComponent implements OnInit, OnDestroy {
       next: (data) => {
         this.artists = data ?? [];
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.errorMessage = 'Ne mogu da učitam umetnike.';
         this.loading = false;
+        this.cdr.detectChanges();
       },
     });
   }
@@ -136,10 +141,12 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.albums = data?.albums ?? [];
         this.songs = data?.songs ?? [];
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.errorMessage = 'Pretraga nije uspela.';
         this.loading = false;
+        this.cdr.detectChanges();
       },
     });
   }

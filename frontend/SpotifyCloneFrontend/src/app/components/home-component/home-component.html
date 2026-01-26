@@ -1,171 +1,169 @@
-<div class="min-vh-100 bg-light text-dark">
-  <!-- Top bar -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
-    <div class="container py-2">
-      <span class="navbar-brand fw-bold">
-        <span class="text-success">Spotify</span> Clone
-      </span>
+<div class="d-flex flex-column min-vh-100" style="background: linear-gradient(to bottom, #1e1e1e 0%, #121212 100%);">
 
-      <div class="d-flex gap-2 align-items-center">
-        <button class="btn btn-outline-secondary btn-sm" (click)="loadArtists()">
-          Osveži
+  <!-- Navbar -->
+  <nav class="d-flex align-items-center justify-content-between px-4 py-3 sticky-top"
+    style="background-color: rgba(0,0,0,0.7); backdrop-filter: blur(10px); z-index: 1000;">
+    <div class="d-flex align-items-center gap-4">
+      <!-- Brand -->
+      <div class="d-flex align-items-center gap-2">
+        <div style="width: 32px; height: 32px; background: var(--brand-color); border-radius: 50%;"></div>
+        <span class="fw-bold fs-4" style="color: white; letter-spacing: -0.05em;">Spotify Clone</span>
+      </div>
+
+      <!-- Navigation Links (Desktop) -->
+      <div class="d-none d-md-flex align-items-center gap-3 ms-4">
+        <button class="btn btn-link text-decoration-none" style="color: var(--text-base); font-weight: 700;"
+          (click)="loadArtists()">
+          Home
         </button>
-        <button class="btn btn-outline-primary btn-sm" (click)="goToNotifications()">
-          🔔 Notifikacije
+        <button class="btn btn-link text-decoration-none" style="color: var(--text-subdued); font-weight: 700;"
+          (click)="goToNotifications()">
+          Notifications
         </button>
-        <button *ngIf="isAdmin" class="btn btn-outline-warning btn-sm" (click)="goToAdmin()">
-          🎵 Admin Panel
-        </button>
-        <button class="btn btn-outline-success btn-sm" (click)="goToProfile()">
-          Profil
-        </button>
-        <button class="btn btn-outline-danger btn-sm" (click)="logout()">
-          Odjava
+        <button *ngIf="isAdmin" class="btn btn-link text-decoration-none"
+          style="color: var(--text-subdued); font-weight: 700;" (click)="goToAdmin()">
+          Admin
         </button>
       </div>
+    </div>
+
+    <!-- User Actions -->
+    <div class="d-flex align-items-center gap-3">
+      <!-- Search Bar (Compact) -->
+      <div class="position-relative d-none d-sm-block">
+        <input type="text" [(ngModel)]="searchQuery" (input)="onSearchInput()" (keyup.enter)="search()"
+          placeholder="What do you want to play?"
+          style="background: #242424; border: 1px solid transparent; border-radius: 500px; color: white; padding: 8px 36px 8px 16px; width: 260px; font-size: 0.9rem;">
+        <span
+          style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-subdued);">🔍</span>
+      </div>
+
+      <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold"
+        style="background-color: #000; color: white; border: none;" (click)="goToProfile()">
+        Profile
+      </button>
+      <button class="btn btn-sm rounded-pill px-3 py-2 fw-bold"
+        style="background-color: transparent; color: var(--text-subdued); border: none;" (click)="logout()">
+        Log out
+      </button>
     </div>
   </nav>
 
-  <div class="container py-4">
-    <!-- Search and Filter -->
-    <div class="card shadow-sm mb-4">
-      <div class="card-body">
-        <div class="row g-2 align-items-center">
-          <div class="col-12 col-md-5">
-            <input
-              class="form-control"
-              type="text"
-              [(ngModel)]="searchQuery"
-              placeholder="Pretraži umetnike, albume, pesme..."
-              (input)="onSearchInput()"
-              (keyup.enter)="search()" />
-          </div>
+  <!-- Main Content -->
+  <div class="container-fluid px-4 py-4 flex-grow-1">
 
-          <div class="col-12 col-md-3">
-            <select
-              class="form-select"
-              [(ngModel)]="selectedGenreId"
-              (change)="onGenreChange()">
-              <option value="">Svi žanrovi</option>
-              <option *ngFor="let genre of genres" [value]="genre.id">{{ genre.name }}</option>
-            </select>
-          </div>
-
-          <div class="col-12 col-md-4 d-grid d-md-flex gap-2 justify-content-md-end">
-            <button
-              class="btn btn-success"
-              (click)="search()"
-              [disabled]="!searchQuery.trim()">
-              Pretraži
-            </button>
-            <button
-              class="btn btn-outline-secondary"
-              (click)="clearSearch()">
-              Poništi
-            </button>
-          </div>
-        </div>
-
-        <div *ngIf="errorMessage" class="alert alert-danger mt-3 mb-0">
-          {{ errorMessage }}
-        </div>
-
-        <div *ngIf="loading" class="mt-3 d-flex align-items-center gap-2 text-muted">
-          <div class="spinner-border spinner-border-sm" role="status"></div>
-          <span>Učitavanje...</span>
-        </div>
-      </div>
+    <!-- Genre Filter Chips -->
+    <div class="d-flex gap-2 mb-4 overflow-auto pb-2">
+      <button class="btn btn-sm rounded-pill fw-bold" [style.background]="selectedGenreId === '' ? 'white' : '#2A2A2A'"
+        [style.color]="selectedGenreId === '' ? 'black' : 'white'"
+        style="border: none; white-space: nowrap; padding: 6px 16px;" (click)="selectedGenreId = ''; onGenreChange()">
+        All
+      </button>
+      <button *ngFor="let genre of genres" class="btn btn-sm rounded-pill fw-bold"
+        [style.background]="selectedGenreId === genre.id ? 'white' : '#2A2A2A'"
+        [style.color]="selectedGenreId === genre.id ? 'black' : 'white'"
+        style="border: none; white-space: nowrap; padding: 6px 16px;"
+        (click)="selectedGenreId = genre.id || ''; onGenreChange()">
+        {{ genre.name }}
+      </button>
     </div>
 
-    <!-- Artists -->
-    <div class="row g-4">
-      <div class="col-12">
-        <h4 class="fw-bold mb-3">Umetnici</h4>
+    <!-- Error/Loading -->
+    <div *ngIf="errorMessage" class="alert alert-danger mb-4"
+      style="background: rgba(229, 9, 20, 0.1); border: 1px solid var(--text-negative); color: var(--text-negative);">
+      {{ errorMessage }}
+    </div>
 
-        <div *ngIf="artists.length === 0 && !loading" class="text-muted">
-          Nema umetnika.
-        </div>
+    <div *ngIf="loading" class="text-center py-5">
+      <div class="spinner-border text-success" role="status"></div>
+    </div>
 
-        <div class="row g-3" *ngIf="artists.length > 0">
-          <div class="col-12 col-md-6 col-lg-4" *ngFor="let artist of artists">
-            <div
-              class="card h-100 shadow-sm artist-card"
-              style="cursor: pointer;"
-              (click)="goToArtist(artist.id!)">
+    <!-- Featured / Artists Section -->
+    <div *ngIf="!loading && artists.length > 0">
+      <h2 class="fs-3 fw-bold mb-3" style="color: white; letter-spacing: -0.02em;">Artists</h2>
+      <div class="row g-4 mb-5">
+        <div class="col-6 col-md-4 col-lg-3 col-xl-2" *ngFor="let artist of artists">
+          <div class="p-3 h-100 rounded"
+            style="background-color: #181818; transition: background-color 0.3s ease; cursor: pointer;"
+            onmouseover="this.style.backgroundColor='#282828'" onmouseout="this.style.backgroundColor='#181818'"
+            (click)="goToArtist(artist.id!)">
 
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start gap-2">
-                  <h5 class="card-title mb-1">{{ artist.name }}</h5>
-                  <span class="badge bg-success-subtle text-success">
-                    Umetnik
-                  </span>
-                </div>
-
-                <p class="card-text text-muted mb-0 text-truncate-2">
-                  {{ artist.biography }}
-                </p>
+            <!-- Circular Image Placeholder -->
+            <div class="mb-3 rounded-circle shadow-lg"
+              style="width: 100%; padding-bottom: 100%; background: #333; position: relative; overflow: hidden;">
+              <div
+                class="d-flex align-items-center justify-content-center position-absolute top-0 start-0 w-100 h-100 text-muted fs-1">
+                👤
               </div>
-
             </div>
+
+            <h5 class="fw-bold text-truncate mb-1" style="font-size: 1rem; color: white;">{{ artist.name }}</h5>
+            <p class="text-truncate mb-0" style="font-size: 0.85rem; color: #a7a7a7;">Artist</p>
           </div>
         </div>
-
       </div>
     </div>
 
-    <!-- Albums (shown only in search results) -->
-    <div class="row g-4 mt-2" *ngIf="isSearchActive && albums.length > 0">
-      <div class="col-12">
-        <h4 class="fw-bold mb-3">Albumi</h4>
+    <!-- Albums (Search Results) -->
+    <div *ngIf="isSearchActive && albums.length > 0 && !loading" class="mb-5">
+      <h2 class="fs-3 fw-bold mb-3" style="color: white; letter-spacing: -0.02em;">Albums</h2>
+      <div class="row g-4">
+        <div class="col-6 col-md-4 col-lg-3 col-xl-2" *ngFor="let album of albums">
+          <div class="p-3 h-100 rounded"
+            style="background-color: #181818; transition: background-color 0.3s ease; cursor: pointer;"
+            onmouseover="this.style.backgroundColor='#282828'" onmouseout="this.style.backgroundColor='#181818'"
+            (click)="goToAlbum(album.id!)">
 
-        <div class="row g-3">
-          <div class="col-12 col-md-6 col-lg-4" *ngFor="let album of albums">
-            <div
-              class="card h-100 shadow-sm"
-              style="cursor: pointer;"
-              (click)="goToAlbum(album.id!)">
-
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start gap-2">
-                  <h5 class="card-title mb-1">{{ album.name }}</h5>
-                  <span class="badge bg-primary-subtle text-primary">
-                    Album
-                  </span>
-                </div>
-
-                <p class="card-text text-muted mb-0">
-                  {{ album.date }}
-                </p>
+            <!-- Square Image Placeholder -->
+            <div class="mb-3 rounded shadow-lg"
+              style="width: 100%; padding-bottom: 100%; background: #333; position: relative; overflow: hidden;">
+              <div
+                class="d-flex align-items-center justify-content-center position-absolute top-0 start-0 w-100 h-100 text-muted fs-1">
+                💿
               </div>
-
             </div>
+
+            <h5 class="fw-bold text-truncate mb-1" style="font-size: 1rem; color: white;">{{ album.name }}</h5>
+            <p class="text-truncate mb-0" style="font-size: 0.85rem; color: #a7a7a7;">{{ album.date }} • Album</p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Songs (shown only in search results) -->
-    <div class="row g-4 mt-2" *ngIf="isSearchActive && songs.length > 0">
-      <div class="col-12">
-        <h4 class="fw-bold mb-3">Pesme</h4>
+    <!-- Songs (Search Results) -->
+    <div *ngIf="isSearchActive && songs.length > 0 && !loading" class="mb-5">
+      <h2 class="fs-3 fw-bold mb-3" style="color: white; letter-spacing: -0.02em;">Songs</h2>
+      <div class="d-flex flex-column gap-2">
+        <div *ngFor="let song of songs; let i = index" class="d-flex align-items-center p-2 rounded gap-3"
+          style="transition: background-color 0.2s ease;"
+          onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'"
+          onmouseout="this.style.backgroundColor='transparent'">
 
-        <div class="list-group">
-          <div class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let song of songs">
-            <div>
-              <h6 class="mb-0">{{ song.name }}</h6>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-              <span class="text-muted small">{{ formatDuration(song.duration) }}</span>
-              <span class="badge bg-warning-subtle text-warning">Pesma</span>
-            </div>
+          <span style="color: #a7a7a7; width: 20px; text-align: center;">{{ i + 1 }}</span>
+
+          <div style="width: 40px; height: 40px; background: #333; border-radius: 4px;"
+            class="d-flex align-items-center justify-content-center text-muted">
+            🎵
           </div>
+
+          <div class="flex-grow-1">
+            <div style="color: white; font-size: 1rem;">{{ song.name }}</div>
+          </div>
+
+          <div style="color: #a7a7a7; font-size: 0.9rem;">
+            {{ formatDuration(song.duration) }}
+          </div>
+
+          <!-- Play Icon (Invisible unless hover - simplified for now) -->
         </div>
       </div>
     </div>
 
-    <!-- No search results message -->
-    <div *ngIf="isSearchActive && artists.length === 0 && albums.length === 0 && songs.length === 0 && !loading" class="text-muted mt-3">
-      Nema rezultata pretrage.
+    <!-- Empty State -->
+    <div *ngIf="artists.length === 0 && !loading && !isSearchActive" class="text-center py-5 text-muted">
+      <h3 class="fw-bold mb-3">No content found</h3>
+      <p>Try refreshing or searching for something else.</p>
     </div>
+
   </div>
 </div>

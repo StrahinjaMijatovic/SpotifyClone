@@ -18,16 +18,6 @@ func setupRoutes(router *gin.Engine) {
 		api.GET("/songs", handlers.GetSongs)
 		api.GET("/search", handlers.SearchContent)
 
-		// Authenticated user routes (subscriptions)
-		auth := api.Group("/")
-		auth.Use(middleware.AuthMiddleware())
-		{
-			auth.POST("/subscriptions", handlers.Subscribe)
-			auth.DELETE("/subscriptions/:target_id", handlers.Unsubscribe)
-			auth.GET("/subscriptions", handlers.GetUserSubscriptions)
-			auth.GET("/subscriptions/:target_id", handlers.CheckSubscription)
-		}
-
 		// Admin routes
 		admin := api.Group("/")
 		admin.Use(middleware.AuthMiddleware())

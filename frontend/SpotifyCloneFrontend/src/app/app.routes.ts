@@ -12,18 +12,20 @@ import { ArtistDetailComponent } from './components/artist-detail/artist-detail'
 import { AlbumDetailComponent } from './components/album-detail/album-detail';
 import { NotificationsComponent } from './components/notifications/notifications';
 
+import { authGuard, adminGuard } from './guards/auth.guard';
+
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'profile', component: ProfileComponent },
+  { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent }, // ocekuje token
   { path: 'verify-email', component: VerifyEmailComponent }, // ocekuje token
   { path: 'magic-login', component: MagicLoginComponent }, // ocekuje token
-  { path: 'admin', component: AdminDashboardComponent },
-  { path: 'artist/:id', component: ArtistDetailComponent },
-  { path: 'album/:id', component: AlbumDetailComponent },
-  { path: 'notifications', component: NotificationsComponent },
+  { path: 'admin', component: AdminDashboardComponent, canActivate: [adminGuard] },
+  { path: 'artist/:id', component: ArtistDetailComponent, canActivate: [authGuard] },
+  { path: 'album/:id', component: AlbumDetailComponent, canActivate: [authGuard] },
+  { path: 'notifications', component: NotificationsComponent, canActivate: [authGuard] },
 ];

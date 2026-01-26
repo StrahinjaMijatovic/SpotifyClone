@@ -53,11 +53,11 @@ func SetupRoutes(router *gin.Engine) {
 		api.GET("/ratings/:songId", proxy.ProxyToRatingsService)
 		api.DELETE("/ratings/:songId", proxy.ProxyToRatingsService)
 
-		// Subscriptions routes (handled by content-service)
-		api.POST("/subscriptions", proxy.ProxyToContentService)
-		api.GET("/subscriptions", proxy.ProxyToContentService)
-		api.GET("/subscriptions/:target_id", proxy.ProxyToContentService)
-		api.DELETE("/subscriptions/:target_id", proxy.ProxyToContentService)
+		// Subscriptions routes
+		api.POST("/subscriptions", proxy.ProxyToSubscriptionsService)
+		api.GET("/subscriptions", proxy.ProxyToSubscriptionsService)
+		api.GET("/subscriptions/:target_id", proxy.ProxyToSubscriptionsService)
+		api.DELETE("/subscriptions/:target_id", proxy.ProxyToSubscriptionsService)
 
 		// Notifications service routes
 		api.GET("/notifications", proxy.ProxyToNotificationsService)

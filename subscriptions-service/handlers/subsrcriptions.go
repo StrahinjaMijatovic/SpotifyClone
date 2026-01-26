@@ -22,12 +22,14 @@ type Subscription struct {
 	UserID    string    `json:"user_id"`
 	Type      string    `json:"type"` // "artist" or "genre"
 	TargetID  string    `json:"target_id"`
+	Name      string    `json:"name"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
 type CreateSubscriptionRequest struct {
 	Type     string `json:"type" binding:"required,oneof=artist genre"`
 	TargetID string `json:"target_id" binding:"required"`
+	Name     string `json:"name"`
 }
 
 func scanKeys(ctx context.Context, pattern string) ([]string, error) {
@@ -67,6 +69,7 @@ func CreateSubscription(c *gin.Context) {
 		UserID:    userID,
 		Type:      req.Type,
 		TargetID:  req.TargetID,
+		Name:      req.Name,
 		CreatedAt: time.Now(),
 	}
 
@@ -101,7 +104,9 @@ func GetSubscriptions(c *gin.Context) {
 		return
 	}
 
-	var subscriptions []Subscription
+	var artists []Subscription
+	var genres []Subscription
+
 	for _, key := range keys {
 		data, err := redisClient.Get(ctx, key).Result()
 		if err != nil {
@@ -110,11 +115,18 @@ func GetSubscriptions(c *gin.Context) {
 
 		var subscription Subscription
 		if err := json.Unmarshal([]byte(data), &subscription); err == nil {
-			subscriptions = append(subscriptions, subscription)
+			if subscription.Type == "artist" {
+				artists = append(artists, subscription)
+			} else if subscription.Type == "genre" {
+				genres = append(genres, subscription)
+			}
 		}
 	}
 
-	c.JSON(http.StatusOK, subscriptions)
+	c.JSON(http.StatusOK, gin.H{
+		"artists": artists,
+		"genres":  genres,
+	})
 }
 
 func DeleteSubscription(c *gin.Context) {
@@ -145,4 +157,36 @@ func DeleteSubscription(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Subscription deleted successfully"})
+}
+
+func CheckSubscription(c *gin.Context) {
+	userID := c.GetString("user_id")
+	if userID == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	targetID := c.Param("target_id")
+	subType := c.Query("type")
+
+	if targetID == "" || subType == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing target_id param or type query"})
+		return
+	}
+
+	// Construct ID to match CreateSubscription logic
+	// ID format: userID + ":" + req.Type + ":" + req.TargetID
+	subID := userID + ":" + subType + ":" + targetID
+	key := "subscription:" + subID
+
+	ctx := c.Request.Context()
+	exists, err := redisClient.Exists(ctx, key).Result()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+		return
+	}
+
+	// Exists returns 1 if key exists, 0 otherwise
+	subscribed := exists > 0
+	c.JSON(http.StatusOK, gin.H{"subscribed": subscribed})
 }

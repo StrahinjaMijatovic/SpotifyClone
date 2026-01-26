@@ -50,7 +50,8 @@ func main() {
 	log.Println("Connected to MongoDB")
 
 	router := gin.Default()
-	router.Use(corsMiddleware())
+	// CORS is handled by the API Gateway
+	// router.Use(corsMiddleware())
 
 	handlers.InitHandlers(contentDB)
 	setupRoutes(router)

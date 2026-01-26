@@ -14,9 +14,11 @@ import {
   ResetPasswordConfirmRequest,
 } from '../models/auth.models';
 
+import { AppConfig } from '../config';
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly apiBase = '/api/v1';
+  private readonly apiBase = AppConfig.apiUrl;
 
   constructor(private http: HttpClient) { }
 

@@ -484,3 +484,92 @@ This code expires in 5 minutes.
 [2026-01-21 20:56:41] TYPE=failed ACTION=login IP=172.19.0.1 DETAILS=User admin invalid password
 [2026-01-21 20:56:57] TYPE=success ACTION=login_otp_sent IP=172.19.0.1 DETAILS=User admin OTP sent
 [2026-01-21 20:57:02] TYPE=success ACTION=login IP=172.19.0.1 DETAILS=User admin logged in
+2026/01/21 21:18:33 Password expiry configured: max age = 60 dana
+2026/01/21 21:18:35 Connected to MongoDB
+2026/01/21 21:18:35 Connected to Redis
+2026/01/21 21:18:35 MongoDB indexes for users ensured
+2026/01/21 21:18:35 Users service starting on HTTP port 8001 (TLS disabled)
+[2026-01-21 21:18:58] TYPE=success ACTION=login_otp_sent IP=172.19.0.1 DETAILS=User Petar OTP sent
+[2026-01-21 21:19:05] TYPE=success ACTION=login IP=172.19.0.1 DETAILS=User Petar logged in
+[2026-01-21 21:19:34] TYPE=success ACTION=login_otp_sent IP=172.19.0.1 DETAILS=User admin OTP sent
+[2026-01-21 21:19:40] TYPE=success ACTION=login IP=172.19.0.1 DETAILS=User admin logged in
+2026/01/21 21:31:22 Password expiry configured: max age = 60 dana
+2026/01/21 21:31:22 Connected to MongoDB
+2026/01/21 21:31:22 Connected to Redis
+2026/01/21 21:31:22 MongoDB indexes for users ensured
+2026/01/21 21:31:22 Users service starting on HTTP port 8001 (TLS disabled)
+[2026-01-21 21:32:23] TYPE=success ACTION=login_otp_sent IP=172.19.0.11 DETAILS=User Petar OTP sent
+[2026-01-21 21:32:49] TYPE=success ACTION=login_otp_sent IP=172.19.0.11 DETAILS=User Petar OTP sent
+[2026-01-21 21:33:16] TYPE=success ACTION=login_otp_sent IP=172.19.0.11 DETAILS=User Petar OTP sent
+[2026-01-21 21:33:35] TYPE=success ACTION=magic_link_sent IP=172.19.0.11 DETAILS=Magic link sent to petar@gmail.com
+[2026-01-21 21:33:52] TYPE=success ACTION=magic_login IP=172.19.0.11 DETAILS=User Petar logged in via magic link
+[2026-01-21 21:34:01] TYPE=failed ACTION=magic_login IP=172.19.0.11 DETAILS=Invalid or expired token
+[2026-01-21 21:34:34] TYPE=success ACTION=login_otp_sent IP=172.19.0.11 DETAILS=User admin OTP sent
+[2026-01-21 21:35:17] TYPE=success ACTION=login_otp_sent IP=172.19.0.11 DETAILS=User admin OTP sent
+2026/01/21 21:40:22 Password expiry configured: max age = 60 dana
+2026/01/21 21:40:22 Connected to MongoDB
+2026/01/21 21:40:22 Connected to Redis
+2026/01/21 21:40:22 MongoDB indexes for users ensured
+2026/01/21 21:40:22 Users service starting on HTTP port 8001 (TLS disabled)
+[2026-01-21 21:41:05] TYPE=success ACTION=login_otp_sent IP=172.19.0.11 DETAILS=User Petar OTP sent
+[2026-01-21 21:41:31] TYPE=success ACTION=login_otp_sent IP=172.19.0.11 DETAILS=User admin OTP sent
+[2026-01-21 21:42:07] TYPE=success ACTION=login IP=172.19.0.11 DETAILS=User admin logged in
+[2026-01-21 21:43:13] TYPE=success ACTION=login_otp_sent IP=172.19.0.11 DETAILS=User Petar OTP sent
+[2026-01-21 21:43:56] TYPE=success ACTION=login_otp_sent IP=172.19.0.11 DETAILS=User Petar OTP sent
+[2026-01-21 21:44:49] TYPE=success ACTION=login_otp_sent IP=172.19.0.11 DETAILS=User Petar OTP sent
+2026/01/21 21:47:05 Password expiry configured: max age = 60 dana
+2026/01/21 21:47:06 Connected to MongoDB
+2026/01/21 21:47:06 Connected to Redis
+2026/01/21 21:47:06 MongoDB indexes for users ensured
+2026/01/21 21:47:06 Users service starting on HTTP port 8001 (TLS disabled)
+[2026-01-21 21:47:40] TYPE=success ACTION=login_otp_sent IP=172.19.0.11 DETAILS=User Petar OTP sent
+[2026-01-21 21:48:06] TYPE=success ACTION=login IP=172.19.0.11 DETAILS=User Petar logged in
+2026/01/26 18:50:34 Password expiry configured: max age = 60 dana
+2026/01/26 18:50:37 Connected to MongoDB
+2026/01/26 18:50:37 Connected to Redis
+2026/01/26 18:50:37 MongoDB indexes for users ensured
+2026/01/26 18:50:37 Users service starting on HTTP port 8001 (TLS disabled)
+[2026-01-26 18:51:38] TYPE=success ACTION=login_otp_sent IP=172.19.0.15 DETAILS=User Petar OTP sent
+2026/01/26 19:01:34 Password expiry configured: max age = 60 dana
+2026/01/26 19:01:35 Connected to MongoDB
+2026/01/26 19:01:35 Connected to Redis
+2026/01/26 19:01:35 MongoDB indexes for users ensured
+2026/01/26 19:01:35 Users service starting on HTTP port 8001 (TLS disabled)
+[2026-01-26 19:02:26] TYPE=failed ACTION=login IP=172.19.0.10 DETAILS=User Petar invalid password
+[2026-01-26 19:02:48] TYPE=success ACTION=login_otp_sent IP=172.19.0.10 DETAILS=User Petar OTP sent
+[2026-01-26 19:02:53] TYPE=success ACTION=login IP=172.19.0.10 DETAILS=User Petar logged in
+2026/01/26 19:11:17 Password expiry configured: max age = 60 dana
+2026/01/26 19:11:17 Connected to MongoDB
+2026/01/26 19:11:17 Connected to Redis
+2026/01/26 19:11:17 MongoDB indexes for users ensured
+2026/01/26 19:11:17 Users service starting on HTTP port 8001 (TLS disabled)
+[2026-01-26 19:11:54] TYPE=success ACTION=login_otp_sent IP=172.19.0.9 DETAILS=User Petar OTP sent
+[2026-01-26 19:12:04] TYPE=success ACTION=login IP=172.19.0.9 DETAILS=User Petar logged in
+[2026-01-26 19:12:43] TYPE=success ACTION=update_profile IP=172.19.0.9 DETAILS=User updated profile
+2026/01/26 19:17:35 Password expiry configured: max age = 60 dana
+2026/01/26 19:17:35 Connected to MongoDB
+2026/01/26 19:17:35 Connected to Redis
+2026/01/26 19:17:35 MongoDB indexes for users ensured
+2026/01/26 19:17:35 Users service starting on HTTP port 8001 (TLS disabled)
+2026/01/26 19:21:16 Password expiry configured: max age = 60 dana
+2026/01/26 19:21:17 Connected to MongoDB
+2026/01/26 19:21:17 Connected to Redis
+2026/01/26 19:21:17 MongoDB indexes for users ensured
+2026/01/26 19:21:17 Users service starting on HTTP port 8001 (TLS disabled)
+[2026-01-26 19:22:03] TYPE=success ACTION=login_otp_sent IP=172.19.0.14 DETAILS=User Petar OTP sent
+[2026-01-26 19:22:10] TYPE=success ACTION=login IP=172.19.0.14 DETAILS=User Petar logged in
+[2026-01-26 19:26:15] TYPE=success ACTION=login_otp_sent IP=172.19.0.14 DETAILS=User Petar OTP sent
+[2026-01-26 19:26:20] TYPE=success ACTION=login IP=172.19.0.14 DETAILS=User Petar logged in
+2026/01/26 19:29:59 Password expiry configured: max age = 60 dana
+2026/01/26 19:29:59 Connected to MongoDB
+2026/01/26 19:29:59 Connected to Redis
+2026/01/26 19:29:59 MongoDB indexes for users ensured
+2026/01/26 19:29:59 Users service starting on HTTP port 8001 (TLS disabled)
+[2026-01-26 19:30:40] TYPE=success ACTION=login_otp_sent IP=172.19.0.11 DETAILS=User Petar OTP sent
+[2026-01-26 19:31:08] TYPE=success ACTION=login_otp_sent IP=172.19.0.11 DETAILS=User Petar OTP sent
+[2026-01-26 19:31:15] TYPE=success ACTION=login IP=172.19.0.11 DETAILS=User Petar logged in
+[2026-01-26 19:32:08] TYPE=success ACTION=login_otp_sent IP=172.19.0.11 DETAILS=User Petar OTP sent
+[2026-01-26 19:32:14] TYPE=success ACTION=login IP=172.19.0.11 DETAILS=User Petar logged in
+[2026-01-26 19:33:44] TYPE=failed ACTION=login IP=172.19.0.11 DETAILS=User admin invalid password
+[2026-01-26 19:33:58] TYPE=success ACTION=login_otp_sent IP=172.19.0.11 DETAILS=User admin OTP sent
+[2026-01-26 19:34:03] TYPE=success ACTION=login IP=172.19.0.11 DETAILS=User admin logged in

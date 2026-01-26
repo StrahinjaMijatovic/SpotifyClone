@@ -9,42 +9,47 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   template: `
-    <div class="min-vh-100 d-flex align-items-center bg-white">
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-12 col-md-6 col-lg-4">
-            <div class="card bg-light border-secondary shadow-lg">
-              <div class="card-body p-4 p-md-5">
-                <div class="text-center mb-4">
-                  <h3 class="fw-bold text-black">Zaboravljena lozinka?</h3>
-                  <p class="text-secondary small">Unesi email i poslaćemo ti link za resetovanje.</p>
-                </div>
+    <div class="d-flex flex-column min-vh-100 justify-content-center align-items-center" style="background: linear-gradient(#1e1e1e 0%, #121212 100%);">
+      
+      <div class="d-flex align-items-center gap-2 mb-4">
+         <div style="width: 40px; height: 40px; background: var(--brand-color); border-radius: 50%;"></div>
+         <span class="fw-bold fs-3 text-white" style="letter-spacing: -0.05em;">Spotify Clone</span>
+      </div>
 
-                <div *ngIf="successMessage" class="alert alert-success">
-                  {{ successMessage }}
-                </div>
-                <div *ngIf="errorMessage" class="alert alert-danger">
-                  {{ errorMessage }}
-                </div>
+      <div class="container" style="max-width: 450px;">
+         <div class="card border-0 shadow-lg fade-in" style="background-color: #121212;">
+            <div class="card-body p-5 text-center">
+               
+               <h4 class="fw-bold text-white mb-3">Forgot Password?</h4>
+               <p class="text-subdued mb-4 text-start">Enter your email address and we'll send you a link to reset your password.</p>
 
-                <form (ngSubmit)="onSubmit()" *ngIf="!successMessage">
-                  <div class="mb-3">
-                    <label class="form-label text-secondary">Email</label>
-                    <input type="email" class="form-control" [(ngModel)]="email" name="email" required placeholder="tvoj@email.com">
-                  </div>
-                  <button class="btn btn-success w-100 py-2" type="submit" [disabled]="loading">
-                    <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
-                    Pošalji link
-                  </button>
-                </form>
+               <div *ngIf="successMessage" class="alert alert-success mb-4 text-start" style="background: rgba(29, 185, 84, 0.1); border: 1px solid var(--text-positive); color: var(--text-positive);">
+                 {{ successMessage }}
+               </div>
+               <div *ngIf="errorMessage" class="alert alert-danger mb-4 text-start" style="background: rgba(229, 9, 20, 0.1); border: 1px solid var(--text-negative); color: var(--text-negative);">
+                 {{ errorMessage }}
+               </div>
 
-                 <div class="text-center mt-4">
-                  <a routerLink="/login" class="text-decoration-none text-secondary">Nazad na login</a>
-                </div>
-              </div>
+               <form (ngSubmit)="onSubmit()" *ngIf="!successMessage">
+                 <div class="mb-4 text-start">
+                   <label class="form-label text-white fw-bold small">Email address</label>
+                   <input type="email" class="form-input" [(ngModel)]="email" name="email" required placeholder="name@domain.com">
+                 </div>
+                 
+                 <button class="btn-primary w-100 py-3 rounded-pill fw-bold text-uppercase" 
+                         type="submit" 
+                         [disabled]="loading"
+                         style="letter-spacing: 0.1em; font-size: 0.85rem;">
+                   <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                   Send Link
+                 </button>
+               </form>
+
+               <div class="mt-4 pt-3 border-top border-secondary" style="border-color: #333 !important;">
+                  <a routerLink="/login" class="text-subdued small text-decoration-none fw-bold text-uppercase" style="letter-spacing: 0.1em;">Back to Login</a>
+               </div>
             </div>
-          </div>
-        </div>
+         </div>
       </div>
     </div>
   `,

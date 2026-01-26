@@ -1,79 +1,101 @@
-<div class="min-vh-100 bg-dark text-light">
-  <!-- Top bar -->
-  <nav class="navbar navbar-dark bg-black border-bottom border-secondary sticky-top">
-    <div class="container py-2">
-      <button class="btn btn-outline-light btn-sm" (click)="goBack()">
-        &larr; Nazad
+<div class="d-flex flex-column min-vh-100" style="background: linear-gradient(to bottom, #1e1e1e 0%, #121212 100%);">
+
+  <!-- Navbar -->
+  <nav class="d-flex align-items-center justify-content-between px-4 py-3 sticky-top"
+    style="background-color: rgba(0,0,0,0.7); backdrop-filter: blur(10px); z-index: 1000;">
+    <div class="d-flex align-items-center gap-4">
+      <button class="btn btn-link text-decoration-none text-white p-0" (click)="goBack()">
+        <span class="fs-4">←</span>
       </button>
-      <span class="navbar-brand fw-bold mb-0">
-        <span class="text-success">Spotify</span> Clone
-      </span>
+      <span class="fw-bold fs-5 text-white" *ngIf="artist">{{ artist.name }}</span>
     </div>
   </nav>
 
-  <div class="container py-4">
-    <!-- Loading -->
+  <div class="container-fluid p-0 flex-grow-1">
+
+    <!-- Loading/Error -->
     <div *ngIf="loading" class="text-center py-5">
       <div class="spinner-border text-success" role="status"></div>
-      <p class="mt-2 text-secondary">Učitavanje...</p>
     </div>
 
-    <!-- Error -->
-    <div *ngIf="errorMessage" class="alert alert-danger">
-      {{ errorMessage }}
+    <div *ngIf="errorMessage" class="container mt-4">
+      <div class="alert alert-danger"
+        style="background: rgba(229, 9, 20, 0.1); border: 1px solid var(--text-negative); color: var(--text-negative);">
+        {{ errorMessage }}
+      </div>
     </div>
 
-    <!-- Artist info -->
+    <!-- Artist Content -->
     <div *ngIf="artist && !loading">
-      <div class="card bg-black border-secondary mb-4">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <h2 class="card-title fw-bold mb-2">{{ artist.name }}</h2>
-              <span class="badge bg-success bg-opacity-25 text-success border border-success mb-3">
-                Umetnik
-              </span>
-            </div>
-            <button
-              class="btn"
-              [class.btn-outline-success]="!isSubscribed"
-              [class.btn-success]="isSubscribed"
-              [disabled]="subscriptionLoading"
-              (click)="toggleSubscription()">
-              <span *ngIf="subscriptionLoading" class="spinner-border spinner-border-sm me-1"></span>
-              {{ isSubscribed ? 'Pretplaćen' : 'Pretplati se' }}
-            </button>
+
+      <!-- Hero Section -->
+      <div class="d-flex align-items-end p-4 p-lg-5"
+        style="background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.5)), #535353; height: 300px;">
+        <div class="d-flex align-items-end gap-4 w-100">
+          <!-- Artist Image Placeholder -->
+          <div class="rounded-circle shadow-lg d-flex align-items-center justify-content-center"
+            style="width: 160px; height: 160px; background: #333; font-size: 4rem;">
+            👤
           </div>
-          <p class="card-text text-secondary">{{ artist.biography }}</p>
+
+          <div class="mb-2">
+            <span class="d-flex align-items-center gap-2 mb-2 text-white"><i class="small">Verified Artist</i> <span
+                class="text-primary">✔</span></span>
+            <h1 class="display-3 fw-bold text-white mb-3" style="letter-spacing: -0.04em;">{{ artist.name }}</h1>
+            <p class="text-white opacity-75 mb-4" style="max-width: 600px;">{{ artist.biography }}</p>
+
+            <div class="d-flex gap-3">
+              <button class="btn btn-lg rounded-pill px-4 fw-bold"
+                style="background-color: var(--brand-color); border: none; color: black; transform: scale(1);"
+                onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                Play
+              </button>
+
+              <button class="btn btn-lg btn-outline-light rounded-pill px-4 fw-bold"
+                [style.background-color]="isSubscribed ? 'transparent' : 'transparent'"
+                [style.color]="isSubscribed ? 'var(--brand-color)' : 'white'"
+                [style.border-color]="isSubscribed ? 'var(--brand-color)' : 'white'" (click)="toggleSubscription()"
+                [disabled]="subscriptionLoading">
+                {{ isSubscribed ? 'Following' : 'Follow' }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Albums -->
-      <h4 class="fw-bold mb-3">Albumi</h4>
-      <div *ngIf="albums.length === 0" class="text-secondary">
-        Ovaj umetnik nema albume.
-      </div>
+      <!-- Albums Section -->
+      <div class="px-4 py-4" style="background: #121212;">
+        <h2 class="fs-3 fw-bold text-white mb-4">Discography</h2>
 
-      <div class="row g-3" *ngIf="albums.length > 0">
-        <div class="col-12 col-md-6 col-lg-4" *ngFor="let album of albums">
-          <div class="card bg-black border-secondary h-100"
-               style="cursor: pointer;"
-               (click)="goToAlbum(album.id!)">
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-start gap-2">
-                <h5 class="card-title mb-1">{{ album.name }}</h5>
-                <span class="badge bg-primary bg-opacity-25 text-primary border border-primary">
-                  Album
-                </span>
+        <div *ngIf="albums.length === 0" class="text-subdued">
+          No albums available for this artist.
+        </div>
+
+        <div class="row g-4" *ngIf="albums.length > 0">
+          <div class="col-6 col-md-4 col-lg-3 col-xl-2" *ngFor="let album of albums">
+            <div class="p-3 h-100 rounded"
+              style="background-color: #181818; transition: background-color 0.3s ease; cursor: pointer;"
+              onmouseover="this.style.backgroundColor='#282828'" onmouseout="this.style.backgroundColor='#181818'"
+              (click)="goToAlbum(album.id!)">
+
+              <!-- Album Art Placeholder -->
+              <div class="mb-3 rounded shadow-lg position-relative"
+                style="width: 100%; padding-bottom: 100%; background: #333; overflow: hidden;">
+                <div
+                  class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center text-muted fs-1">
+                  💿
+                </div>
               </div>
-              <div class="small text-secondary">
-                <span *ngIf="album.date">{{ album.date | date:'mediumDate' }}</span>
-                <span *ngIf="!album.date">-</span>
-              </div>
+
+              <h5 class="fw-bold text-truncate mb-1 text-white" style="font-size: 1rem;">{{ album.name }}</h5>
+              <p class="text-truncate mb-0" style="font-size: 0.85rem; color: #a7a7a7;">
+                {{ album.date ? (album.date | date:'yyyy') : 'Unknown' }} • Album
+              </p>
             </div>
           </div>
         </div>
       </div>
     </div>
+
   </div>
 </div>

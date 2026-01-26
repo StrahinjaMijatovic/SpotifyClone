@@ -1,275 +1,307 @@
-<div class="container-fluid py-4 bg-black min-vh-100">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="text-light fw-bold">
-                    <span class="text-success">🎵</span> Admin Dashboard
-                </h2>
-                <button class="btn btn-outline-light" (click)="goHome()">
-                    &larr; Nazad na Početnu
-                </button>
-            </div>
-
-            <!-- Tabs -->
-            <ul class="nav nav-tabs mb-4">
-                <li class="nav-item">
-                    <button class="nav-link" [class.active]="activeTab === 'artists'" (click)="activeTab = 'artists'">
-                        Umetnici
-                    </button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link" [class.active]="activeTab === 'albums'" (click)="activeTab = 'albums'">
-                        Albumi
-                    </button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link" [class.active]="activeTab === 'songs'" (click)="activeTab = 'songs'">
-                        Pesme
-                    </button>
-                </li>
-            </ul>
-
-            <!-- Artists Tab -->
-            <div *ngIf="activeTab === 'artists'" class="tab-content">
-                <div class="card bg-dark border-secondary mb-4">
-                    <div class="card-body">
-                        <h5 class="text-light mb-3">Dodaj Novog Umetnika</h5>
-
-                        <div *ngIf="artistMessage" class="alert alert-success">{{ artistMessage }}</div>
-                        <div *ngIf="artistError" class="alert alert-danger">{{ artistError }}</div>
-
-                        <form (ngSubmit)="createArtist()" class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label text-secondary">Ime Umetnika</label>
-                                <input type="text" class="form-control bg-black text-light border-secondary"
-                                    [(ngModel)]="artistForm.name" name="name" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-secondary">Žanrovi</label>
-                                <select multiple class="form-select bg-black text-light border-secondary"
-                                    [(ngModel)]="artistForm.selectedGenres" name="genres" required
-                                    style="min-height: 100px;">
-                                    <option *ngFor="let genre of genres" [value]="genre.id">
-                                        {{ genre.name }}
-                                    </option>
-                                </select>
-                                <small class="text-secondary">Drži Ctrl za višestruki izbor</small>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label text-secondary">Biografija</label>
-                                <textarea class="form-control bg-black text-light border-secondary"
-                                    [(ngModel)]="artistForm.biography" name="biography" rows="3" required></textarea>
-                            </div>
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-success">Kreiraj Umetnika</button>
-                            </div>
-                        </form>
+<div class="min-vh-100 py-4" style="background-color: var(--bg-base);">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-5">
+                    <div class="d-flex align-items-center gap-3">
+                        <div
+                            style="width: 40px; height: 40px; background: var(--brand-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <span style="font-size: 1.2rem; color: white;">⚙️</span>
+                        </div>
+                        <h2 class="fw-bold m-0" style="color: white; letter-spacing: -0.05em;">Admin Dashboard</h2>
                     </div>
+                    <button class="btn btn-secondary border-0"
+                        style="background-color: #282828; color: white;     border-radius: 500px; padding: 8px 24px; font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.1em;"
+                        (click)="goHome()">
+                        Back to Home
+                    </button>
                 </div>
 
-                <div class="card bg-dark border-secondary">
-                    <div class="card-body">
-                        <h5 class="text-light mb-3">Svi Umetnici</h5>
-                        <div class="table-responsive">
-                            <table class="table table-dark table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Ime</th>
-                                        <th>Biografija</th>
-                                        <th>Akcije</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let artist of artists">
-                                        <td>{{ artist.name }}</td>
-                                        <td>{{ artist.biography | slice:0:100 }}...</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-primary" (click)="editArtist(artist)">
-                                                Izmeni
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr *ngIf="artists.length === 0">
-                                        <td colspan="3" class="text-center text-secondary">Nema umetnika</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                <!-- Custom Tabs -->
+                <div class="d-flex gap-4 mb-4 border-bottom border-secondary pb-1"
+                    style="border-color: #282828 !important;">
+                    <button class="btn btn-link text-decoration-none p-0 pb-2 border-bottom border-3"
+                        [style.color]="activeTab === 'artists' ? 'white' : '#b3b3b3'"
+                        [style.border-color]="activeTab === 'artists' ? 'var(--brand-color)' : 'transparent'"
+                        (click)="activeTab = 'artists'" style="font-weight: 700; transition: all 0.2s;">
+                        Artists
+                    </button>
+                    <button class="btn btn-link text-decoration-none p-0 pb-2 border-bottom border-3"
+                        [style.color]="activeTab === 'albums' ? 'white' : '#b3b3b3'"
+                        [style.border-color]="activeTab === 'albums' ? 'var(--brand-color)' : 'transparent'"
+                        (click)="activeTab = 'albums'" style="font-weight: 700; transition: all 0.2s;">
+                        Albums
+                    </button>
+                    <button class="btn btn-link text-decoration-none p-0 pb-2 border-bottom border-3"
+                        [style.color]="activeTab === 'songs' ? 'white' : '#b3b3b3'"
+                        [style.border-color]="activeTab === 'songs' ? 'var(--brand-color)' : 'transparent'"
+                        (click)="activeTab = 'songs'" style="font-weight: 700; transition: all 0.2s;">
+                        Songs
+                    </button>
+                </div>
+
+                <!-- Artists Tab -->
+                <div *ngIf="activeTab === 'artists'" class="fade-in">
+                    <!-- Create Artist Card -->
+                    <div class="card border-0 mb-4 shadow-elevated" style="background-color: #181818;">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-4 text-white">Add New Artist</h5>
+
+                            <div *ngIf="artistMessage" class="alert alert-success mb-4"
+                                style="background: rgba(29, 185, 84, 0.1); border: 1px solid var(--text-positive); color: var(--text-positive);">
+                                {{ artistMessage }}</div>
+                            <div *ngIf="artistError" class="alert alert-danger mb-4"
+                                style="background: rgba(229, 9, 20, 0.1); border: 1px solid var(--text-negative); color: var(--text-negative);">
+                                {{ artistError }}</div>
+
+                            <form (ngSubmit)="createArtist()" class="row g-3">
+                                <div class="col-md-6 form-group">
+                                    <label class="form-label">Artist Name</label>
+                                    <input type="text" class="form-input" [(ngModel)]="artistForm.name" name="name"
+                                        placeholder="e.g. The Weeknd" required>
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label class="form-label">Genres</label>
+                                    <select multiple class="form-input" [(ngModel)]="artistForm.selectedGenres"
+                                        name="genres" required style="min-height: 100px;">
+                                        <option *ngFor="let genre of genres" [value]="genre.id">{{ genre.name }}
+                                        </option>
+                                    </select>
+                                    <small class="text-subdued mt-1 d-block">Hold Ctrl to select multiple</small>
+                                </div>
+                                <div class="col-12 form-group">
+                                    <label class="form-label">Biography</label>
+                                    <textarea class="form-input" [(ngModel)]="artistForm.biography" name="biography"
+                                        rows="3" placeholder="Artist biography..." required></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn-primary"
+                                        style="border-radius: 500px; padding: 12px 32px;">Create Artist</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Artists List -->
+                    <div class="card border-0 shadow-elevated" style="background-color: #181818;">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-4 text-white">All Artists</h5>
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover"
+                                    style="--bs-table-bg: #181818; --bs-table-hover-bg: #282828;">
+                                    <thead>
+                                        <tr style="border-bottom: 1px solid #333;">
+                                            <th class="text-subdued fw-normal text-uppercase fs-7"
+                                                style="font-size: 0.75rem; letter-spacing: 0.1em;">Name</th>
+                                            <th class="text-subdued fw-normal text-uppercase fs-7"
+                                                style="font-size: 0.75rem; letter-spacing: 0.1em;">Biography</th>
+                                            <th class="text-subdued fw-normal text-uppercase fs-7"
+                                                style="font-size: 0.75rem; letter-spacing: 0.1em;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="border-top: none;">
+                                        <tr *ngFor="let artist of artists" style="border-bottom: 1px solid #282828;">
+                                            <td class="text-white align-middle py-3">{{ artist.name }}</td>
+                                            <td class="text-subdued align-middle py-3">{{ artist.biography | slice:0:100
+                                                }}...</td>
+                                            <td class="align-middle py-3">
+                                                <button class="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                                                    (click)="editArtist(artist)">Edit</button>
+                                            </td>
+                                        </tr>
+                                        <tr *ngIf="artists.length === 0">
+                                            <td colspan="3" class="text-center text-subdued py-5">No artists found</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Albums Tab -->
-            <div *ngIf="activeTab === 'albums'" class="tab-content">
-                <div class="card bg-dark border-secondary mb-4">
-                    <div class="card-body">
-                        <h5 class="text-light mb-3">Dodaj Novi Album</h5>
+                <!-- Albums Tab -->
+                <div *ngIf="activeTab === 'albums'" class="fade-in">
+                    <div class="card border-0 mb-4 shadow-elevated" style="background-color: #181818;">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-4 text-white">Add New Album</h5>
 
-                        <div *ngIf="albumMessage" class="alert alert-success">{{ albumMessage }}</div>
-                        <div *ngIf="albumError" class="alert alert-danger">{{ albumError }}</div>
+                            <div *ngIf="albumMessage" class="alert alert-success mb-4"
+                                style="background: rgba(29, 185, 84, 0.1); border: 1px solid var(--text-positive); color: var(--text-positive);">
+                                {{ albumMessage }}</div>
+                            <div *ngIf="albumError" class="alert alert-danger mb-4"
+                                style="background: rgba(229, 9, 20, 0.1); border: 1px solid var(--text-negative); color: var(--text-negative);">
+                                {{ albumError }}</div>
 
-                        <form (ngSubmit)="createAlbum()" class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label text-secondary">Naziv Albuma</label>
-                                <input type="text" class="form-control bg-black text-light border-secondary"
-                                    [(ngModel)]="albumForm.name" name="name" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-secondary">Datum Izdanja</label>
-                                <input type="date" class="form-control bg-black text-light border-secondary"
-                                    [(ngModel)]="albumForm.date" name="date" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-secondary">Žanr</label>
-                                <select class="form-select bg-black text-light border-secondary"
-                                    [(ngModel)]="albumForm.genre" name="genre" required>
-                                    <option value="" disabled>-- Izaberi žanr --</option>
-                                    <option *ngFor="let genre of genres" [value]="genre.id">
-                                        {{ genre.name }}
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-secondary">Umetnici</label>
-                                <select multiple class="form-select bg-black text-light border-secondary"
-                                    [(ngModel)]="albumForm.selectedArtists" name="artists" required
-                                    style="min-height: 100px;">
-                                    <option *ngFor="let artist of artists" [value]="artist.id">
-                                        {{ artist.name }}
-                                    </option>
-                                </select>
-                                <small class="text-secondary">Drži Ctrl za višestruki izbor</small>
-                            </div>
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-success">Kreiraj Album</button>
-                            </div>
-                        </form>
+                            <form (ngSubmit)="createAlbum()" class="row g-3">
+                                <div class="col-md-6 form-group">
+                                    <label class="form-label">Album Name</label>
+                                    <input type="text" class="form-input" [(ngModel)]="albumForm.name" name="name"
+                                        required>
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label class="form-label">Release Date</label>
+                                    <input type="date" class="form-input" [(ngModel)]="albumForm.date" name="date"
+                                        required>
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label class="form-label">Genre</label>
+                                    <select class="form-input" [(ngModel)]="albumForm.genre" name="genre" required>
+                                        <option value="" disabled>-- Select Genre --</option>
+                                        <option *ngFor="let genre of genres" [value]="genre.id">{{ genre.name }}
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label class="form-label">Artists</label>
+                                    <select multiple class="form-input" [(ngModel)]="albumForm.selectedArtists"
+                                        name="artists" required style="min-height: 100px;">
+                                        <option *ngFor="let artist of artists" [value]="artist.id">{{ artist.name }}
+                                        </option>
+                                    </select>
+                                    <small class="text-subdued mt-1 d-block">Hold Ctrl to select multiple</small>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn-primary"
+                                        style="border-radius: 500px; padding: 12px 32px;">Create Album</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </div>
 
-                <div class="card bg-dark border-secondary">
-                    <div class="card-body">
-                        <h5 class="text-light mb-3">Svi Albumi</h5>
-                        <div class="table-responsive">
-                            <table class="table table-dark table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Naziv</th>
-                                        <th>Datum</th>
-                                        <th>ID</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let album of albums">
-                                        <td>{{ album.name }}</td>
-                                        <td>{{ album.date | date:'shortDate' }}</td>
-                                        <td><code class="text-success">{{ album.id }}</code></td>
-                                    </tr>
-                                    <tr *ngIf="albums.length === 0">
-                                        <td colspan="3" class="text-center text-secondary">Nema albuma</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    <div class="card border-0 shadow-elevated" style="background-color: #181818;">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-4 text-white">All Albums</h5>
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover"
+                                    style="--bs-table-bg: #181818; --bs-table-hover-bg: #282828;">
+                                    <thead>
+                                        <tr style="border-bottom: 1px solid #333;">
+                                            <th class="text-subdued fw-normal text-uppercase fs-7"
+                                                style="font-size: 0.75rem; letter-spacing: 0.1em;">Name</th>
+                                            <th class="text-subdued fw-normal text-uppercase fs-7"
+                                                style="font-size: 0.75rem; letter-spacing: 0.1em;">Date</th>
+                                            <th class="text-subdued fw-normal text-uppercase fs-7"
+                                                style="font-size: 0.75rem; letter-spacing: 0.1em;">ID</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="border-top: none;">
+                                        <tr *ngFor="let album of albums" style="border-bottom: 1px solid #282828;">
+                                            <td class="text-white align-middle py-3">{{ album.name }}</td>
+                                            <td class="text-subdued align-middle py-3">{{ album.date | date:'mediumDate'
+                                                }}</td>
+                                            <td class="align-middle py-3"><code
+                                                    style="color: var(--brand-color);">{{ album.id }}</code></td>
+                                        </tr>
+                                        <tr *ngIf="albums.length === 0">
+                                            <td colspan="3" class="text-center text-subdued py-5">No albums found</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Songs Tab -->
-            <div *ngIf="activeTab === 'songs'" class="tab-content">
-                <div class="card bg-dark border-secondary mb-4">
-                    <div class="card-body">
-                        <h5 class="text-light mb-3">Dodaj Novu Pesmu</h5>
+                <!-- Songs Tab -->
+                <div *ngIf="activeTab === 'songs'" class="fade-in">
+                    <div class="card border-0 mb-4 shadow-elevated" style="background-color: #181818;">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-4 text-white">Add New Song</h5>
 
-                        <div *ngIf="songMessage" class="alert alert-success">{{ songMessage }}</div>
-                        <div *ngIf="songError" class="alert alert-danger">{{ songError }}</div>
+                            <div *ngIf="songMessage" class="alert alert-success mb-4"
+                                style="background: rgba(29, 185, 84, 0.1); border: 1px solid var(--text-positive); color: var(--text-positive);">
+                                {{ songMessage }}</div>
+                            <div *ngIf="songError" class="alert alert-danger mb-4"
+                                style="background: rgba(229, 9, 20, 0.1); border: 1px solid var(--text-negative); color: var(--text-negative);">
+                                {{ songError }}</div>
 
-                        <form (ngSubmit)="createSong()" class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label text-secondary">Naziv Pesme</label>
-                                <input type="text" class="form-control bg-black text-light border-secondary"
-                                    [(ngModel)]="songForm.name" name="name" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-secondary">Trajanje (sekunde)</label>
-                                <input type="number" class="form-control bg-black text-light border-secondary"
-                                    [(ngModel)]="songForm.duration" name="duration" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label text-secondary">Žanr</label>
-                                <select class="form-select bg-black text-light border-secondary"
-                                    [(ngModel)]="songForm.genre" name="genre" required>
-                                    <option value="" disabled>-- Izaberi žanr --</option>
-                                    <option *ngFor="let genre of genres" [value]="genre.id">
-                                        {{ genre.name }}
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label text-secondary">Album</label>
-                                <select class="form-select bg-black text-light border-secondary"
-                                    [(ngModel)]="songForm.album" name="album" required>
-                                    <option value="" disabled>-- Izaberi album --</option>
-                                    <option *ngFor="let album of albums" [value]="album.id">
-                                        {{ album.name }}
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label text-secondary">Umetnici</label>
-                                <select multiple class="form-select bg-black text-light border-secondary"
-                                    [(ngModel)]="songForm.selectedArtists" name="artists" required
-                                    style="min-height: 80px;">
-                                    <option *ngFor="let artist of artists" [value]="artist.id">
-                                        {{ artist.name }}
-                                    </option>
-                                </select>
-                                <small class="text-secondary">Ctrl + klik</small>
-                            </div>
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-success">Kreiraj Pesmu</button>
-                            </div>
-                        </form>
+                            <form (ngSubmit)="createSong()" class="row g-3">
+                                <div class="col-md-6 form-group">
+                                    <label class="form-label">Song Name</label>
+                                    <input type="text" class="form-input" [(ngModel)]="songForm.name" name="name"
+                                        required>
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label class="form-label">Duration (seconds)</label>
+                                    <input type="number" class="form-input" [(ngModel)]="songForm.duration"
+                                        name="duration" required>
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    <label class="form-label">Genre</label>
+                                    <select class="form-input" [(ngModel)]="songForm.genre" name="genre" required>
+                                        <option value="" disabled>-- Select Genre --</option>
+                                        <option *ngFor="let genre of genres" [value]="genre.id">{{ genre.name }}
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    <label class="form-label">Album</label>
+                                    <select class="form-input" [(ngModel)]="songForm.album" name="album" required>
+                                        <option value="" disabled>-- Select Album --</option>
+                                        <option *ngFor="let album of albums" [value]="album.id">{{ album.name }}
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    <label class="form-label">Artists</label>
+                                    <select multiple class="form-input" [(ngModel)]="songForm.selectedArtists"
+                                        name="artists" required style="min-height: 80px;">
+                                        <option *ngFor="let artist of artists" [value]="artist.id">{{ artist.name }}
+                                        </option>
+                                    </select>
+                                    <small class="text-subdued mt-1 d-block">Ctrl + click</small>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn-primary"
+                                        style="border-radius: 500px; padding: 12px 32px;">Create Song</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </div>
 
-                <div class="card bg-dark border-secondary">
-                    <div class="card-body">
-                        <h5 class="text-light mb-3">Sve Pesme</h5>
-                        <div class="table-responsive">
-                            <table class="table table-dark table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Naziv</th>
-                                        <th>Trajanje</th>
-                                        <th>Album ID</th>
-                                        <th>Akcije</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let song of songs">
-                                        <td>{{ song.name }}</td>
-                                        <td>{{ song.duration }}s</td>
-                                        <td><code class="text-success">{{ song.album }}</code></td>
-                                        <td>
-                                            <button
-                                                class="btn btn-sm btn-outline-danger"
-                                                (click)="deleteSong(song)"
-                                                [disabled]="deletingsongId === song.id">
-                                                {{ deletingsongId === song.id ? 'Brisanje...' : 'Obriši' }}
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr *ngIf="songs.length === 0">
-                                        <td colspan="4" class="text-center text-secondary">Nema pesama</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    <div class="card border-0 shadow-elevated" style="background-color: #181818;">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-4 text-white">All Songs</h5>
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover"
+                                    style="--bs-table-bg: #181818; --bs-table-hover-bg: #282828;">
+                                    <thead>
+                                        <tr style="border-bottom: 1px solid #333;">
+                                            <th class="text-subdued fw-normal text-uppercase fs-7"
+                                                style="font-size: 0.75rem; letter-spacing: 0.1em;">Name</th>
+                                            <th class="text-subdued fw-normal text-uppercase fs-7"
+                                                style="font-size: 0.75rem; letter-spacing: 0.1em;">Duration</th>
+                                            <th class="text-subdued fw-normal text-uppercase fs-7"
+                                                style="font-size: 0.75rem; letter-spacing: 0.1em;">Album ID</th>
+                                            <th class="text-subdued fw-normal text-uppercase fs-7"
+                                                style="font-size: 0.75rem; letter-spacing: 0.1em;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="border-top: none;">
+                                        <tr *ngFor="let song of songs" style="border-bottom: 1px solid #282828;">
+                                            <td class="text-white align-middle py-3">{{ song.name }}</td>
+                                            <td class="text-subdued align-middle py-3">{{ song.duration }}s</td>
+                                            <td class="align-middle py-3"><code
+                                                    style="color: var(--brand-color);">{{ song.album }}</code></td>
+                                            <td class="align-middle py-3">
+                                                <button class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                                    (click)="deleteSong(song)" [disabled]="deletingsongId === song.id">
+                                                    {{ deletingsongId === song.id ? 'Deleting...' : 'Delete' }}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr *ngIf="songs.length === 0">
+                                            <td colspan="4" class="text-center text-subdued py-5">No songs found</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
+            </div>
         </div>
     </div>
 </div>

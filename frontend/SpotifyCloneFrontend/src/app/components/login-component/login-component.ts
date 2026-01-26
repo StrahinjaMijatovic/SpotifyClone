@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -37,7 +37,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private recaptchaService: RecaptchaService
+    private recaptchaService: RecaptchaService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -115,8 +116,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    // Odmah prikaži OTP polje
-    this.step = 2;
+    this.loading = true; // Show loading indicator
     this.errorMessage = null;
 
     this.authService.login({
@@ -125,9 +125,14 @@ export class LoginComponent implements OnInit, AfterViewInit {
       recaptcha_token: this.recaptchaToken
     }).subscribe({
       next: (res) => {
+        this.loading = false;
+        console.log('Login success, switching to step 2');
         this.tempToken = res.temp_token;
+        this.step = 2; // Only switch to OTP step on success
+        this.cdr.detectChanges();
       },
       error: (err) => {
+        this.loading = false;
         this.step = 1;
         this.errorMessage = err?.error?.error || 'Login failed';
         // Reset reCAPTCHA on error
