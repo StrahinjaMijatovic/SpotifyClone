@@ -101,3 +101,33 @@ func MarkAsRead(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Notification marked as read"})
 }
+
+type CreateNotificationRequest struct {
+	UserID  string `json:"user_id" binding:"required"`
+	Message string `json:"message" binding:"required"`
+	Type    string `json:"type" binding:"required"`
+}
+
+func CreateNotification(c *gin.Context) {
+	var req CreateNotificationRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
+		return
+	}
+
+	ctx := c.Request.Context()
+	notificationID := gocql.TimeUUID()
+
+	if err := session.Query(`
+		INSERT INTO notifications (user_id, id, message, type, read, created_at)
+		VALUES (?, ?, ?, ?, ?, ?)
+	`, req.UserID, notificationID, req.Message, req.Type, false, time.Now()).WithContext(ctx).Exec(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create notification"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "Notification created",
+		"id":      notificationID.String(),
+	})
+}

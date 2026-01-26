@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"crypto/tls"
 	"fmt"
 	"log"
 	"net/http"
@@ -18,8 +17,8 @@ import (
 )
 
 const (
-	maxRetries     = 30              // Maksimalan broj pokušaja
-	initialBackoff = 2 * time.Second // Početno čekanje
+	maxRetries     = 30               // Maksimalan broj pokušaja
+	initialBackoff = 2 * time.Second  // Početno čekanje
 	maxBackoff     = 30 * time.Second // Maksimalno čekanje između pokušaja
 )
 
@@ -66,11 +65,7 @@ func main() {
 	srv := &http.Server{
 		Addr:    ":" + port,
 		Handler: router,
-		TLSConfig: &tls.Config{
-			MinVersion: tls.VersionTLS12,
-		},
 	}
-	srv.ListenAndServeTLS("cert.pem", "key.pem")
 
 	go func() {
 		log.Printf("Notifications service starting on port %s", port)
@@ -228,6 +223,7 @@ func setupRoutes(router *gin.Engine) {
 	{
 		api.GET("/notifications", middleware.AuthMiddleware(), handlers.GetNotifications)
 		api.PUT("/notifications/:id/read", middleware.AuthMiddleware(), handlers.MarkAsRead)
+		api.POST("/notifications", handlers.CreateNotification) // Called by content-service
 	}
 
 	router.GET("/health", func(c *gin.Context) {

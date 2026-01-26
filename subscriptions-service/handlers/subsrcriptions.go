@@ -159,6 +159,39 @@ func DeleteSubscription(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Subscription deleted successfully"})
 }
 
+func GetFollowersByArtist(c *gin.Context) {
+	artistID := c.Param("artist_id")
+	if artistID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing artist_id"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	// Pattern: subscription:*:artist:artistID
+	pattern := "subscription:*:artist:" + artistID
+	keys, err := scanKeys(ctx, pattern)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch followers"})
+		return
+	}
+
+	userIDs := make([]string, 0)
+	for _, key := range keys {
+		data, err := redisClient.Get(ctx, key).Result()
+		if err != nil {
+			continue
+		}
+
+		var subscription Subscription
+		if err := json.Unmarshal([]byte(data), &subscription); err == nil {
+			userIDs = append(userIDs, subscription.UserID)
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{"user_ids": userIDs})
+}
+
 func CheckSubscription(c *gin.Context) {
 	userID := c.GetString("user_id")
 	if userID == "" {

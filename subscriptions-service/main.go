@@ -102,6 +102,7 @@ func setupRoutes(router *gin.Engine) {
 		api.GET("/subscriptions", middleware.AuthMiddleware(), handlers.GetSubscriptions)
 		api.GET("/subscriptions/:target_id", middleware.AuthMiddleware(), handlers.CheckSubscription)
 		api.DELETE("/subscriptions/:id", middleware.AuthMiddleware(), handlers.DeleteSubscription)
+		api.GET("/subscriptions/followers/:artist_id", handlers.GetFollowersByArtist) // Called by content-service
 	}
 
 	router.GET("/health", func(c *gin.Context) {

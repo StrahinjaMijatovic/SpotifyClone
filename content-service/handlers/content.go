@@ -1,6 +1,9 @@
 package handlers
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
 	"net/http"
 	"time"
 
@@ -225,6 +228,9 @@ func CreateAlbum(c *gin.Context) {
 		return
 	}
 
+	// Notify followers of all artists
+	go notifyFollowersAboutAlbum(album.Artists, album.Name, album.ID.Hex())
+
 	c.JSON(http.StatusCreated, album)
 }
 
@@ -343,6 +349,9 @@ func CreateSong(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create song"})
 		return
 	}
+
+	// Notify followers of all artists
+	go notifyFollowersAboutSong(song.Artists, song.Name, song.ID.Hex())
 
 	c.JSON(http.StatusCreated, song)
 }
@@ -477,4 +486,76 @@ func SearchContent(c *gin.Context) {
 		"albums":  albums,
 		"songs":   songs,
 	})
+}
+
+// Helper functions for notifications
+func notifyFollowersAboutSong(artistIDs []primitive.ObjectID, songName string, songID string) {
+	for _, artistID := range artistIDs {
+		followerIDs := getFollowers(artistID.Hex())
+
+		// Get artist name
+		var artist models.Artist
+		ctx := context.Background()
+		if err := contentDB.Collection("artists").FindOne(ctx, bson.M{"_id": artistID}).Decode(&artist); err != nil {
+			continue
+		}
+
+		message := "New song '" + songName + "' by " + artist.Name
+
+		for _, userID := range followerIDs {
+			sendNotification(userID, message, "new_song")
+		}
+	}
+}
+
+func notifyFollowersAboutAlbum(artistIDs []primitive.ObjectID, albumName string, albumID string) {
+	for _, artistID := range artistIDs {
+		followerIDs := getFollowers(artistID.Hex())
+
+		// Get artist name
+		var artist models.Artist
+		ctx := context.Background()
+		if err := contentDB.Collection("artists").FindOne(ctx, bson.M{"_id": artistID}).Decode(&artist); err != nil {
+			continue
+		}
+
+		message := "New album '" + albumName + "' by " + artist.Name
+
+		for _, userID := range followerIDs {
+			sendNotification(userID, message, "new_album")
+		}
+	}
+}
+
+func getFollowers(artistID string) []string {
+	// Call subscriptions-service
+	subscriptionsURL := "http://subscriptions-service:8004/api/v1/subscriptions/followers/" + artistID
+	resp, err := http.Get(subscriptionsURL)
+	if err != nil {
+		return []string{}
+	}
+	defer resp.Body.Close()
+
+	var result struct {
+		UserIDs []string `json:"user_ids"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return []string{}
+	}
+
+	return result.UserIDs
+}
+
+func sendNotification(userID, message, notifType string) {
+	// Call notifications-service
+	notificationsURL := "http://notifications-service:8005/api/v1/notifications"
+
+	payload := map[string]string{
+		"user_id": userID,
+		"message": message,
+		"type":    notifType,
+	}
+
+	jsonData, _ := json.Marshal(payload)
+	http.Post(notificationsURL, "application/json", bytes.NewBuffer(jsonData))
 }

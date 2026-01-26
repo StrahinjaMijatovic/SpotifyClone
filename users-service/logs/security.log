@@ -573,3 +573,25 @@ This code expires in 5 minutes.
 [2026-01-26 19:33:44] TYPE=failed ACTION=login IP=172.19.0.11 DETAILS=User admin invalid password
 [2026-01-26 19:33:58] TYPE=success ACTION=login_otp_sent IP=172.19.0.11 DETAILS=User admin OTP sent
 [2026-01-26 19:34:03] TYPE=success ACTION=login IP=172.19.0.11 DETAILS=User admin logged in
+2026/01/26 19:36:41 Password expiry configured: max age = 60 dana
+2026/01/26 19:36:41 Connected to MongoDB
+2026/01/26 19:36:41 Connected to Redis
+2026/01/26 19:36:41 MongoDB indexes for users ensured
+2026/01/26 19:36:41 Users service starting on HTTP port 8001 (TLS disabled)
+[2026-01-26 19:37:33] TYPE=success ACTION=login_otp_sent IP=172.19.0.15 DETAILS=User Petar OTP sent
+[2026-01-26 19:37:40] TYPE=success ACTION=login IP=172.19.0.15 DETAILS=User Petar logged in
+[2026-01-26 19:40:01] TYPE=success ACTION=login_otp_sent IP=172.19.0.15 DETAILS=User Petar OTP sent
+[2026-01-26 19:40:06] TYPE=success ACTION=login IP=172.19.0.15 DETAILS=User Petar logged in
+[2026-01-26 19:40:53] TYPE=success ACTION=login_otp_sent IP=172.19.0.15 DETAILS=User admin OTP sent
+[2026-01-26 19:40:58] TYPE=success ACTION=login IP=172.19.0.15 DETAILS=User admin logged in
+2026/01/26 19:52:58 Password expiry configured: max age = 60 dana
+2026/01/26 19:52:59 Connected to MongoDB
+2026/01/26 19:52:59 Connected to Redis
+2026/01/26 19:52:59 MongoDB indexes for users ensured
+2026/01/26 19:52:59 Users service starting on HTTP port 8001 (TLS disabled)
+[2026-01-26 19:53:34] TYPE=success ACTION=login_otp_sent IP=172.19.0.10 DETAILS=User Petar OTP sent
+[2026-01-26 19:53:42] TYPE=success ACTION=login IP=172.19.0.10 DETAILS=User Petar logged in
+[2026-01-26 19:54:06] TYPE=success ACTION=login_otp_sent IP=172.19.0.10 DETAILS=User admin OTP sent
+[2026-01-26 19:54:13] TYPE=success ACTION=login IP=172.19.0.10 DETAILS=User admin logged in
+[2026-01-26 19:55:12] TYPE=success ACTION=login_otp_sent IP=172.19.0.10 DETAILS=User Petar OTP sent
+[2026-01-26 19:55:17] TYPE=success ACTION=login IP=172.19.0.10 DETAILS=User Petar logged in
