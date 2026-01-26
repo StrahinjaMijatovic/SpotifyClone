@@ -7,6 +7,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { ContentService } from '../../services/content.service';
 import { AuthService } from '../../services/auth.service';
+import { NotificationsService } from '../../services/notifications.service';
 import type { Artist, Album, Song } from '../../models/content.models';
 
 @Component({
@@ -26,6 +27,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   isSearchActive = false;
   loading = false;
   errorMessage: string | null = null;
+  unreadNotificationCount = 0;
 
   private searchSubject = new Subject<string>();
   private searchSubscription?: Subscription;
@@ -37,6 +39,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(
     private contentService: ContentService,
     private authService: AuthService,
+    private notificationsService: NotificationsService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) { }
@@ -45,6 +48,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.loadGenres();
     this.loadArtists();
     this.setupLiveSearch();
+    this.loadUnreadCount();
   }
 
   ngOnDestroy(): void {
@@ -165,6 +169,18 @@ export class HomeComponent implements OnInit, OnDestroy {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  loadUnreadCount(): void {
+    this.notificationsService.getUnreadCount().subscribe({
+      next: (data) => {
+        this.unreadNotificationCount = data.unread_count;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.unreadNotificationCount = 0;
+      }
+    });
   }
 
   logout(): void {

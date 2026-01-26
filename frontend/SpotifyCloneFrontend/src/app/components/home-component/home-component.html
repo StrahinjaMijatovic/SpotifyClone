@@ -16,9 +16,14 @@
           (click)="loadArtists()">
           Home
         </button>
-        <button class="btn btn-link text-decoration-none" style="color: var(--text-subdued); font-weight: 700;"
-          (click)="goToNotifications()">
+        <button class="btn btn-link text-decoration-none position-relative"
+          style="color: var(--text-subdued); font-weight: 700;" (click)="goToNotifications()">
           Notifications
+          <span *ngIf="unreadNotificationCount > 0"
+            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+            style="font-size: 0.7rem; padding: 0.25em 0.5em;">
+            {{ unreadNotificationCount }}
+          </span>
         </button>
         <button *ngIf="isAdmin" class="btn btn-link text-decoration-none"
           style="color: var(--text-subdued); font-weight: 700;" (click)="goToAdmin()">

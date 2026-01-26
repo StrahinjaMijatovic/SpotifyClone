@@ -131,3 +131,33 @@ func CreateNotification(c *gin.Context) {
 		"id":      notificationID.String(),
 	})
 }
+
+func GetUnreadCount(c *gin.Context) {
+	userID := c.GetString("user_id")
+	if userID == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	// Fetch all notifications and count unread ones
+	count := 0
+	iter := session.Query(`
+		SELECT read FROM notifications WHERE user_id = ?
+	`, userID).WithContext(ctx).Iter()
+
+	var read bool
+	for iter.Scan(&read) {
+		if !read {
+			count++
+		}
+	}
+
+	if err := iter.Close(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch unread count"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"unread_count": count})
+}

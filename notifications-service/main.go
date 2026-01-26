@@ -222,6 +222,7 @@ func setupRoutes(router *gin.Engine) {
 	api := router.Group("/api/v1")
 	{
 		api.GET("/notifications", middleware.AuthMiddleware(), handlers.GetNotifications)
+		api.GET("/notifications/unread/count", middleware.AuthMiddleware(), handlers.GetUnreadCount)
 		api.PUT("/notifications/:id/read", middleware.AuthMiddleware(), handlers.MarkAsRead)
 		api.POST("/notifications", handlers.CreateNotification) // Called by content-service
 	}

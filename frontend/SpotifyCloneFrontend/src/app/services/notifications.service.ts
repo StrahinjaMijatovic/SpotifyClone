@@ -28,7 +28,11 @@ export class NotificationsService {
   }
 
   // Označi notifikaciju kao pročitanu
-  markAsRead(notificationId: string): Observable<any> {
-    return this.http.put(`${this.apiBase}/notifications/${notificationId}/read`, {}, { headers: this.getAuthHeaders() });
+  markAsRead(id: string): Observable<any> {
+    return this.http.put(`${this.apiBase}/notifications/${id}/read`, {}, { headers: this.getAuthHeaders() });
+  }
+
+  getUnreadCount(): Observable<{ unread_count: number }> {
+    return this.http.get<{ unread_count: number }>(`${this.apiBase}/notifications/unread/count`, { headers: this.getAuthHeaders() });
   }
 }

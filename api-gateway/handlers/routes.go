@@ -62,6 +62,7 @@ func SetupRoutes(router *gin.Engine) {
 
 		// Notifications service routes
 		api.GET("/notifications", proxy.ProxyToNotificationsService)
+		api.GET("/notifications/unread/count", proxy.ProxyToNotificationsService)
 		api.PUT("/notifications/:id/read", proxy.ProxyToNotificationsService)
 		api.POST("/notifications", proxy.ProxyToNotificationsService)
 
