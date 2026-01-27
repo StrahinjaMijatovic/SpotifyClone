@@ -1,0 +1,1088 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Spotify Clone API",
+    "description": "REST API dokumentacija za Spotify Clone aplikaciju. Mikroservisna arhitektura sa autentifikacijom, upravljanjem sadržajem, ocenama, pretplatama, notifikacijama i preporukama.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "API Support"
+    },
+    "license": {
+      "name": "MIT"
+    }
+  },
+  "host": "localhost:8080",
+  "basePath": "/api/v1",
+  "schemes": ["http", "https"],
+  "securityDefinitions": {
+    "BearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "JWT token. Format: Bearer {token}"
+    }
+  },
+  "tags": [
+    {"name": "Auth", "description": "Autentifikacija i upravljanje korisnicima"},
+    {"name": "Content", "description": "Upravljanje muzičkim sadržajem (artisti, albumi, pesme)"},
+    {"name": "Ratings", "description": "Ocenjivanje pesama"},
+    {"name": "Subscriptions", "description": "Pretplate na artiste i žanrove"},
+    {"name": "Notifications", "description": "Korisničke notifikacije"},
+    {"name": "Recommendations", "description": "Personalizovane preporuke"}
+  ],
+  "paths": {
+    "/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Registracija novog korisnika",
+        "description": "Kreira novi korisnički nalog. Šalje email za verifikaciju.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RegisterRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Uspješna registracija",
+            "schema": {"$ref": "#/definitions/MessageResponse"}
+          },
+          "400": {
+            "description": "Nevažeći podaci",
+            "schema": {"$ref": "#/definitions/ErrorResponse"}
+          },
+          "409": {
+            "description": "Korisnik već postoji",
+            "schema": {"$ref": "#/definitions/ErrorResponse"}
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Prijava korisnika",
+        "description": "Inicira proces prijave. Vraća temp_token i šalje OTP kod na email.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OTP poslan na email",
+            "schema": {"$ref": "#/definitions/LoginInitiateResponse"}
+          },
+          "401": {
+            "description": "Pogrešni kredencijali",
+            "schema": {"$ref": "#/definitions/ErrorResponse"}
+          },
+          "423": {
+            "description": "Nalog zaključan",
+            "schema": {"$ref": "#/definitions/ErrorResponse"}
+          }
+        }
+      }
+    },
+    "/verify-otp": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Verifikacija OTP koda",
+        "description": "Verifikuje OTP kod i vraća JWT token za autentifikaciju.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/VerifyOTPRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Uspješna verifikacija",
+            "schema": {"$ref": "#/definitions/VerifyOTPResponse"}
+          },
+          "400": {
+            "description": "Nevažeći ili istekao OTP",
+            "schema": {"$ref": "#/definitions/ErrorResponse"}
+          }
+        }
+      }
+    },
+    "/verify-email": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Verifikacija email adrese",
+        "description": "Verifikuje email adresu putem linka poslanog na email.",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "token",
+            "type": "string",
+            "required": true,
+            "description": "Token za verifikaciju emaila"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email uspešno verifikovan",
+            "schema": {"$ref": "#/definitions/MessageResponse"}
+          },
+          "400": {
+            "description": "Nevažeći token",
+            "schema": {"$ref": "#/definitions/ErrorResponse"}
+          }
+        }
+      }
+    },
+    "/magic-link": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Zahtev za magic link",
+        "description": "Šalje magic link na email za prijavu bez lozinke.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MagicLinkRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Magic link poslan",
+            "schema": {"$ref": "#/definitions/MessageResponse"}
+          },
+          "404": {
+            "description": "Korisnik nije pronađen",
+            "schema": {"$ref": "#/definitions/ErrorResponse"}
+          }
+        }
+      }
+    },
+    "/magic-login": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Prijava putem magic linka",
+        "description": "Autentifikuje korisnika putem magic link tokena.",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "token",
+            "type": "string",
+            "required": true,
+            "description": "Magic link token"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Uspešna prijava",
+            "schema": {"$ref": "#/definitions/VerifyOTPResponse"}
+          },
+          "400": {
+            "description": "Nevažeći token",
+            "schema": {"$ref": "#/definitions/ErrorResponse"}
+          }
+        }
+      }
+    },
+    "/reset-password": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Zahtev za reset lozinke",
+        "description": "Šalje link za reset lozinke na email.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ResetPasswordRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Link za reset poslan",
+            "schema": {"$ref": "#/definitions/MessageResponse"}
+          }
+        }
+      }
+    },
+    "/reset-password/confirm": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Potvrda reseta lozinke",
+        "description": "Postavlja novu lozinku koristeći reset token.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ResetPasswordConfirmRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lozinka uspešno promenjena",
+            "schema": {"$ref": "#/definitions/MessageResponse"}
+          },
+          "400": {
+            "description": "Nevažeći token ili slaba lozinka",
+            "schema": {"$ref": "#/definitions/ErrorResponse"}
+          }
+        }
+      }
+    },
+    "/change-password": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Promena lozinke",
+        "description": "Menja lozinku autentifikovanog korisnika.",
+        "security": [{"BearerAuth": []}],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ChangePasswordRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lozinka promenjena",
+            "schema": {"$ref": "#/definitions/MessageResponse"}
+          },
+          "400": {
+            "description": "Pogrešna trenutna lozinka",
+            "schema": {"$ref": "#/definitions/ErrorResponse"}
+          },
+          "401": {
+            "description": "Nije autentifikovan",
+            "schema": {"$ref": "#/definitions/ErrorResponse"}
+          }
+        }
+      }
+    },
+    "/profile": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Dohvati profil",
+        "description": "Vraća profil trenutno prijavljenog korisnika.",
+        "security": [{"BearerAuth": []}],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Profil korisnika",
+            "schema": {"$ref": "#/definitions/UserProfile"}
+          },
+          "401": {
+            "description": "Nije autentifikovan",
+            "schema": {"$ref": "#/definitions/ErrorResponse"}
+          }
+        }
+      },
+      "put": {
+        "tags": ["Auth"],
+        "summary": "Ažuriraj profil",
+        "description": "Ažurira profil trenutno prijavljenog korisnika.",
+        "security": [{"BearerAuth": []}],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateProfileRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profil ažuriran",
+            "schema": {"$ref": "#/definitions/UserProfile"}
+          },
+          "401": {
+            "description": "Nije autentifikovan",
+            "schema": {"$ref": "#/definitions/ErrorResponse"}
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Auth"],
+        "summary": "Obriši nalog",
+        "description": "Trajno briše korisnički nalog.",
+        "security": [{"BearerAuth": []}],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Nalog obrisan",
+            "schema": {"$ref": "#/definitions/MessageResponse"}
+          },
+          "401": {
+            "description": "Nije autentifikovan",
+            "schema": {"$ref": "#/definitions/ErrorResponse"}
+          }
+        }
+      }
+    },
+    "/logout": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Odjava",
+        "description": "Odjavljuje korisnika i invalidira token.",
+        "security": [{"BearerAuth": []}],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Uspješna odjava",
+            "schema": {"$ref": "#/definitions/MessageResponse"}
+          }
+        }
+      }
+    },
+    "/genres": {
+      "get": {
+        "tags": ["Content"],
+        "summary": "Lista žanrova",
+        "description": "Vraća listu svih muzičkih žanrova.",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Lista žanrova",
+            "schema": {
+              "type": "array",
+              "items": {"$ref": "#/definitions/Genre"}
+            }
+          }
+        }
+      }
+    },
+    "/artists": {
+      "get": {
+        "tags": ["Content"],
+        "summary": "Lista artista",
+        "description": "Vraća listu svih artista. Podržava paginaciju i filtriranje.",
+        "produces": ["application/json"],
+        "parameters": [
+          {"in": "query", "name": "page", "type": "integer", "description": "Broj stranice"},
+          {"in": "query", "name": "limit", "type": "integer", "description": "Broj rezultata po stranici"},
+          {"in": "query", "name": "genre", "type": "string", "description": "Filter po žanru"}
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista artista",
+            "schema": {
+              "type": "array",
+              "items": {"$ref": "#/definitions/Artist"}
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Content"],
+        "summary": "Kreiraj artista",
+        "description": "Kreira novog artista. Samo admin.",
+        "security": [{"BearerAuth": []}],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {"$ref": "#/definitions/CreateArtistRequest"}
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Artist kreiran",
+            "schema": {"$ref": "#/definitions/Artist"}
+          },
+          "401": {"description": "Nije autentifikovan"},
+          "403": {"description": "Nedovoljna prava (nije admin)"}
+        }
+      }
+    },
+    "/artists/{id}": {
+      "get": {
+        "tags": ["Content"],
+        "summary": "Detalji artista",
+        "description": "Vraća detalje o artistu uključujući albume i pesme.",
+        "produces": ["application/json"],
+        "parameters": [
+          {"in": "path", "name": "id", "type": "string", "required": true, "description": "ID artista"}
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalji artista",
+            "schema": {"$ref": "#/definitions/ArtistDetail"}
+          },
+          "404": {"description": "Artist nije pronađen"}
+        }
+      },
+      "put": {
+        "tags": ["Content"],
+        "summary": "Ažuriraj artista",
+        "description": "Ažurira podatke o artistu. Samo admin.",
+        "security": [{"BearerAuth": []}],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {"in": "path", "name": "id", "type": "string", "required": true},
+          {"in": "body", "name": "body", "required": true, "schema": {"$ref": "#/definitions/CreateArtistRequest"}}
+        ],
+        "responses": {
+          "200": {"description": "Artist ažuriran", "schema": {"$ref": "#/definitions/Artist"}},
+          "401": {"description": "Nije autentifikovan"},
+          "403": {"description": "Nedovoljna prava"}
+        }
+      }
+    },
+    "/albums": {
+      "get": {
+        "tags": ["Content"],
+        "summary": "Lista albuma",
+        "description": "Vraća listu svih albuma.",
+        "produces": ["application/json"],
+        "parameters": [
+          {"in": "query", "name": "artist_id", "type": "string", "description": "Filter po artistu"}
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista albuma",
+            "schema": {"type": "array", "items": {"$ref": "#/definitions/Album"}}
+          }
+        }
+      },
+      "post": {
+        "tags": ["Content"],
+        "summary": "Kreiraj album",
+        "description": "Kreira novi album. Samo admin.",
+        "security": [{"BearerAuth": []}],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {"in": "body", "name": "body", "required": true, "schema": {"$ref": "#/definitions/CreateAlbumRequest"}}
+        ],
+        "responses": {
+          "201": {"description": "Album kreiran", "schema": {"$ref": "#/definitions/Album"}},
+          "401": {"description": "Nije autentifikovan"},
+          "403": {"description": "Nedovoljna prava"}
+        }
+      }
+    },
+    "/albums/{id}": {
+      "get": {
+        "tags": ["Content"],
+        "summary": "Detalji albuma",
+        "description": "Vraća detalje o albumu uključujući sve pesme.",
+        "produces": ["application/json"],
+        "parameters": [
+          {"in": "path", "name": "id", "type": "string", "required": true}
+        ],
+        "responses": {
+          "200": {"description": "Detalji albuma", "schema": {"$ref": "#/definitions/AlbumDetail"}},
+          "404": {"description": "Album nije pronađen"}
+        }
+      }
+    },
+    "/songs": {
+      "get": {
+        "tags": ["Content"],
+        "summary": "Lista pesama",
+        "description": "Vraća listu pesama. Podržava filtriranje po albumu.",
+        "produces": ["application/json"],
+        "parameters": [
+          {"in": "query", "name": "album_id", "type": "string", "description": "Filter po albumu"}
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista pesama",
+            "schema": {"type": "array", "items": {"$ref": "#/definitions/Song"}}
+          }
+        }
+      },
+      "post": {
+        "tags": ["Content"],
+        "summary": "Kreiraj pesmu",
+        "description": "Kreira novu pesmu. Samo admin.",
+        "security": [{"BearerAuth": []}],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {"in": "body", "name": "body", "required": true, "schema": {"$ref": "#/definitions/CreateSongRequest"}}
+        ],
+        "responses": {
+          "201": {"description": "Pesma kreirana", "schema": {"$ref": "#/definitions/Song"}},
+          "401": {"description": "Nije autentifikovan"},
+          "403": {"description": "Nedovoljna prava"}
+        }
+      }
+    },
+    "/songs/{id}": {
+      "delete": {
+        "tags": ["Content"],
+        "summary": "Obriši pesmu",
+        "description": "Briše pesmu i sve povezane podatke (ocene, preporuke). Samo admin.",
+        "security": [{"BearerAuth": []}],
+        "produces": ["application/json"],
+        "parameters": [
+          {"in": "path", "name": "id", "type": "string", "required": true}
+        ],
+        "responses": {
+          "200": {"description": "Pesma obrisana"},
+          "401": {"description": "Nije autentifikovan"},
+          "403": {"description": "Nedovoljna prava"},
+          "404": {"description": "Pesma nije pronađena"}
+        }
+      }
+    },
+    "/search": {
+      "get": {
+        "tags": ["Content"],
+        "summary": "Pretraga",
+        "description": "Pretražuje artiste, albume i pesme po upitu.",
+        "produces": ["application/json"],
+        "parameters": [
+          {"in": "query", "name": "q", "type": "string", "required": true, "description": "Upit za pretragu"}
+        ],
+        "responses": {
+          "200": {
+            "description": "Rezultati pretrage",
+            "schema": {"$ref": "#/definitions/SearchResult"}
+          }
+        }
+      }
+    },
+    "/ratings": {
+      "get": {
+        "tags": ["Ratings"],
+        "summary": "Moje ocene",
+        "description": "Vraća sve ocene trenutnog korisnika.",
+        "security": [{"BearerAuth": []}],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Lista ocena",
+            "schema": {"type": "array", "items": {"$ref": "#/definitions/Rating"}}
+          },
+          "401": {"description": "Nije autentifikovan"}
+        }
+      },
+      "post": {
+        "tags": ["Ratings"],
+        "summary": "Ocijeni pesmu",
+        "description": "Dodaje ili ažurira ocenu za pesmu.",
+        "security": [{"BearerAuth": []}],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {"in": "body", "name": "body", "required": true, "schema": {"$ref": "#/definitions/CreateRatingRequest"}}
+        ],
+        "responses": {
+          "201": {"description": "Ocena sačuvana", "schema": {"$ref": "#/definitions/Rating"}},
+          "401": {"description": "Nije autentifikovan"}
+        }
+      }
+    },
+    "/ratings/{songId}": {
+      "get": {
+        "tags": ["Ratings"],
+        "summary": "Ocene pesme",
+        "description": "Vraća sve ocene za određenu pesmu.",
+        "produces": ["application/json"],
+        "parameters": [
+          {"in": "path", "name": "songId", "type": "string", "required": true}
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista ocena",
+            "schema": {"type": "array", "items": {"$ref": "#/definitions/Rating"}}
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Ratings"],
+        "summary": "Obriši ocenu",
+        "description": "Briše ocenu korisnika za određenu pesmu.",
+        "security": [{"BearerAuth": []}],
+        "produces": ["application/json"],
+        "parameters": [
+          {"in": "path", "name": "songId", "type": "string", "required": true}
+        ],
+        "responses": {
+          "200": {"description": "Ocena obrisana"},
+          "401": {"description": "Nije autentifikovan"},
+          "404": {"description": "Ocena nije pronađena"}
+        }
+      }
+    },
+    "/subscriptions": {
+      "get": {
+        "tags": ["Subscriptions"],
+        "summary": "Moje pretplate",
+        "description": "Vraća sve pretplate trenutnog korisnika.",
+        "security": [{"BearerAuth": []}],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Lista pretplata",
+            "schema": {"$ref": "#/definitions/UserSubscriptions"}
+          },
+          "401": {"description": "Nije autentifikovan"}
+        }
+      },
+      "post": {
+        "tags": ["Subscriptions"],
+        "summary": "Pretplati se",
+        "description": "Kreira novu pretplatu na artista ili žanr.",
+        "security": [{"BearerAuth": []}],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {"in": "body", "name": "body", "required": true, "schema": {"$ref": "#/definitions/CreateSubscriptionRequest"}}
+        ],
+        "responses": {
+          "201": {"description": "Pretplata kreirana"},
+          "401": {"description": "Nije autentifikovan"},
+          "409": {"description": "Već ste pretplaćeni"}
+        }
+      }
+    },
+    "/subscriptions/{target_id}": {
+      "get": {
+        "tags": ["Subscriptions"],
+        "summary": "Status pretplate",
+        "description": "Provjerava da li je korisnik pretplaćen na artista/žanr.",
+        "security": [{"BearerAuth": []}],
+        "produces": ["application/json"],
+        "parameters": [
+          {"in": "path", "name": "target_id", "type": "string", "required": true}
+        ],
+        "responses": {
+          "200": {"description": "Status pretplate", "schema": {"$ref": "#/definitions/SubscriptionStatus"}}
+        }
+      },
+      "delete": {
+        "tags": ["Subscriptions"],
+        "summary": "Otkaži pretplatu",
+        "description": "Briše pretplatu na artista ili žanr.",
+        "security": [{"BearerAuth": []}],
+        "produces": ["application/json"],
+        "parameters": [
+          {"in": "path", "name": "target_id", "type": "string", "required": true}
+        ],
+        "responses": {
+          "200": {"description": "Pretplata otkazana"},
+          "401": {"description": "Nije autentifikovan"}
+        }
+      }
+    },
+    "/subscriptions/followers/{artist_id}": {
+      "get": {
+        "tags": ["Subscriptions"],
+        "summary": "Broj pratilaca",
+        "description": "Vraća broj pratilaca za artista.",
+        "produces": ["application/json"],
+        "parameters": [
+          {"in": "path", "name": "artist_id", "type": "string", "required": true}
+        ],
+        "responses": {
+          "200": {
+            "description": "Broj pratilaca",
+            "schema": {"$ref": "#/definitions/FollowerCount"}
+          }
+        }
+      }
+    },
+    "/notifications": {
+      "get": {
+        "tags": ["Notifications"],
+        "summary": "Moje notifikacije",
+        "description": "Vraća sve notifikacije za trenutnog korisnika.",
+        "security": [{"BearerAuth": []}],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Lista notifikacija",
+            "schema": {"type": "array", "items": {"$ref": "#/definitions/Notification"}}
+          },
+          "401": {"description": "Nije autentifikovan"}
+        }
+      },
+      "post": {
+        "tags": ["Notifications"],
+        "summary": "Kreiraj notifikaciju",
+        "description": "Kreira novu notifikaciju. Koristi se interno.",
+        "security": [{"BearerAuth": []}],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {"in": "body", "name": "body", "required": true, "schema": {"$ref": "#/definitions/CreateNotificationRequest"}}
+        ],
+        "responses": {
+          "201": {"description": "Notifikacija kreirana"}
+        }
+      }
+    },
+    "/notifications/unread/count": {
+      "get": {
+        "tags": ["Notifications"],
+        "summary": "Broj nepročitanih",
+        "description": "Vraća broj nepročitanih notifikacija.",
+        "security": [{"BearerAuth": []}],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Broj nepročitanih",
+            "schema": {"$ref": "#/definitions/UnreadCount"}
+          },
+          "401": {"description": "Nije autentifikovan"}
+        }
+      }
+    },
+    "/notifications/{id}/read": {
+      "put": {
+        "tags": ["Notifications"],
+        "summary": "Označi kao pročitano",
+        "description": "Označava notifikaciju kao pročitanu.",
+        "security": [{"BearerAuth": []}],
+        "produces": ["application/json"],
+        "parameters": [
+          {"in": "path", "name": "id", "type": "string", "required": true}
+        ],
+        "responses": {
+          "200": {"description": "Notifikacija označena kao pročitana"},
+          "401": {"description": "Nije autentifikovan"},
+          "404": {"description": "Notifikacija nije pronađena"}
+        }
+      }
+    },
+    "/recommendations": {
+      "get": {
+        "tags": ["Recommendations"],
+        "summary": "Personalizovane preporuke",
+        "description": "Vraća personalizovane preporuke pesama na osnovu istorije slušanja.",
+        "security": [{"BearerAuth": []}],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Lista preporučenih pesama",
+            "schema": {"type": "array", "items": {"$ref": "#/definitions/Song"}}
+          },
+          "401": {"description": "Nije autentifikovan"}
+        }
+      }
+    }
+  },
+  "definitions": {
+    "RegisterRequest": {
+      "type": "object",
+      "required": ["username", "email", "password", "first_name", "last_name"],
+      "properties": {
+        "username": {"type": "string", "example": "john_doe"},
+        "email": {"type": "string", "format": "email", "example": "john@example.com"},
+        "password": {"type": "string", "minLength": 8, "example": "SecurePass123!"},
+        "first_name": {"type": "string", "example": "John"},
+        "last_name": {"type": "string", "example": "Doe"},
+        "recaptcha_token": {"type": "string"}
+      }
+    },
+    "LoginRequest": {
+      "type": "object",
+      "required": ["email", "password"],
+      "properties": {
+        "email": {"type": "string", "format": "email"},
+        "password": {"type": "string"},
+        "recaptcha_token": {"type": "string"}
+      }
+    },
+    "LoginInitiateResponse": {
+      "type": "object",
+      "properties": {
+        "message": {"type": "string"},
+        "temp_token": {"type": "string"}
+      }
+    },
+    "VerifyOTPRequest": {
+      "type": "object",
+      "required": ["temp_token", "otp"],
+      "properties": {
+        "temp_token": {"type": "string"},
+        "otp": {"type": "string", "example": "123456"}
+      }
+    },
+    "VerifyOTPResponse": {
+      "type": "object",
+      "properties": {
+        "token": {"type": "string"},
+        "user": {"$ref": "#/definitions/UserProfile"}
+      }
+    },
+    "MagicLinkRequest": {
+      "type": "object",
+      "required": ["email"],
+      "properties": {
+        "email": {"type": "string", "format": "email"}
+      }
+    },
+    "ResetPasswordRequest": {
+      "type": "object",
+      "required": ["email"],
+      "properties": {
+        "email": {"type": "string", "format": "email"}
+      }
+    },
+    "ResetPasswordConfirmRequest": {
+      "type": "object",
+      "required": ["token", "new_password"],
+      "properties": {
+        "token": {"type": "string"},
+        "new_password": {"type": "string", "minLength": 8}
+      }
+    },
+    "ChangePasswordRequest": {
+      "type": "object",
+      "required": ["current_password", "new_password"],
+      "properties": {
+        "current_password": {"type": "string"},
+        "new_password": {"type": "string", "minLength": 8}
+      }
+    },
+    "UpdateProfileRequest": {
+      "type": "object",
+      "properties": {
+        "first_name": {"type": "string"},
+        "last_name": {"type": "string"}
+      }
+    },
+    "UserProfile": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "username": {"type": "string"},
+        "email": {"type": "string"},
+        "first_name": {"type": "string"},
+        "last_name": {"type": "string"},
+        "role": {"type": "string", "enum": ["admin", "regular"]}
+      }
+    },
+    "Genre": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "description": {"type": "string"}
+      }
+    },
+    "Artist": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "biography": {"type": "string"},
+        "genres": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "ArtistDetail": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "biography": {"type": "string"},
+        "genres": {"type": "array", "items": {"type": "string"}},
+        "albums": {"type": "array", "items": {"$ref": "#/definitions/Album"}},
+        "songs": {"type": "array", "items": {"$ref": "#/definitions/Song"}}
+      }
+    },
+    "CreateArtistRequest": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {"type": "string"},
+        "biography": {"type": "string"},
+        "genres": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "Album": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "date": {"type": "string", "format": "date"},
+        "genre": {"type": "string"},
+        "artists": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "AlbumDetail": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "date": {"type": "string"},
+        "genre": {"type": "string"},
+        "artists": {"type": "array", "items": {"type": "string"}},
+        "songs": {"type": "array", "items": {"$ref": "#/definitions/Song"}}
+      }
+    },
+    "CreateAlbumRequest": {
+      "type": "object",
+      "required": ["name", "artists"],
+      "properties": {
+        "name": {"type": "string"},
+        "date": {"type": "string"},
+        "genre": {"type": "string"},
+        "artists": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "Song": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "duration": {"type": "integer", "description": "Trajanje u sekundama"},
+        "album": {"type": "string"},
+        "genre": {"type": "string"},
+        "artists": {"type": "array", "items": {"type": "string"}},
+        "audio_url": {"type": "string"}
+      }
+    },
+    "CreateSongRequest": {
+      "type": "object",
+      "required": ["name", "duration"],
+      "properties": {
+        "name": {"type": "string"},
+        "duration": {"type": "integer"},
+        "album": {"type": "string"},
+        "genre": {"type": "string"},
+        "artists": {"type": "array", "items": {"type": "string"}},
+        "audio_url": {"type": "string"}
+      }
+    },
+    "SearchResult": {
+      "type": "object",
+      "properties": {
+        "artists": {"type": "array", "items": {"$ref": "#/definitions/Artist"}},
+        "albums": {"type": "array", "items": {"$ref": "#/definitions/Album"}},
+        "songs": {"type": "array", "items": {"$ref": "#/definitions/Song"}}
+      }
+    },
+    "Rating": {
+      "type": "object",
+      "properties": {
+        "user_id": {"type": "string"},
+        "song_id": {"type": "string"},
+        "rating": {"type": "integer", "minimum": 1, "maximum": 5}
+      }
+    },
+    "CreateRatingRequest": {
+      "type": "object",
+      "required": ["song_id", "rating"],
+      "properties": {
+        "song_id": {"type": "string"},
+        "rating": {"type": "integer", "minimum": 1, "maximum": 5}
+      }
+    },
+    "UserSubscriptions": {
+      "type": "object",
+      "properties": {
+        "artists": {"type": "array", "items": {"$ref": "#/definitions/Artist"}},
+        "genres": {"type": "array", "items": {"$ref": "#/definitions/Genre"}}
+      }
+    },
+    "CreateSubscriptionRequest": {
+      "type": "object",
+      "required": ["target_id", "type"],
+      "properties": {
+        "target_id": {"type": "string"},
+        "type": {"type": "string", "enum": ["artist", "genre"]}
+      }
+    },
+    "SubscriptionStatus": {
+      "type": "object",
+      "properties": {
+        "subscribed": {"type": "boolean"}
+      }
+    },
+    "FollowerCount": {
+      "type": "object",
+      "properties": {
+        "count": {"type": "integer"}
+      }
+    },
+    "Notification": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "user_id": {"type": "string"},
+        "message": {"type": "string"},
+        "type": {"type": "string"},
+        "read": {"type": "boolean"},
+        "created_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "CreateNotificationRequest": {
+      "type": "object",
+      "required": ["user_id", "message", "type"],
+      "properties": {
+        "user_id": {"type": "string"},
+        "message": {"type": "string"},
+        "type": {"type": "string"}
+      }
+    },
+    "UnreadCount": {
+      "type": "object",
+      "properties": {
+        "count": {"type": "integer"}
+      }
+    },
+    "MessageResponse": {
+      "type": "object",
+      "properties": {
+        "message": {"type": "string"}
+      }
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "properties": {
+        "error": {"type": "string"}
+      }
+    }
+  }
+}

@@ -668,3 +668,13 @@ This code expires in 5 minutes.
 [2026-01-27 18:55:41] TYPE=success ACTION=login IP=172.19.0.15 DETAILS=User Petar logged in
 [2026-01-27 18:56:05] TYPE=success ACTION=login_otp_sent IP=172.19.0.15 DETAILS=User Petar OTP sent
 [2026-01-27 18:56:11] TYPE=success ACTION=login IP=172.19.0.15 DETAILS=User Petar logged in
+[2026-01-27 18:58:52] TYPE=failed ACTION=login IP=172.19.0.15 DETAILS=User Petar invalid password
+[2026-01-27 18:59:05] TYPE=success ACTION=login_otp_sent IP=172.19.0.15 DETAILS=User Petar OTP sent
+[2026-01-27 18:59:11] TYPE=success ACTION=login IP=172.19.0.15 DETAILS=User Petar logged in
+2026/01/27 19:08:02 Password expiry configured: max age = 60 dana
+2026/01/27 19:08:02 Connected to MongoDB
+2026/01/27 19:08:02 Connected to Redis
+2026/01/27 19:08:02 MongoDB indexes for users ensured
+2026/01/27 19:08:02 Users service starting on HTTP port 8001 (TLS disabled)
+[2026-01-27 19:08:56] TYPE=success ACTION=login_otp_sent IP=172.19.0.15 DETAILS=User Petar OTP sent
+[2026-01-27 19:09:01] TYPE=success ACTION=login IP=172.19.0.15 DETAILS=User Petar logged in

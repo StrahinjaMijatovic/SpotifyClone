@@ -6,6 +6,11 @@ import (
 )
 
 func SetupRoutes(router *gin.Engine) {
+	// Swagger dokumentacija
+	router.GET("/swagger", SwaggerUI)
+	router.GET("/swagger/", SwaggerUI)
+	router.GET("/swagger/doc.json", SwaggerJSON)
+
 	api := router.Group("/api/v1")
 	{
 		// Users service routes
