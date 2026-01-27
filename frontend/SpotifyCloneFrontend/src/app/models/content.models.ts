@@ -20,6 +20,7 @@ export type Song = {
   album?: string;
   genre?: string;
   artists?: string[];
+  audio_url?: string;
 };
 
 export type SearchResult = {

@@ -8,6 +8,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ContentService } from '../../services/content.service';
 import { AuthService } from '../../services/auth.service';
 import { NotificationsService } from '../../services/notifications.service';
+import { AudioPlayerService } from '../../services/audio-player.service';
 import type { Artist, Album, Song } from '../../models/content.models';
 
 @Component({
@@ -41,7 +42,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private notificationsService: NotificationsService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private audioPlayerService: AudioPlayerService
   ) { }
 
   ngOnInit(): void {
@@ -181,6 +183,11 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.unreadNotificationCount = 0;
       }
     });
+  }
+
+  playSong(song: Song, index: number = 0): void {
+    // Play the clicked song and add all songs in the current list to the queue
+    this.audioPlayerService.playSong(song, this.songs, index);
   }
 
   logout(): void {

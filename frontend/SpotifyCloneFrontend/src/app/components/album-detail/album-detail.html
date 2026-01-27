@@ -57,7 +57,8 @@
       <div class="px-4 py-3 d-flex align-items-center gap-4" style="background: #121212;">
         <button class="btn btn-lg rounded-circle d-flex align-items-center justify-content-center p-0"
           style="width: 56px; height: 56px; background-color: var(--brand-color); border: none; color: black;"
-          onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+          onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"
+          (click)="playAll()" title="Play all">
           <span class="fs-3">▶</span>
         </button>
 
@@ -86,7 +87,8 @@
           class="d-flex align-items-center px-3 py-2 rounded position-relative track-row"
           style="cursor: pointer; transition: background-color 0.2s;"
           onmouseover="this.style.backgroundColor='#2a2a2a'; this.querySelector('.play-icon').style.display='inline'; this.querySelector('.track-num').style.display='none';"
-          onmouseout="this.style.backgroundColor='transparent'; this.querySelector('.play-icon').style.display='none'; this.querySelector('.track-num').style.display='inline';">
+          onmouseout="this.style.backgroundColor='transparent'; this.querySelector('.play-icon').style.display='none'; this.querySelector('.track-num').style.display='inline';"
+          (click)="playSong(song, i)">
 
           <div class="text-subdued me-3 d-flex justify-content-center" style="width: 16px;">
             <span class="track-num">{{ i + 1 }}</span>

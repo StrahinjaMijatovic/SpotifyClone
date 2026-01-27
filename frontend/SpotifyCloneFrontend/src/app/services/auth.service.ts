@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, BehaviorSubject } from 'rxjs';
 import {
   LoginRequest,
   LoginInitiateResponse,
@@ -19,8 +19,16 @@ import { AppConfig } from '../config';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly apiBase = AppConfig.apiUrl;
+  private loggedInSubject = new BehaviorSubject<boolean>(this.hasToken());
+
+  /** Observable koji emituje login status - true kada je korisnik ulogovan */
+  public isLoggedIn$ = this.loggedInSubject.asObservable();
 
   constructor(private http: HttpClient) { }
+
+  private hasToken(): boolean {
+    return !!localStorage.getItem('token');
+  }
 
   // Step 1: Login (returns temp_token)
   login(payload: LoginRequest): Observable<LoginInitiateResponse> {
@@ -35,6 +43,7 @@ export class AuthService {
         if (res.user && res.user.role) {
           localStorage.setItem('user_role', res.user.role);
         }
+        this.loggedInSubject.next(true);
       })
     );
   }
@@ -44,6 +53,8 @@ export class AuthService {
     return this.http.post(`${this.apiBase}/logout`, {}).pipe(
       tap(() => {
         localStorage.removeItem('token');
+        localStorage.removeItem('user_role');
+        this.loggedInSubject.next(false);
       })
     );
   }
@@ -97,6 +108,7 @@ export class AuthService {
       tap((res: any) => {
         if (res.token) {
           localStorage.setItem('token', res.token);
+          this.loggedInSubject.next(true);
         }
       })
     );

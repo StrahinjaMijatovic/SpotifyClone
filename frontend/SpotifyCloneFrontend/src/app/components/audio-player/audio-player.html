@@ -1,0 +1,96 @@
+<div *ngIf="playerState && playerState.currentSong" class="audio-player">
+    <div class="player-container">
+
+        <!-- Left Section: Song Info -->
+        <div class="song-info">
+            <div class="album-art">
+                <div class="album-placeholder" [class.loading]="playerState.isLoading">
+                    <span *ngIf="!playerState.isLoading">🎵</span>
+                    <span *ngIf="playerState.isLoading" class="loading-spinner"></span>
+                </div>
+            </div>
+            <div class="song-details">
+                <div class="song-name" [title]="playerState.currentSong.name">{{ playerState.currentSong.name }}</div>
+                <div class="song-artist" [title]="getArtistsText()">{{ getArtistsText() }}</div>
+            </div>
+            <button class="control-btn like-btn" (click)="toggleLike()" [class.liked]="isLiked" title="Dodaj u omiljene">
+                {{ isLiked ? '❤️' : '🤍' }}
+            </button>
+        </div>
+
+        <!-- Center Section: Playback Controls -->
+        <div class="player-controls">
+            <div class="control-buttons">
+                <button class="control-btn" [class.active]="playerState.isShuffleOn" (click)="toggleShuffle()"
+                    title="Shuffle">
+                    🔀
+                </button>
+                <button class="control-btn" (click)="skipPrevious()" title="Previous">
+                    ⏮️
+                </button>
+                <button class="control-btn play-btn" (click)="togglePlayPause()" title="Play/Pause">
+                    {{ playerState.isPlaying ? '⏸️' : '▶️' }}
+                </button>
+                <button class="control-btn" (click)="skipNext()" title="Next">
+                    ⏭️
+                </button>
+                <button class="control-btn" [class.active]="repeatActive" (click)="cycleRepeat()" title="Repeat">
+                    {{ repeatIcon }}
+                </button>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <span class="time-label">{{ formatTime(playerState.currentTime) }}</span>
+                <div class="progress-bar" (click)="onProgressClick($event)">
+                    <div class="progress-fill" [style.width.%]="progressPercent"></div>
+                    <div class="progress-handle" [style.left.%]="progressPercent"></div>
+                </div>
+                <span class="time-label">{{ formatTime(playerState.duration) }}</span>
+            </div>
+        </div>
+
+        <!-- Right Section: Volume Controls -->
+        <div class="volume-controls">
+            <button class="control-btn queue-btn" (click)="toggleQueue()" [class.active]="showQueue" title="Red za reprodukciju">
+                📋
+            </button>
+            <button class="control-btn" (click)="toggleMute()" title="Mute (M)">
+                {{ playerState.isMuted || playerState.volume === 0 ? '🔇' : (playerState.volume > 50 ? '🔊' : '🔉') }}
+            </button>
+            <div class="volume-slider-container">
+                <input type="range" min="0" max="100" [value]="playerState.isMuted ? 0 : playerState.volume"
+                    (input)="onVolumeChange($event)" class="volume-slider">
+                <div class="volume-fill" [style.width.%]="playerState.isMuted ? 0 : playerState.volume"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="playerState.error" class="error-message">
+        {{ playerState.error }}
+        <button class="dismiss-btn" (click)="dismissError()">✕</button>
+    </div>
+
+    <!-- Queue Panel -->
+    <div *ngIf="showQueue" class="queue-panel">
+        <div class="queue-header">
+            <h4>Red za reprodukciju</h4>
+            <button class="close-queue-btn" (click)="toggleQueue()">✕</button>
+        </div>
+        <div class="queue-list">
+            <div *ngFor="let song of playerState.queue; let i = index"
+                 class="queue-item"
+                 [class.current]="i === playerState.currentIndex"
+                 (click)="playFromQueue(i)">
+                <span class="queue-index">{{ i + 1 }}</span>
+                <div class="queue-song-info">
+                    <span class="queue-song-name">{{ song.name }}</span>
+                    <span class="queue-song-artist">{{ song.artists?.join(', ') || 'Nepoznat' }}</span>
+                </div>
+                <span class="queue-duration">{{ formatTime(song.duration) }}</span>
+            </div>
+        </div>
+    </div>
+</div>

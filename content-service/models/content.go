@@ -39,6 +39,7 @@ type Song struct {
 	Genre     primitive.ObjectID   `json:"genre" bson:"genre"`
 	Album     primitive.ObjectID   `json:"album" bson:"album"`
 	Artists   []primitive.ObjectID `json:"artists" bson:"artists"`
+	AudioURL  string               `json:"audio_url,omitempty" bson:"audio_url,omitempty"` // URL to audio file
 	CreatedAt time.Time            `json:"created_at" bson:"created_at"`
 	UpdatedAt time.Time            `json:"updated_at" bson:"updated_at"`
 }
@@ -68,6 +69,7 @@ type CreateSongRequest struct {
 	Genre    string   `json:"genre" binding:"required"`
 	Album    string   `json:"album" binding:"required"`
 	Artists  []string `json:"artists" binding:"required,min=1"`
+	AudioURL string   `json:"audio_url,omitempty"`
 }
 
 // Subscription types

@@ -1,0 +1,9 @@
+/* Global app styles */
+:root {
+    --player-height: 90px;
+}
+
+/* Add padding to body to prevent content from being hidden by fixed player */
+body {
+    padding-bottom: var(--player-height);
+}

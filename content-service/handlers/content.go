@@ -340,6 +340,7 @@ func CreateSong(c *gin.Context) {
 		Genre:     genreID,
 		Album:     albumID,
 		Artists:   artistIDs,
+		AudioURL:  req.AudioURL,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -558,4 +559,36 @@ func sendNotification(userID, message, notifType string) {
 
 	jsonData, _ := json.Marshal(payload)
 	http.Post(notificationsURL, "application/json", bytes.NewBuffer(jsonData))
+}
+
+// StreamSong handles audio streaming for a song
+func StreamSong(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	id := c.Param("id")
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid song ID"})
+		return
+	}
+
+	var song models.Song
+	err = contentDB.Collection("songs").FindOne(ctx, bson.M{"_id": objID}).Decode(&song)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Song not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+		return
+	}
+
+	if song.AudioURL == "" {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Audio file not available for this song"})
+		return
+	}
+
+	// For now, we'll simply redirect to the audio URL
+	// In a production scenario, you might want to proxy the stream or serve from local storage
+	c.Redirect(http.StatusTemporaryRedirect, song.AudioURL)
 }

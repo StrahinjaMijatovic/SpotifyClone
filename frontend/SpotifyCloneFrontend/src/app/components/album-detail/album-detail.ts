@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 
 import { ContentService } from '../../services/content.service';
 import { RatingsService, Rating } from '../../services/ratings.service';
+import { AudioPlayerService } from '../../services/audio-player.service';
 import type { Album, Song } from '../../models/content.models';
 
 @Component({
@@ -30,7 +31,8 @@ export class AlbumDetailComponent implements OnInit {
     private router: Router,
     private contentService: ContentService,
     private ratingsService: RatingsService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private audioPlayerService: AudioPlayerService
   ) { }
 
   ngOnInit(): void {
@@ -156,5 +158,17 @@ export class AlbumDetailComponent implements OnInit {
 
   goHome(): void {
     this.router.navigate(['/home']);
+  }
+
+  playSong(song: Song, index: number = 0): void {
+    // Play the clicked song and add all album songs to the queue
+    this.audioPlayerService.playSong(song, this.songs, index);
+  }
+
+  playAll(): void {
+    // Play all songs starting from the first
+    if (this.songs.length > 0) {
+      this.audioPlayerService.playSong(this.songs[0], this.songs, 0);
+    }
   }
 }

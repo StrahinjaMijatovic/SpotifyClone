@@ -140,9 +140,9 @@
       <h2 class="fs-3 fw-bold mb-3" style="color: white; letter-spacing: -0.02em;">Songs</h2>
       <div class="d-flex flex-column gap-2">
         <div *ngFor="let song of songs; let i = index" class="d-flex align-items-center p-2 rounded gap-3"
-          style="transition: background-color 0.2s ease;"
+          style="transition: background-color 0.2s ease; cursor: pointer;"
           onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'"
-          onmouseout="this.style.backgroundColor='transparent'">
+          onmouseout="this.style.backgroundColor='transparent'" (click)="playSong(song, i)">
 
           <span style="color: #a7a7a7; width: 20px; text-align: center;">{{ i + 1 }}</span>
 
@@ -159,7 +159,12 @@
             {{ formatDuration(song.duration) }}
           </div>
 
-          <!-- Play Icon (Invisible unless hover - simplified for now) -->
+          <!-- Play Icon -->
+          <button class="btn btn-sm rounded-circle"
+            style="background: #1db954; color: white; width: 32px; height: 32px; padding: 0; border: none;"
+            title="Play">
+            ▶
+          </button>
         </div>
       </div>
     </div>

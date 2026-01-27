@@ -29,6 +29,9 @@ func setupRoutes(router *gin.Engine) {
 			admin.POST("/songs", handlers.CreateSong)
 			admin.DELETE("/songs/:id", handlers.DeleteSong)
 		}
+
+		// Authenticated user routes
+		api.GET("/songs/:id/stream", middleware.AuthMiddleware(), handlers.StreamSong)
 	}
 
 	router.GET("/health", func(c *gin.Context) {

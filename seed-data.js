@@ -123,29 +123,29 @@ print("Inserted " + albums.length + " albums");
 // Insert Songs
 const songs = [
     // The Eminem Show
-    { _id: ObjectId(), name: "Without Me", duration: 290, genre: genres[0]._id, album: albums[0]._id, artists: [artists[0]._id], created_at: new Date(), updated_at: new Date() },
-    { _id: ObjectId(), name: "Cleanin' Out My Closet", duration: 297, genre: genres[0]._id, album: albums[0]._id, artists: [artists[0]._id], created_at: new Date(), updated_at: new Date() },
-    { _id: ObjectId(), name: "Sing for the Moment", duration: 339, genre: genres[0]._id, album: albums[0]._id, artists: [artists[0]._id], created_at: new Date(), updated_at: new Date() },
+    { _id: ObjectId(), name: "Without Me", duration: 290, genre: genres[0]._id, album: albums[0]._id, artists: [artists[0]._id], audio_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", created_at: new Date(), updated_at: new Date() },
+    { _id: ObjectId(), name: "Cleanin' Out My Closet", duration: 297, genre: genres[0]._id, album: albums[0]._id, artists: [artists[0]._id], audio_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", created_at: new Date(), updated_at: new Date() },
+    { _id: ObjectId(), name: "Sing for the Moment", duration: 339, genre: genres[0]._id, album: albums[0]._id, artists: [artists[0]._id], audio_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", created_at: new Date(), updated_at: new Date() },
 
     // Abbey Road
-    { _id: ObjectId(), name: "Come Together", duration: 259, genre: genres[1]._id, album: albums[1]._id, artists: [artists[1]._id], created_at: new Date(), updated_at: new Date() },
-    { _id: ObjectId(), name: "Something", duration: 182, genre: genres[1]._id, album: albums[1]._id, artists: [artists[1]._id], created_at: new Date(), updated_at: new Date() },
-    { _id: ObjectId(), name: "Here Comes the Sun", duration: 185, genre: genres[1]._id, album: albums[1]._id, artists: [artists[1]._id], created_at: new Date(), updated_at: new Date() },
+    { _id: ObjectId(), name: "Come Together", duration: 259, genre: genres[1]._id, album: albums[1]._id, artists: [artists[1]._id], audio_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", created_at: new Date(), updated_at: new Date() },
+    { _id: ObjectId(), name: "Something", duration: 182, genre: genres[1]._id, album: albums[1]._id, artists: [artists[1]._id], audio_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3", created_at: new Date(), updated_at: new Date() },
+    { _id: ObjectId(), name: "Here Comes the Sun", duration: 185, genre: genres[1]._id, album: albums[1]._id, artists: [artists[1]._id], audio_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3", created_at: new Date(), updated_at: new Date() },
 
     // Random Access Memories
-    { _id: ObjectId(), name: "Get Lucky", duration: 368, genre: genres[3]._id, album: albums[2]._id, artists: [artists[2]._id], created_at: new Date(), updated_at: new Date() },
-    { _id: ObjectId(), name: "Instant Crush", duration: 337, genre: genres[3]._id, album: albums[2]._id, artists: [artists[2]._id], created_at: new Date(), updated_at: new Date() },
-    { _id: ObjectId(), name: "Lose Yourself to Dance", duration: 353, genre: genres[3]._id, album: albums[2]._id, artists: [artists[2]._id], created_at: new Date(), updated_at: new Date() },
+    { _id: ObjectId(), name: "Get Lucky", duration: 368, genre: genres[3]._id, album: albums[2]._id, artists: [artists[2]._id], audio_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3", created_at: new Date(), updated_at: new Date() },
+    { _id: ObjectId(), name: "Instant Crush", duration: 337, genre: genres[3]._id, album: albums[2]._id, artists: [artists[2]._id], audio_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3", created_at: new Date(), updated_at: new Date() },
+    { _id: ObjectId(), name: "Lose Yourself to Dance", duration: 353, genre: genres[3]._id, album: albums[2]._id, artists: [artists[2]._id], audio_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3", created_at: new Date(), updated_at: new Date() },
 
     // Lemonade
-    { _id: ObjectId(), name: "Formation", duration: 205, genre: genres[4]._id, album: albums[3]._id, artists: [artists[3]._id], created_at: new Date(), updated_at: new Date() },
-    { _id: ObjectId(), name: "Sorry", duration: 232, genre: genres[4]._id, album: albums[3]._id, artists: [artists[3]._id], created_at: new Date(), updated_at: new Date() },
-    { _id: ObjectId(), name: "Hold Up", duration: 221, genre: genres[4]._id, album: albums[3]._id, artists: [artists[3]._id], created_at: new Date(), updated_at: new Date() },
+    { _id: ObjectId(), name: "Formation", duration: 205, genre: genres[4]._id, album: albums[3]._id, artists: [artists[3]._id], audio_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3", created_at: new Date(), updated_at: new Date() },
+    { _id: ObjectId(), name: "Sorry", duration: 232, genre: genres[4]._id, album: albums[3]._id, artists: [artists[3]._id], audio_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3", created_at: new Date(), updated_at: new Date() },
+    { _id: ObjectId(), name: "Hold Up", duration: 221, genre: genres[4]._id, album: albums[3]._id, artists: [artists[3]._id], audio_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3", created_at: new Date(), updated_at: new Date() },
 
     // DAMN.
-    { _id: ObjectId(), name: "HUMBLE.", duration: 177, genre: genres[0]._id, album: albums[4]._id, artists: [artists[4]._id], created_at: new Date(), updated_at: new Date() },
-    { _id: ObjectId(), name: "DNA.", duration: 185, genre: genres[0]._id, album: albums[4]._id, artists: [artists[4]._id], created_at: new Date(), updated_at: new Date() },
-    { _id: ObjectId(), name: "LOYALTY.", duration: 227, genre: genres[0]._id, album: albums[4]._id, artists: [artists[4]._id], created_at: new Date(), updated_at: new Date() }
+    { _id: ObjectId(), name: "HUMBLE.", duration: 177, genre: genres[0]._id, album: albums[4]._id, artists: [artists[4]._id], audio_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3", created_at: new Date(), updated_at: new Date() },
+    { _id: ObjectId(), name: "DNA.", duration: 185, genre: genres[0]._id, album: albums[4]._id, artists: [artists[4]._id], audio_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-14.mp3", created_at: new Date(), updated_at: new Date() },
+    { _id: ObjectId(), name: "LOYALTY.", duration: 227, genre: genres[0]._id, album: albums[4]._id, artists: [artists[4]._id], audio_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3", created_at: new Date(), updated_at: new Date() }
 ];
 
 db.songs.insertMany(songs);
