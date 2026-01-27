@@ -12,6 +12,7 @@ import (
 	"example.com/users-service/config"
 	"example.com/users-service/handlers"
 	"example.com/users-service/middleware"
+	"example.com/users-service/tracing"
 	"example.com/users-service/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
@@ -31,6 +32,24 @@ func main() {
 		log.Fatal("Failed to initialize logger:", err)
 	}
 	defer utils.CloseLogger()
+
+	// Inicijalizuj distributed tracing
+	serviceName := os.Getenv("SERVICE_NAME")
+	if serviceName == "" {
+		serviceName = "users-service"
+	}
+
+	tp, err := tracing.InitTracer(serviceName)
+	if err != nil {
+		log.Printf("Warning: Failed to initialize tracing: %v", err)
+	} else {
+		defer func() {
+			if err := tp.Shutdown(context.Background()); err != nil {
+				log.Printf("Error shutting down tracer: %v", err)
+			}
+		}()
+		log.Println("Distributed tracing initialized")
+	}
 
 	// Initialize password expiry config
 	config.InitPasswordConfig()
@@ -94,8 +113,9 @@ func main() {
 
 	// Setup router
 	router := gin.Default()
-	// CORS is handled by the API Gateway
-	// router.Use(corsMiddleware())
+
+	// Dodaj tracing middleware
+	router.Use(tracing.TracingMiddleware(serviceName))
 
 	// Initialize handlers
 	handlers.InitHandlers(usersDB, redisClient)

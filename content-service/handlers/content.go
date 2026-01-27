@@ -11,6 +11,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 
 	"example.com/content-service/models"
 )
@@ -492,11 +494,12 @@ func SearchContent(c *gin.Context) {
 // Helper functions for notifications
 func notifyFollowersAboutSong(artistIDs []primitive.ObjectID, songName string, songID string) {
 	for _, artistID := range artistIDs {
-		followerIDs := getFollowers(artistID.Hex())
+		// Koristimo context.Background() jer je ovo u goroutini, ali možemo započeti novi span
+		ctx := context.Background()
+		followerIDs := getFollowers(ctx, artistID.Hex())
 
 		// Get artist name
 		var artist models.Artist
-		ctx := context.Background()
 		if err := contentDB.Collection("artists").FindOne(ctx, bson.M{"_id": artistID}).Decode(&artist); err != nil {
 			continue
 		}
@@ -504,18 +507,18 @@ func notifyFollowersAboutSong(artistIDs []primitive.ObjectID, songName string, s
 		message := "New song '" + songName + "' by " + artist.Name
 
 		for _, userID := range followerIDs {
-			sendNotification(userID, message, "new_song")
+			sendNotification(ctx, userID, message, "new_song")
 		}
 	}
 }
 
 func notifyFollowersAboutAlbum(artistIDs []primitive.ObjectID, albumName string, albumID string) {
 	for _, artistID := range artistIDs {
-		followerIDs := getFollowers(artistID.Hex())
+		ctx := context.Background()
+		followerIDs := getFollowers(ctx, artistID.Hex())
 
 		// Get artist name
 		var artist models.Artist
-		ctx := context.Background()
 		if err := contentDB.Collection("artists").FindOne(ctx, bson.M{"_id": artistID}).Decode(&artist); err != nil {
 			continue
 		}
@@ -523,15 +526,24 @@ func notifyFollowersAboutAlbum(artistIDs []primitive.ObjectID, albumName string,
 		message := "New album '" + albumName + "' by " + artist.Name
 
 		for _, userID := range followerIDs {
-			sendNotification(userID, message, "new_album")
+			sendNotification(ctx, userID, message, "new_album")
 		}
 	}
 }
 
-func getFollowers(artistID string) []string {
+func getFollowers(ctx context.Context, artistID string) []string {
 	// Call subscriptions-service
 	subscriptionsURL := "http://subscriptions-service:8004/api/v1/subscriptions/followers/" + artistID
-	resp, err := http.Get(subscriptionsURL)
+
+	req, err := http.NewRequestWithContext(ctx, "GET", subscriptionsURL, nil)
+	if err != nil {
+		return []string{}
+	}
+
+	// Propagiraj trace kontekst
+	otel.GetTextMapPropagator().Inject(ctx, propagation.HeaderCarrier(req.Header))
+
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return []string{}
 	}
@@ -547,7 +559,7 @@ func getFollowers(artistID string) []string {
 	return result.UserIDs
 }
 
-func sendNotification(userID, message, notifType string) {
+func sendNotification(ctx context.Context, userID, message, notifType string) {
 	// Call notifications-service
 	notificationsURL := "http://notifications-service:8005/api/v1/notifications"
 
@@ -558,7 +570,20 @@ func sendNotification(userID, message, notifType string) {
 	}
 
 	jsonData, _ := json.Marshal(payload)
-	http.Post(notificationsURL, "application/json", bytes.NewBuffer(jsonData))
+
+	req, err := http.NewRequestWithContext(ctx, "POST", notificationsURL, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	// Propagiraj trace kontekst
+	otel.GetTextMapPropagator().Inject(ctx, propagation.HeaderCarrier(req.Header))
+
+	resp, err := http.DefaultClient.Do(req)
+	if err == nil {
+		resp.Body.Close()
+	}
 }
 
 // StreamSong handles audio streaming for a song

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"example.com/content-service/handlers"
+	"example.com/content-service/tracing"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -24,6 +25,24 @@ func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8002"
+	}
+
+	// Inicijalizuj distributed tracing
+	serviceName := os.Getenv("SERVICE_NAME")
+	if serviceName == "" {
+		serviceName = "content-service"
+	}
+
+	tp, err := tracing.InitTracer(serviceName)
+	if err != nil {
+		log.Printf("Warning: Failed to initialize tracing: %v", err)
+	} else {
+		defer func() {
+			if err := tp.Shutdown(context.Background()); err != nil {
+				log.Printf("Error shutting down tracer: %v", err)
+			}
+		}()
+		log.Println("Distributed tracing initialized")
 	}
 
 	mongodbURI := os.Getenv("MONGODB_URI")
@@ -50,11 +69,24 @@ func main() {
 	log.Println("Connected to MongoDB")
 
 	router := gin.Default()
-	// CORS is handled by the API Gateway
-	// router.Use(corsMiddleware())
+
+	// Dodaj tracing middleware
+	router.Use(tracing.TracingMiddleware(serviceName))
 
 	handlers.InitHandlers(contentDB)
 	setupRoutes(router)
+
+	// TLS Configuration
+	tlsEnabled := os.Getenv("TLS_ENABLED")
+	certFile := os.Getenv("TLS_CERT_FILE")
+	keyFile := os.Getenv("TLS_KEY_FILE")
+
+	if certFile == "" {
+		certFile = "certs/cert.pem"
+	}
+	if keyFile == "" {
+		keyFile = "certs/key.pem"
+	}
 
 	srv := &http.Server{
 		Addr:    ":" + port,
@@ -63,12 +95,18 @@ func main() {
 			MinVersion: tls.VersionTLS12,
 		},
 	}
-	srv.ListenAndServeTLS("cert.pem", "key.pem")
 
 	go func() {
-		log.Printf("Content service starting on port %s", port)
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Failed to start server: %v", err)
+		if tlsEnabled == "true" {
+			log.Printf("Content service starting on HTTPS port %s", port)
+			if err := srv.ListenAndServeTLS(certFile, keyFile); err != nil && err != http.ErrServerClosed {
+				log.Fatalf("Failed to start HTTPS server: %v", err)
+			}
+		} else {
+			log.Printf("Content service starting on port %s", port)
+			if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+				log.Fatalf("Failed to start server: %v", err)
+			}
 		}
 	}()
 

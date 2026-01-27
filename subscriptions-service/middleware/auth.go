@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"example.com/subsriptions-service/utils"
+	"example.com/subscriptions-service/utils"
 	"github.com/gin-gonic/gin"
 )
 

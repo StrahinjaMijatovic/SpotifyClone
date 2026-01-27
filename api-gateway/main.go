@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"crypto/tls"
 	"log"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 
 	"example.com/api-gateway/handlers"
 	"example.com/api-gateway/middleware"
+	"example.com/api-gateway/tracing"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,10 +19,31 @@ func main() {
 		port = "8080"
 	}
 
+	// Inicijalizuj distributed tracing
+	serviceName := os.Getenv("SERVICE_NAME")
+	if serviceName == "" {
+		serviceName = "api-gateway"
+	}
+
+	tp, err := tracing.InitTracer(serviceName)
+	if err != nil {
+		log.Printf("Warning: Failed to initialize tracing: %v", err)
+	} else {
+		defer func() {
+			if err := tp.Shutdown(context.Background()); err != nil {
+				log.Printf("Error shutting down tracer: %v", err)
+			}
+		}()
+		log.Println("Distributed tracing initialized with Jaeger")
+	}
+
 	router := gin.Default()
 
 	router.Use(corsMiddleware())
 	router.Use(middleware.RateLimitMiddleware())
+
+	// Dodaj tracing middleware
+	router.Use(tracing.TracingMiddleware(serviceName))
 
 	handlers.SetupRoutes(router)
 

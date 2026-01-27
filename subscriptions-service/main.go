@@ -2,14 +2,16 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 
-	"example.com/subsriptions-service/handlers"
-	"example.com/subsriptions-service/middleware"
+	"example.com/subscriptions-service/handlers"
+	"example.com/subscriptions-service/middleware"
+	"example.com/subscriptions-service/tracing"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 )
@@ -20,6 +22,24 @@ func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8004"
+	}
+
+	// Inicijalizuj distributed tracing
+	serviceName := os.Getenv("SERVICE_NAME")
+	if serviceName == "" {
+		serviceName = "subscriptions-service"
+	}
+
+	tp, err := tracing.InitTracer(serviceName)
+	if err != nil {
+		log.Printf("Warning: Failed to initialize tracing: %v", err)
+	} else {
+		defer func() {
+			if err := tp.Shutdown(context.Background()); err != nil {
+				log.Printf("Error shutting down tracer: %v", err)
+			}
+		}()
+		log.Println("Distributed tracing initialized")
 	}
 
 	redisURI := os.Getenv("REDIS_URI")
@@ -41,21 +61,43 @@ func main() {
 	log.Println("Connected to Redis")
 
 	router := gin.Default()
-	// CORS is handled by the API Gateway
-	// router.Use(corsMiddleware())
+	// Dodaj tracing middleware
+	router.Use(tracing.TracingMiddleware(serviceName))
 
 	handlers.InitHandlers(redisClient)
 	setupRoutes(router)
 
+	// TLS Configuration
+	tlsEnabled := os.Getenv("TLS_ENABLED")
+	certFile := os.Getenv("TLS_CERT_FILE")
+	keyFile := os.Getenv("TLS_KEY_FILE")
+
+	if certFile == "" {
+		certFile = "certs/cert.pem"
+	}
+	if keyFile == "" {
+		keyFile = "certs/key.pem"
+	}
+
 	srv := &http.Server{
 		Addr:    ":" + port,
 		Handler: router,
+		TLSConfig: &tls.Config{
+			MinVersion: tls.VersionTLS12,
+		},
 	}
 
 	go func() {
-		log.Printf("Subscriptions service starting on port %s", port)
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Failed to start server: %v", err)
+		if tlsEnabled == "true" {
+			log.Printf("Subscriptions service starting on HTTPS port %s", port)
+			if err := srv.ListenAndServeTLS(certFile, keyFile); err != nil && err != http.ErrServerClosed {
+				log.Fatalf("Failed to start HTTPS server: %v", err)
+			}
+		} else {
+			log.Printf("Subscriptions service starting on port %s", port)
+			if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+				log.Fatalf("Failed to start server: %v", err)
+			}
 		}
 	}()
 

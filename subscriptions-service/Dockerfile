@@ -6,7 +6,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN go build -o /subsriptions-service .
+RUN go build -o /subscriptions-service .
 
 EXPOSE 8004
-CMD ["/subsriptions-service"]
+CMD ["/subscriptions-service"]
